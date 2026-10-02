@@ -430,12 +430,12 @@
             </div>
 
             <div class="form-group">
-                <label>សេវាកដឹក (Delivery Service):</label>
+                <label>សេវាដឹក (Delivery Service):</label>
                 <select id="inputCourier" onchange="updateLabel()">
-                    <option value="វីរៈប៊ុនថាំ">វីរៈប៊ុនថាំ (VET Express)</option>
-                    <option value="J&T">J&T Express</option>
-                    <option value="កាពីតូល">កាពីតូល (Capitol)</option>
-                    <option value="Pick up">Pick up (មកយកខ្លួនឯង)</option>
+                    <option value="virak">វីរៈប៊ុនថាំ (VET Express)</option>
+                    <option value="jt">J&T Express</option>
+                    <option value="capitol">កាពីតូល (Capitol)</option>
+                    <option value="pickup">Pick up (មកយកខ្លួនឯង)</option>
                 </select>
             </div>
 
@@ -530,7 +530,7 @@
                 <div class="label-footer">
                     <div class="courier-options">
                         <div class="checkbox-item">
-                            <span class="checkbox-circle" id="chk-vet"></span> វី៖ប៊ុនថាំ
+                            <span class="checkbox-circle" id="chk-virak"></span> វីរៈប៊ុនថាំ
                         </div>
                         <div class="checkbox-item">
                             <span class="checkbox-circle" id="chk-jt"></span> J&T
@@ -613,11 +613,13 @@
             const name = document.getElementById('inputName').value;
             const phone = document.getElementById('inputPhone').value;
             const address = document.getElementById('inputAddress').value;
-            const courier = document.getElementById('inputCourier').value;
+            const courierSelect = document.getElementById('inputCourier');
+            const courierVal = courierSelect.value;
+            const courierText = courierSelect.options[courierSelect.selectedIndex].text.split(' ')[0]; // Gets Khmer name part
+            
             let price = document.getElementById('inputPrice').value.trim();
             const isCod = document.getElementById('inputCod').checked;
 
-            // Append (COD) if checked and price is not empty
             if (isCod && price !== '') {
                 price += ' (COD)';
             }
@@ -626,21 +628,23 @@
             document.getElementById('prevName').textContent = name || '\u00A0';
             document.getElementById('prevPhone').textContent = phone || '\u00A0';
             document.getElementById('prevAddress').innerHTML = address ? address.replace(/\n/g, '<br>') : '\u00A0';
-            document.getElementById('prevCourier').textContent = courier;
+            document.getElementById('prevCourier').textContent = courierText;
             document.getElementById('prevPrice').textContent = price || '\u00A0';
 
-            document.getElementById('chk-vet').classList.remove('checked');
+            // Reset checkboxes
+            document.getElementById('chk-virak').classList.remove('checked');
             document.getElementById('chk-jt').classList.remove('checked');
             document.getElementById('chk-capitol').classList.remove('checked');
             document.getElementById('chk-pickup').classList.remove('checked');
 
-            if (courier === 'វីរៈប៊ុនថាំ') {
-                document.getElementById('chk-vet').classList.add('checked');
-            } else if (courier === 'J&T') {
+            // Set checkbox based on selected value
+            if (courierVal === 'virak') {
+                document.getElementById('chk-virak').classList.add('checked');
+            } else if (courierVal === 'jt') {
                 document.getElementById('chk-jt').classList.add('checked');
-            } else if (courier === 'កាពីតូល') {
+            } else if (courierVal === 'capitol') {
                 document.getElementById('chk-capitol').classList.add('checked');
-            } else if (courier === 'Pick up') {
+            } else if (courierVal === 'pickup') {
                 document.getElementById('chk-pickup').classList.add('checked');
             }
         }
@@ -652,7 +656,7 @@
                 document.getElementById('inputName').value = '';
                 document.getElementById('inputPhone').value = '';
                 document.getElementById('inputAddress').value = '';
-                document.getElementById('inputCourier').value = 'វីរៈប៊ុនថាំ'; 
+                document.getElementById('inputCourier').value = 'virak'; 
                 document.getElementById('inputPrice').value = '';
                 document.getElementById('inputCod').checked = false;
                 updateLabel(); 
@@ -674,14 +678,14 @@
             }
 
             let lowerText = rawText.toLowerCase();
-            if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈប៊ុនថាំ')) {
-                document.getElementById('inputCourier').value = 'វីរៈប៊ុនថាំ';
+            if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ')) {
+                document.getElementById('inputCourier').value = 'virak';
             } else if (lowerText.includes('j&t') || lowerText.includes('jt')) {
-                document.getElementById('inputCourier').value = 'J&T';
+                document.getElementById('inputCourier').value = 'jt';
             } else if (lowerText.includes('កាពីតូល') || lowerText.includes('capitol')) {
-                document.getElementById('inputCourier').value = 'កាពីតូល';
+                document.getElementById('inputCourier').value = 'capitol';
             } else if (lowerText.includes('pick') || lowerText.includes('យកផ្ទាល់')) {
-                document.getElementById('inputCourier').value = 'Pick up';
+                document.getElementById('inputCourier').value = 'pickup';
             }
 
             updateLabel();
