@@ -2,7 +2,7 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <title>WHAT YOU WANT - Label Generator (70x100mm)</title>
+    <title>WHAT YOU WANT - Label Generator (75x100mm)</title>
     <!-- Include Tesseract.js for OCR capability -->
     <script src="https://unpkg.com/tesseract.js@v4.1.1/dist/tesseract.min.js"></script>
     
@@ -11,7 +11,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Content:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&display=swap');
 
         :root {
-            --label-width: 70mm;
+            --label-width: 75mm;
             --label-height: 100mm;
             --primary-yellow: #fef08a;
             --border-yellow: #eab308;
@@ -91,7 +91,7 @@
             border-radius: 8px;
         }
 
-        /* New Scan Button Styles */
+        /* Scan Button Styles */
         .paste-header {
             display: flex;
             justify-content: space-between;
@@ -159,13 +159,13 @@
             font-weight: bold;
         }
 
-        /* --- 70mm x 100mm LABEL STYLING --- */
+        /* --- 75mm x 100mm LABEL STYLING --- */
         .label {
             width: var(--label-width);
             height: var(--label-height);
             background: #FFFBEB;
             border: 3px solid #FACC15;
-            padding: 4mm;
+            padding: 4.2mm; /* Proportional increase */
             display: flex;
             flex-direction: column;
             position: relative;
@@ -189,6 +189,12 @@
             align-items: center;
             justify-content: center;
         }
+        
+        .header-logo-container svg {
+            width: 100%;
+            max-width: 118px; /* Proportional increase from 110px */
+            height: auto;
+        }
 
         /* Right Side - Main Title & Info */
         .header-main-content {
@@ -202,7 +208,7 @@
 
         .main-brand {
             font-family: 'Arial Black', 'Kantumruy Pro', sans-serif;
-            font-size: 14px;
+            font-size: 15px; /* Scaled from 14px */
             font-weight: 900;
             letter-spacing: 0px;
             color: #000;
@@ -212,7 +218,7 @@
         }
 
         .khmer-tag {
-            font-size: 6px;
+            font-size: 6.5px; /* Scaled from 6px */
             font-weight: bold;
             color: #1f2937;
             white-space: nowrap;
@@ -220,7 +226,7 @@
         }
 
         .eng-tag {
-            font-size: 5.5px; 
+            font-size: 6px; /* Scaled from 5.5px */
             font-weight: bold;
             color: #1f2937;
             white-space: nowrap; 
@@ -228,7 +234,7 @@
         }
 
         .contact-line {
-            font-size: 6px; 
+            font-size: 6.5px; /* Scaled from 6px */
             font-weight: bold;
             color: #000;
             display: flex;
@@ -239,7 +245,7 @@
         }
 
         .datetime-line {
-            font-size: 5.5px; 
+            font-size: 6px; /* Scaled from 5.5px */
             font-weight: 600;
             color: #4b5563;
             line-height: 1;
@@ -271,7 +277,7 @@
         }
 
         .field-label-title {
-            font-size: 7.5px;
+            font-size: 8px; /* Scaled from 7.5px */
             color: #713f12;
             font-weight: bold;
             line-height: 1;
@@ -279,7 +285,7 @@
         }
 
         .field-content {
-            font-size: 10.5px;
+            font-size: 11px; /* Scaled from 10.5px */
             color: #000;
             font-weight: 600;
             word-break: break-word;
@@ -309,7 +315,7 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
-            font-size: 7.5px;
+            font-size: 8px; /* Scaled from 7.5px */
             font-weight: bold;
         }
 
@@ -320,8 +326,8 @@
         }
 
         .checkbox-circle {
-            width: 8px;
-            height: 8px;
+            width: 9px; /* Scaled from 8px */
+            height: 9px;
             border: 1.5px solid #000;
             border-radius: 50%;
             display: inline-block;
@@ -338,8 +344,8 @@
         }
 
         .custom-icon {
-            width: 25px;
-            height: 25px;
+            width: 27px; /* Scaled from 25px */
+            height: 27px;
         }
 
         .warning-container {
@@ -351,7 +357,7 @@
 
         .warning-text {
             text-align: right;
-            font-size: 7px;
+            font-size: 7.5px; /* Scaled from 7px */
             font-weight: bold;
             color: #dc2626;
             line-height: 1.1;
@@ -362,7 +368,7 @@
         }
 
         .fragile-badge {
-            width: 55px;
+            width: 59px; /* Scaled from 55px */
             height: auto;
         }
 
@@ -399,7 +405,7 @@
            ------------------------------------------- */
         @media print {
             @page {
-                size: 70mm 100mm;
+                size: 75mm 100mm;
                 margin: 0; 
             }
 
@@ -407,7 +413,7 @@
                 margin: 0 !important;
                 padding: 0 !important;
                 background: none !important;
-                width: 70mm !important;
+                width: 75mm !important;
                 height: 100mm !important;
             }
 
@@ -427,10 +433,10 @@
                 position: absolute !important;
                 top: 0 !important;
                 left: 0 !important;
-                width: 70mm !important; 
+                width: 75mm !important; 
                 height: 100mm !important; 
                 margin: 0 !important; 
-                padding: 3mm !important; 
+                padding: 4.2mm !important; 
                 border: none !important; 
                 box-sizing: border-box !important;
                 box-shadow: none !important;
@@ -506,12 +512,12 @@
                 </div>
             </div>
 
-            <button class="print-btn" onclick="window.print()">🖨️ Print Label (70x100mm)</button>
+            <button class="print-btn" onclick="window.print()">🖨️ Print Label (75x100mm)</button>
         </div>
 
         <!-- Visual Live Preview Panel -->
         <div class="preview-panel">
-            <div class="preview-label">Live Preview (70mm x 100mm)</div>
+            <div class="preview-label">Live Preview (75mm x 100mm)</div>
             
             <div class="label" id="labelPreview">
                 <!-- Header -->
@@ -519,15 +525,15 @@
                     
                     <!-- Left Panel (S-SHAPE BASKET LOGO) -->
                     <div class="header-logo-container">
-                        <svg viewBox="0 0 270 190" style="width: 100%; max-width: 110px; height: auto;" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 270 190" xmlns="http://www.w3.org/2000/svg">
                             <g fill="none" stroke="#F5B201" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M 18 25 H 52 L 80 142 H 245" />
                                 <path d="M 52 25 H 225 A 17.5 17.5 0 0 1 225 60 H 90 A 17.5 17.5 0 0 0 90 95 H 210" />
                                 <circle cx="106" cy="160" r="10" stroke-width="16" />
                                 <circle cx="216" cy="160" r="10" stroke-width="16" />
                             </g>
-                            <text x="84" y="127" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="18" fill="#000" letter-spacing="-0.2">WHAT YOU WANT</text>
-                            <text x="245" y="139" font-family="Arial, sans-serif" font-weight="700" font-size="7.5" fill="#333" text-anchor="end" letter-spacing="0.2">SHOPPING FOR YOU</text>
+                            <text x="88" y="118" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="14.5" fill="#000" letter-spacing="0">WHAT YOU WANT</text>
+                            <text x="245" y="130" font-family="Arial, sans-serif" font-weight="700" font-size="7.5" fill="#333" text-anchor="end" letter-spacing="0.2">SHOPPING FOR YOU</text>
                         </svg>
                     </div>
 
@@ -537,7 +543,7 @@
                         <div class="khmer-tag">ផ្គត់ផ្គង់ឡាមកោររោមមានគុណភាពខ្ពស់</div>
                         <div class="eng-tag">Authentic Product from Korea Japan and USA</div>
                         <div class="contact-line">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="6" height="6">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="6.5" height="6.5">
                                 <circle cx="12" cy="12" r="12" fill="#2AABEE"/>
                                 <path d="M5.4 11.6L18 6.5c.6-.2 1.1.1 1 .8l-2.2 10.3c-.1.6-.5.8-1.1.5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3.1 5.7-5.1c.2-.2 0-.4-.4-.2L8.6 13.9l-3-1c-.6-.2-.6-.6.1-.9z" fill="#FFF"/>
                             </svg>
