@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>WHAT YOU WANT - Label Generator (70x100mm)</title>
+    <!-- Include Tesseract.js for OCR capability -->
+    <script src="https://unpkg.com/tesseract.js@v4.1.1/dist/tesseract.min.js"></script>
+    
     <style>
         /* Import a clean standard font supporting Khmer */
         @import url('https://fonts.googleapis.com/css2?family=Content:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&display=swap');
@@ -88,6 +91,38 @@
             border-radius: 8px;
         }
 
+        /* New Scan Button Styles */
+        .paste-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .scan-btn {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .scan-btn:hover {
+            background-color: #059669;
+        }
+
+        .scan-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
         .print-btn {
             background-color: #2563eb;
             color: white;
@@ -162,6 +197,7 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            gap: 2.5px; 
         }
 
         .main-brand {
@@ -171,35 +207,42 @@
             letter-spacing: 0px;
             color: #000;
             white-space: nowrap;
-        }
-
-        .tagline {
-            display: flex;
-            flex-direction: column;
-            color: #1f2937;
-            margin: 2px 0;
-            font-weight: bold;
-            line-height: 1.2;
+            line-height: 1;
+            margin-bottom: 1px;
         }
 
         .khmer-tag {
             font-size: 6px;
+            font-weight: bold;
+            color: #1f2937;
             white-space: nowrap;
+            line-height: 1;
         }
 
         .eng-tag {
-            font-size: 4.5px; 
+            font-size: 5.5px; 
+            font-weight: bold;
+            color: #1f2937;
             white-space: nowrap; 
+            line-height: 1;
         }
 
         .contact-line {
-            font-size: 9px;
+            font-size: 6px; 
             font-weight: bold;
             color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px; 
+            line-height: 1;
+        }
+
+        .datetime-line {
+            font-size: 5.5px; 
+            font-weight: 600;
+            color: #4b5563;
+            line-height: 1;
         }
 
         /* Input Fields Group inside Label */
@@ -405,7 +448,17 @@
             <h2>WHAT YOU WANT - Label Maker</h2>
             
             <div class="form-group paste-box">
-                <label>⚡ Quick Smart Paste (Auto-fills fields below):</label>
+                <div class="paste-header">
+                    <label style="margin:0;">⚡ Quick Smart Paste (Auto-fills):</label>
+                    
+                    <!-- New OCR Camera Scan Button -->
+                    <button type="button" id="scanBtn" class="scan-btn" onclick="document.getElementById('cameraInput').click()">
+                        📷 Scan Text
+                    </button>
+                    <!-- Hidden file input set to trigger camera on mobile devices -->
+                    <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;" onchange="processImageScan(this)">
+                </div>
+                
                 <textarea id="smartPaste" placeholder="Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()"></textarea>
             </div>
 
@@ -469,25 +522,24 @@
                                 <circle cx="106" cy="160" r="10" stroke-width="16" />
                                 <circle cx="216" cy="160" r="10" stroke-width="16" />
                             </g>
-                            <text x="84" y="118" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="18" fill="#000" letter-spacing="-0.2">WHAT YOU WANT</text>
-                            <text x="245" y="130" font-family="Arial, sans-serif" font-weight="700" font-size="7.5" fill="#333" text-anchor="end" letter-spacing="0.2">SHOPPING FOR YOU</text>
+                            <text x="84" y="127" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="18" fill="#000" letter-spacing="-0.2">WHAT YOU WANT</text>
+                            <text x="245" y="139" font-family="Arial, sans-serif" font-weight="700" font-size="7.5" fill="#333" text-anchor="end" letter-spacing="0.2">SHOPPING FOR YOU</text>
                         </svg>
                     </div>
 
                     <!-- Right Side (Title & Information) -->
                     <div class="header-main-content">
                         <div class="main-brand">WHAT YOU WANT</div>
-                        <div class="tagline">
-                            <span class="khmer-tag">ផ្គត់ផ្គង់ឡាមកោររោមមានគុណភាពខ្ពស់</span>
-                            <span class="eng-tag">Authentic Product from Korea Japan and USA</span>
-                        </div>
+                        <div class="khmer-tag">ផ្គត់ផ្គង់ឡាមកោររោមមានគុណភាពខ្ពស់</div>
+                        <div class="eng-tag">Authentic Product from Korea Japan and USA</div>
                         <div class="contact-line">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="6" height="6">
                                 <circle cx="12" cy="12" r="12" fill="#2AABEE"/>
                                 <path d="M5.4 11.6L18 6.5c.6-.2 1.1.1 1 .8l-2.2 10.3c-.1.6-.5.8-1.1.5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3.1 5.7-5.1c.2-.2 0-.4-.4-.2L8.6 13.9l-3-1c-.6-.2-.6-.6.1-.9z" fill="#FFF"/>
                             </svg>
                             067 221 000
                         </div>
+                        <div class="datetime-line" id="currentDateTime">កាលបរិច្ឆេទ: --/--/---- ម៉ោង: --:--</div>
                     </div>
                 </div>
 
@@ -608,6 +660,77 @@
     </div>
 
     <script>
+        // OCR Camera Image Processing Function
+        async function processImageScan(inputElement) {
+            if (inputElement.files && inputElement.files[0]) {
+                const file = inputElement.files[0];
+                const btn = document.getElementById('scanBtn');
+                const originalText = btn.innerHTML;
+                
+                // Update UI to show loading state
+                btn.innerHTML = '⏳ Scanning...';
+                btn.disabled = true;
+
+                try {
+                    // Start OCR recognition using english and khmer
+                    const result = await Tesseract.recognize(file, 'eng+khm', {
+                        logger: m => console.log(m) // logs progress to console
+                    });
+                    
+                    const extractedText = result.data.text.trim();
+                    
+                    if (extractedText) {
+                        const pasteBox = document.getElementById('smartPaste');
+                        // Append text instead of replacing so multiple scans can be stitched
+                        if (pasteBox.value) {
+                            pasteBox.value += '\n' + extractedText;
+                        } else {
+                            pasteBox.value = extractedText;
+                        }
+                        // Automatically parse the new text
+                        parseSmartText();
+                    } else {
+                        alert("No text was found in the image. Please try again.");
+                    }
+                } catch (error) {
+                    console.error("OCR Scan Error:", error);
+                    alert("Failed to extract text. Make sure you have an active internet connection on your first use.");
+                } finally {
+                    // Revert button to original state
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    // Reset input so the same image/camera can be triggered again sequentially
+                    inputElement.value = '';
+                }
+            }
+        }
+
+        // Update Live Clock Date & Time Function
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Format Date as dd-mm-yyyy
+            const d = String(now.getDate()).padStart(2, '0');
+            const m = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const y = now.getFullYear();
+            const dateStr = `${d}-${m}-${y}`;
+            
+            // Format Time as 24-hour (HH:MM)
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeStr = `${hours}:${minutes}`;
+            
+            // Apply text with Khmer labels
+            const dtElement = document.getElementById('currentDateTime');
+            if (dtElement) {
+                dtElement.textContent = `កាលបរិច្ឆេទ: ${dateStr} ម៉ោង: ${timeStr}`;
+            }
+        }
+        
+        // Call immediately and set interval to update every 60 seconds
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+
         function updateLabel() {
             const sender = document.getElementById('inputSender').value;
             const name = document.getElementById('inputName').value;
