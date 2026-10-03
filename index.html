@@ -451,7 +451,7 @@
                 <div class="paste-header">
                     <label style="margin:0;">⚡ Quick Smart Paste (Auto-fills):</label>
                     
-                    <!-- New OCR Camera Scan Button -->
+                    <!-- OCR Camera Scan Button -->
                     <button type="button" id="scanBtn" class="scan-btn" onclick="document.getElementById('cameraInput').click()">
                         📷 Scan Text
                     </button>
@@ -460,6 +460,10 @@
                 </div>
                 
                 <textarea id="smartPaste" placeholder="Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()"></textarea>
+                
+                <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">
+                    * <b>Tip:</b> If the built-in scanner fails on Khmer words, tap the text box above and use your phone's native "Scan Text" feature (Live Text on iOS or Google Lens on Android) for perfect accuracy.
+                </div>
             </div>
 
             <div class="form-group">
@@ -660,7 +664,44 @@
     </div>
 
     <script>
-        // OCR Camera Image Processing Function
+        // --- 1. NEW: Advanced Pre-Processing for Tesseract.js ---
+        // Instead of strict black-and-white (which breaks Khmer subscripts),
+        // we scale the image up to ensure high resolution, then let the OCR engine handle it.
+        function preprocessImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Increase max width to 1500px for better detail on complex fonts
+                        const MAX_WIDTH = 1500;
+                        let width = img.width;
+                        let height = img.height;
+                        if (width < MAX_WIDTH) {
+                            height = Math.round((height * MAX_WIDTH) / width);
+                            width = MAX_WIDTH;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        // Draw high-res image. No harsh thresholding.
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        resolve(canvas.toDataURL('image/jpeg', 1.0));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // --- 2. UPDATED: OCR Camera Image Processing Function ---
         async function processImageScan(inputElement) {
             if (inputElement.files && inputElement.files[0]) {
                 const file = inputElement.files[0];
@@ -668,12 +709,17 @@
                 const originalText = btn.innerHTML;
                 
                 // Update UI to show loading state
-                btn.innerHTML = '⏳ Scanning...';
+                btn.innerHTML = '⏳ Processing Image...';
                 btn.disabled = true;
 
                 try {
-                    // Start OCR recognition using english and khmer
-                    const result = await Tesseract.recognize(file, 'eng+khm', {
+                    // Pre-process for higher resolution
+                    const processedImgUrl = await preprocessImage(file);
+                    
+                    btn.innerHTML = '⏳ Scanning Text...';
+
+                    // Force 'khm+eng' explicitly to prioritize Khmer structure
+                    const result = await Tesseract.recognize(processedImgUrl, 'khm+eng', {
                         logger: m => console.log(m) // logs progress to console
                     });
                     
@@ -690,7 +736,7 @@
                         // Automatically parse the new text
                         parseSmartText();
                     } else {
-                        alert("No text was found in the image. Please try again.");
+                        alert("No text was found in the image. Please try taking a clearer photo.");
                     }
                 } catch (error) {
                     console.error("OCR Scan Error:", error);
