@@ -57,6 +57,24 @@
             color: #1f2937;
             border-bottom: 2px solid #e5e7eb;
             padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* API Reset Button */
+        .api-btn {
+            font-size: 11px;
+            color: #6b7280;
+            background: none;
+            border: 1px solid #d1d5db;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .api-btn:hover {
+            background: #f3f4f6;
         }
 
         .form-group {
@@ -100,7 +118,7 @@
         }
 
         .scan-btn {
-            background-color: #10b981;
+            background-color: #8b5cf6; 
             color: white;
             border: none;
             padding: 6px 10px;
@@ -115,7 +133,7 @@
         }
 
         .scan-btn:hover {
-            background-color: #059669;
+            background-color: #7c3aed;
         }
 
         .scan-btn:disabled {
@@ -165,7 +183,7 @@
             height: var(--label-height);
             background: #FFFBEB;
             border: 3px solid #FACC15;
-            padding: 4.2mm; 
+            padding: 4mm;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -189,12 +207,6 @@
             align-items: center;
             justify-content: center;
         }
-        
-        .header-logo-container svg {
-            width: 100%;
-            max-width: 118px; 
-            height: auto;
-        }
 
         /* Right Side - Main Title & Info */
         .header-main-content {
@@ -208,7 +220,7 @@
 
         .main-brand {
             font-family: 'Arial Black', 'Kantumruy Pro', sans-serif;
-            font-size: 15px; 
+            font-size: 14px;
             font-weight: 900;
             letter-spacing: 0px;
             color: #000;
@@ -218,7 +230,7 @@
         }
 
         .khmer-tag {
-            font-size: 6.5px; 
+            font-size: 6px;
             font-weight: bold;
             color: #1f2937;
             white-space: nowrap;
@@ -226,7 +238,7 @@
         }
 
         .eng-tag {
-            font-size: 6px; 
+            font-size: 5.5px; 
             font-weight: bold;
             color: #1f2937;
             white-space: nowrap; 
@@ -234,7 +246,7 @@
         }
 
         .contact-line {
-            font-size: 6.5px; 
+            font-size: 6px; 
             font-weight: bold;
             color: #000;
             display: flex;
@@ -245,7 +257,7 @@
         }
 
         .datetime-line {
-            font-size: 6px; 
+            font-size: 5.5px; 
             font-weight: 600;
             color: #4b5563;
             line-height: 1;
@@ -277,7 +289,7 @@
         }
 
         .field-label-title {
-            font-size: 8px; 
+            font-size: 7.5px;
             color: #713f12;
             font-weight: bold;
             line-height: 1;
@@ -285,7 +297,7 @@
         }
 
         .field-content {
-            font-size: 11px; 
+            font-size: 10.5px;
             color: #000;
             font-weight: 600;
             word-break: break-word;
@@ -315,7 +327,7 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
-            font-size: 8px; 
+            font-size: 7.5px;
             font-weight: bold;
         }
 
@@ -326,8 +338,8 @@
         }
 
         .checkbox-circle {
-            width: 9px; 
-            height: 9px;
+            width: 8px;
+            height: 8px;
             border: 1.5px solid #000;
             border-radius: 50%;
             display: inline-block;
@@ -344,8 +356,8 @@
         }
 
         .custom-icon {
-            width: 27px; 
-            height: 27px;
+            width: 25px;
+            height: 25px;
         }
 
         .warning-container {
@@ -357,7 +369,7 @@
 
         .warning-text {
             text-align: right;
-            font-size: 7.5px; 
+            font-size: 7px;
             font-weight: bold;
             color: #dc2626;
             line-height: 1.1;
@@ -368,7 +380,7 @@
         }
 
         .fragile-badge {
-            width: 59px; 
+            width: 55px;
             height: auto;
         }
 
@@ -405,7 +417,7 @@
            ------------------------------------------- */
         @media print {
             @page {
-                size: 75mm 100mm;
+                size: 75mm 100mm; 
                 margin: 0; 
             }
 
@@ -413,7 +425,7 @@
                 margin: 0 !important;
                 padding: 0 !important;
                 background: none !important;
-                width: 75mm !important;
+                width: 75mm !important; 
                 height: 100mm !important;
             }
 
@@ -436,7 +448,7 @@
                 width: 75mm !important; 
                 height: 100mm !important; 
                 margin: 0 !important; 
-                padding: 4.2mm !important; 
+                padding: 3mm !important; 
                 border: none !important; 
                 box-sizing: border-box !important;
                 box-shadow: none !important;
@@ -451,24 +463,27 @@
     <div class="app-container">
         <!-- Control Form Panel -->
         <div class="control-panel">
-            <h2>WHAT YOU WANT - Label Maker</h2>
+            <h2>
+                WHAT YOU WANT - Label Maker
+                <button type="button" class="api-btn" onclick="alert('API Settings functionality pending.')">API Reset</button>
+            </h2>
             
             <div class="form-group paste-box">
                 <div class="paste-header">
                     <label style="margin:0;">⚡ Quick Smart Paste (Auto-fills):</label>
                     
-                    <!-- Smart Scan Button (Detects iOS vs Android/Desktop) -->
-                    <button type="button" id="scanBtn" class="scan-btn" onclick="triggerSmartScan()">
+                    <!-- OCR Camera Scan Button -->
+                    <button type="button" id="scanBtn" class="scan-btn" onclick="document.getElementById('cameraInput').click()">
                         📷 Scan Text
                     </button>
-                    <!-- Hidden file input set to trigger camera on non-iOS devices -->
+                    <!-- Hidden file input set to trigger camera on mobile devices -->
                     <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;" onchange="processImageScan(this)">
                 </div>
                 
                 <textarea id="smartPaste" placeholder="Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()"></textarea>
                 
-                <div id="iosScanHint" style="display: none; font-size: 11px; color: #b91c1c; margin-top: 4px; font-weight: bold; background: #fee2e2; padding: 6px; border-radius: 4px;">
-                    👇 Apple restricts this button. To scan: Tap the box above, tap the cursor again, and select the native 'Scan Text' icon.
+                <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">
+                    * <b>Tip:</b> If the built-in scanner fails on Khmer words, tap the text box above and use your phone's native "Scan Text" feature (Live Text on iOS or Google Lens on Android) for perfect accuracy.
                 </div>
             </div>
 
@@ -525,15 +540,16 @@
                     
                     <!-- Left Panel (S-SHAPE BASKET LOGO) -->
                     <div class="header-logo-container">
-                        <svg viewBox="0 0 270 190" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 270 190" style="width: 100%; max-width: 110px; height: auto;" xmlns="http://www.w3.org/2000/svg">
                             <g fill="none" stroke="#F5B201" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M 18 25 H 52 L 80 142 H 245" />
                                 <path d="M 52 25 H 225 A 17.5 17.5 0 0 1 225 60 H 90 A 17.5 17.5 0 0 0 90 95 H 210" />
                                 <circle cx="106" cy="160" r="10" stroke-width="16" />
                                 <circle cx="216" cy="160" r="10" stroke-width="16" />
                             </g>
-                            <text x="88" y="118" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="14.5" fill="#000" letter-spacing="0">WHAT YOU WANT</text>
-                            <text x="245" y="130" font-family="Arial, sans-serif" font-weight="700" font-size="7.5" fill="#333" text-anchor="end" letter-spacing="0.2">SHOPPING FOR YOU</text>
+                            <text x="85" y="116" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="15" fill="#000" letter-spacing="-0.2">WHAT YOU WANT</text>
+                            <!-- Increased font size from 7 to 9 -->
+                            <text x="245" y="130" font-family="Arial, sans-serif" font-weight="700" font-size="9" fill="#333" text-anchor="end" letter-spacing="0.2">SHOPPING FOR YOU</text>
                         </svg>
                     </div>
 
@@ -543,7 +559,7 @@
                         <div class="khmer-tag">ផ្គត់ផ្គង់ឡាមកោររោមមានគុណភាពខ្ពស់</div>
                         <div class="eng-tag">Authentic Product from Korea Japan and USA</div>
                         <div class="contact-line">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="6.5" height="6.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="6" height="6">
                                 <circle cx="12" cy="12" r="12" fill="#2AABEE"/>
                                 <path d="M5.4 11.6L18 6.5c.6-.2 1.1.1 1 .8l-2.2 10.3c-.1.6-.5.8-1.1.5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3.1 5.7-5.1c.2-.2 0-.4-.4-.2L8.6 13.9l-3-1c-.6-.2-.6-.6.1-.9z" fill="#FFF"/>
                             </svg>
@@ -670,28 +686,7 @@
     </div>
 
     <script>
-        // --- Smart Scan Detector ---
-        function triggerSmartScan() {
-            // Detect if the user is on an iOS device (iPhone, iPad, iPod)
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-            const pasteBox = document.getElementById('smartPaste');
-            
-            if (isIOS) {
-                // For iOS: Focus the text area to trigger the keyboard, and show instructions
-                pasteBox.focus();
-                document.getElementById('iosScanHint').style.display = 'block';
-                
-                // Hide the hint automatically after 10 seconds
-                setTimeout(() => {
-                    document.getElementById('iosScanHint').style.display = 'none';
-                }, 10000);
-            } else {
-                // For Android/Desktop: Fallback to the web Tesseract scanner
-                document.getElementById('cameraInput').click();
-            }
-        }
-
-        // --- Advanced Pre-Processing for Tesseract.js (Non-iOS Fallback) ---
+        // --- 1. Advanced Pre-Processing for Tesseract.js ---
         function preprocessImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -701,6 +696,7 @@
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
                         
+                        // Increase max width to 1500px for better detail on complex fonts
                         const MAX_WIDTH = 1500;
                         let width = img.width;
                         let height = img.height;
@@ -712,7 +708,9 @@
                         canvas.width = width;
                         canvas.height = height;
                         
+                        // Draw high-res image. No harsh thresholding.
                         ctx.drawImage(img, 0, 0, width, height);
+                        
                         resolve(canvas.toDataURL('image/jpeg', 1.0));
                     };
                     img.onerror = reject;
@@ -723,33 +721,39 @@
             });
         }
 
-        // --- OCR Camera Image Processing Function (Non-iOS Fallback) ---
+        // --- 2. OCR Camera Image Processing Function ---
         async function processImageScan(inputElement) {
             if (inputElement.files && inputElement.files[0]) {
                 const file = inputElement.files[0];
                 const btn = document.getElementById('scanBtn');
                 const originalText = btn.innerHTML;
                 
-                btn.innerHTML = '⏳ Processing Image...';
+                // Update UI to show loading state
+                btn.innerHTML = '⏳ Processing...';
                 btn.disabled = true;
 
                 try {
+                    // Pre-process for higher resolution
                     const processedImgUrl = await preprocessImage(file);
+                    
                     btn.innerHTML = '⏳ Scanning Text...';
 
+                    // Force 'khm+eng' explicitly to prioritize Khmer structure
                     const result = await Tesseract.recognize(processedImgUrl, 'khm+eng', {
-                        logger: m => console.log(m)
+                        logger: m => console.log(m) // logs progress to console
                     });
                     
                     const extractedText = result.data.text.trim();
                     
                     if (extractedText) {
                         const pasteBox = document.getElementById('smartPaste');
+                        // Append text instead of replacing so multiple scans can be stitched
                         if (pasteBox.value) {
                             pasteBox.value += '\n' + extractedText;
                         } else {
                             pasteBox.value = extractedText;
                         }
+                        // Automatically parse the new text
                         parseSmartText();
                     } else {
                         alert("No text was found in the image. Please try taking a clearer photo.");
@@ -758,8 +762,10 @@
                     console.error("OCR Scan Error:", error);
                     alert("Failed to extract text. Make sure you have an active internet connection on your first use.");
                 } finally {
+                    // Revert button to original state
                     btn.innerHTML = originalText;
                     btn.disabled = false;
+                    // Reset input so the same image/camera can be triggered again sequentially
                     inputElement.value = '';
                 }
             }
@@ -769,21 +775,25 @@
         function updateDateTime() {
             const now = new Date();
             
+            // Format Date as dd-mm-yyyy
             const d = String(now.getDate()).padStart(2, '0');
-            const m = String(now.getMonth() + 1).padStart(2, '0'); 
+            const m = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
             const y = now.getFullYear();
             const dateStr = `${d}-${m}-${y}`;
             
+            // Format Time as 24-hour (HH:MM)
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const timeStr = `${hours}:${minutes}`;
             
+            // Apply text with Khmer labels
             const dtElement = document.getElementById('currentDateTime');
             if (dtElement) {
                 dtElement.textContent = `កាលបរិច្ឆេទ: ${dateStr} ម៉ោង: ${timeStr}`;
             }
         }
         
+        // Call immediately and set interval to update every 60 seconds
         updateDateTime();
         setInterval(updateDateTime, 60000);
 
@@ -794,7 +804,7 @@
             const address = document.getElementById('inputAddress').value;
             const courierSelect = document.getElementById('inputCourier');
             const courierVal = courierSelect.value;
-            const courierText = courierSelect.options[courierSelect.selectedIndex].text.split(' ')[0];
+            const courierText = courierSelect.options[courierSelect.selectedIndex].text.split(' ')[0]; // Gets Khmer name part
             
             let price = document.getElementById('inputPrice').value.trim();
             const isCod = document.getElementById('inputCod').checked;
@@ -810,11 +820,13 @@
             document.getElementById('prevCourier').textContent = courierText;
             document.getElementById('prevPrice').textContent = price || '\u00A0';
 
+            // Reset checkboxes
             document.getElementById('chk-virak').classList.remove('checked');
             document.getElementById('chk-jt').classList.remove('checked');
             document.getElementById('chk-capitol').classList.remove('checked');
             document.getElementById('chk-pickup').classList.remove('checked');
 
+            // Set checkbox based on selected value
             if (courierVal === 'virak') {
                 document.getElementById('chk-virak').classList.add('checked');
             } else if (courierVal === 'jt') {
