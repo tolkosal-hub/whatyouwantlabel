@@ -62,19 +62,24 @@
             align-items: center;
         }
 
-        /* API Reset Button */
+        /* API Settings Button */
         .api-btn {
-            font-size: 11px;
-            color: #6b7280;
-            background: none;
+            font-size: 12px;
+            color: #374151;
+            background: #f9fafb;
             border: 1px solid #d1d5db;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 5px 10px;
+            border-radius: 6px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
         }
         
         .api-btn:hover {
-            background: #f3f4f6;
+            background: #e5e7eb;
+            border-color: #9ca3af;
         }
 
         .form-group {
@@ -412,6 +417,112 @@
             cursor: pointer;
         }
 
+        /* --- SETTINGS MODAL STYLES --- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(2px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: 12px;
+            max-width: 480px;
+            width: 90%;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .btn-group-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #f87171;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-danger:hover {
+            background: #fca5a5;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
         /* -------------------------------------------
            PRINT SETTINGS 
            ------------------------------------------- */
@@ -429,7 +540,7 @@
                 height: 100mm !important;
             }
 
-            .control-panel, .preview-label {
+            .control-panel, .preview-label, .modal-backdrop {
                 display: none !important;
             }
 
@@ -465,7 +576,7 @@
         <div class="control-panel">
             <h2>
                 WHAT YOU WANT - Label Maker
-                <button type="button" class="api-btn" onclick="alert('API Settings functionality pending.')">API Reset</button>
+                <button type="button" class="api-btn" onclick="openSettingsModal()">⚙️ Settings & API</button>
             </h2>
             
             <div class="form-group paste-box">
@@ -482,8 +593,8 @@
                 
                 <textarea id="smartPaste" placeholder="Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()"></textarea>
                 
-                <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">
-                    * <b>Tip:</b> Make sure there is good lighting. The built-in scanner is optimized for English and Khmer text recognition.
+                <div style="font-size: 11px; color: #6b7280; margin-top: 4px;" id="scanTipText">
+                    * <b>Tip:</b> Uses high-contrast scanner. Set a Gemini API key in <b>Settings & API</b> for automated Khmer & English AI extraction.
                 </div>
             </div>
 
@@ -684,8 +795,91 @@
         </div>
     </div>
 
+    <!-- API & SETTINGS MODAL -->
+    <div class="modal-backdrop" id="settingsModal">
+        <div class="modal-box">
+            <h3 class="modal-title">
+                API & Application Settings
+                <button type="button" class="modal-close-btn" onclick="closeSettingsModal()">&times;</button>
+            </h3>
+
+            <div class="form-group">
+                <label>Default Sender Number:</label>
+                <input type="text" id="settingDefaultSender" placeholder="067221000/077221000">
+            </div>
+
+            <div class="form-group">
+                <label>Gemini API Key (Optional for Smart AI OCR):</label>
+                <input type="password" id="settingGeminiApiKey" placeholder="AIzaSy...">
+                <small style="color: #6b7280; font-size: 11px;">
+                    If provided, scanned photos are intelligently analyzed by Google Gemini to accurately extract Khmer names, phones, addresses, and couriers directly. If left blank, local Tesseract OCR is used.
+                </small>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-danger" onclick="resetAllSettings()">Reset All Settings</button>
+                <div class="btn-group-right">
+                    <button type="button" class="btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+                    <button type="button" class="btn-primary" onclick="saveSettings()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- 1. Advanced Pre-Processing for Tesseract.js ---
+        // --- SETTINGS & LOCAL STORAGE MANAGEMENT ---
+        const DEFAULT_SENDER = "067221000/077221000";
+
+        function loadSavedSettings() {
+            const savedSender = localStorage.getItem('label_default_sender') || DEFAULT_SENDER;
+            const savedApiKey = localStorage.getItem('label_gemini_api_key') || '';
+
+            document.getElementById('inputSender').value = savedSender;
+            document.getElementById('settingDefaultSender').value = savedSender;
+            document.getElementById('settingGeminiApiKey').value = savedApiKey;
+
+            const tipText = document.getElementById('scanTipText');
+            if (savedApiKey.trim()) {
+                tipText.innerHTML = `* ⚡ <b>AI Vision Active:</b> Scans are parsed with Google Gemini AI for high Khmer & English accuracy.`;
+            } else {
+                tipText.innerHTML = `* <b>Tip:</b> Using local high-contrast OCR. Enter an API Key in <b>Settings & API</b> for automated Khmer & English AI extraction.`;
+            }
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.add('open');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('open');
+        }
+
+        function saveSettings() {
+            const sender = document.getElementById('settingDefaultSender').value.trim() || DEFAULT_SENDER;
+            const apiKey = document.getElementById('settingGeminiApiKey').value.trim();
+
+            localStorage.setItem('label_default_sender', sender);
+            localStorage.setItem('label_gemini_api_key', apiKey);
+
+            document.getElementById('inputSender').value = sender;
+            updateLabel();
+            loadSavedSettings();
+            closeSettingsModal();
+            alert("Settings updated successfully!");
+        }
+
+        function resetAllSettings() {
+            if (confirm("Are you sure you want to reset all saved settings and clear your API key?")) {
+                localStorage.removeItem('label_default_sender');
+                localStorage.removeItem('label_gemini_api_key');
+                loadSavedSettings();
+                updateLabel();
+                closeSettingsModal();
+                alert("Settings have been reset to default.");
+            }
+        }
+
+        // --- PRE-PROCESSING FOR TESSERACT OCR ---
         function preprocessImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -706,34 +900,23 @@
                         canvas.width = width;
                         canvas.height = height;
                         
-                        // Draw high-res image
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // --- ENHANCEMENT: Convert to Grayscale & Boost Contrast ---
-                        // This makes English letters significantly clearer for the OCR engine
+                        // Grayscale and Contrast Boost for English text clarity
                         const imageData = ctx.getImageData(0, 0, width, height);
                         const data = imageData.data;
                         
                         for (let i = 0; i < data.length; i += 4) {
-                            // Calculate grayscale luminance
                             let gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-                            
-                            // Boost contrast by 50%
-                            gray = ((gray - 128) * 1.5) + 128;
-                            
-                            // Clamp values between 0 and 255
+                            gray = ((gray - 128) * 1.5) + 128; // contrast boost
                             gray = Math.max(0, Math.min(255, gray));
-                            
-                            // Apply new values
-                            data[i] = gray;     // R
-                            data[i + 1] = gray; // G
-                            data[i + 2] = gray; // B
+                            data[i] = gray;
+                            data[i + 1] = gray;
+                            data[i + 2] = gray;
                         }
                         
                         ctx.putImageData(imageData, 0, 0);
-                        // --------------------------------------------------------
-                        
-                        resolve(canvas.toDataURL('image/jpeg', 1.0));
+                        resolve(canvas.toDataURL('image/jpeg', 0.95));
                     };
                     img.onerror = reject;
                     img.src = e.target.result;
@@ -743,80 +926,125 @@
             });
         }
 
-        // --- 2. OCR Camera Image Processing Function ---
+        // --- OPTIONAL GEMINI AI VISION EXTRACTION ---
+        async function extractWithGemini(base64Image, apiKey) {
+            const base64Data = base64Image.split(',')[1];
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+            const prompt = `Analyze this shipping/delivery label or customer chat order image (which may be in Khmer and English).
+Extract these exact fields in pure JSON format:
+{
+  "name": "Customer Name or empty string",
+  "phone": "Customer Phone Number or empty string",
+  "address": "Full Shipping Address or empty string",
+  "courier": "virak OR jt OR capitol OR pickup",
+  "price": "Total price if mentioned (e.g. 15$) or empty string",
+  "isCod": true or false
+}
+Return ONLY valid raw JSON with no Markdown backticks.`;
+
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        {
+                            inline_data: {
+                                mime_type: "image/jpeg",
+                                data: base64Data
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    response_mime_type: "application/json"
+                }
+            };
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error?.message || "Gemini API request failed");
+            }
+
+            const jsonResponse = await response.json();
+            const textResponse = jsonResponse.candidates?.[0]?.content?.parts?.[0]?.text;
+            return JSON.parse(textResponse);
+        }
+
+        // --- OCR & SCAN PROCESSING ---
         async function processImageScan(inputElement) {
             if (inputElement.files && inputElement.files[0]) {
                 const file = inputElement.files[0];
                 const btn = document.getElementById('scanBtn');
                 const originalText = btn.innerHTML;
-                
-                // Update UI to show loading state
-                btn.innerHTML = '⏳ Processing...';
+                const apiKey = (localStorage.getItem('label_gemini_api_key') || '').trim();
+
                 btn.disabled = true;
 
                 try {
-                    // Pre-process for higher resolution and contrast
+                    btn.innerHTML = '⏳ Preparing Image...';
                     const processedImgUrl = await preprocessImage(file);
-                    
-                    btn.innerHTML = '⏳ Scanning Text...';
 
-                    // ENHANCEMENT: Switched to 'eng+khm' to prioritize English recognition structures 
-                    // before falling back to Khmer dictionary parameters.
-                    const result = await Tesseract.recognize(processedImgUrl, 'eng+khm', {
-                        logger: m => console.log(m) 
-                    });
-                    
-                    const extractedText = result.data.text.trim();
-                    
-                    if (extractedText) {
-                        const pasteBox = document.getElementById('smartPaste');
-                        // Append text instead of replacing so multiple scans can be stitched
-                        if (pasteBox.value) {
-                            pasteBox.value += '\n' + extractedText;
-                        } else {
-                            pasteBox.value = extractedText;
-                        }
-                        // Automatically parse the new text
-                        parseSmartText();
+                    if (apiKey) {
+                        // Use AI Vision if API Key is configured
+                        btn.innerHTML = '⚡ AI Extracting...';
+                        const aiData = await extractWithGemini(processedImgUrl, apiKey);
+                        
+                        if (aiData.name) document.getElementById('inputName').value = aiData.name;
+                        if (aiData.phone) document.getElementById('inputPhone').value = aiData.phone;
+                        if (aiData.address) document.getElementById('inputAddress').value = aiData.address;
+                        if (aiData.courier) document.getElementById('inputCourier').value = aiData.courier;
+                        if (aiData.price) document.getElementById('inputPrice').value = aiData.price;
+                        if (typeof aiData.isCod === 'boolean') document.getElementById('inputCod').checked = aiData.isCod;
+                        
+                        document.getElementById('smartPaste').value = `${aiData.name || ''}\n${aiData.phone || ''}\n${aiData.address || ''}`;
+                        updateLabel();
                     } else {
-                        alert("No text was found in the image. Please try taking a clearer photo.");
+                        // Fallback to local Tesseract OCR
+                        btn.innerHTML = '⏳ Scanning Text...';
+                        const result = await Tesseract.recognize(processedImgUrl, 'eng+khm', {
+                            logger: m => console.log(m)
+                        });
+                        
+                        const extractedText = result.data.text.trim();
+                        if (extractedText) {
+                            const pasteBox = document.getElementById('smartPaste');
+                            pasteBox.value = pasteBox.value ? pasteBox.value + '\n' + extractedText : extractedText;
+                            parseSmartText();
+                        } else {
+                            alert("No legible text detected. Please try a clearer picture.");
+                        }
                     }
                 } catch (error) {
-                    console.error("OCR Scan Error:", error);
-                    alert("Failed to extract text. Make sure you have an active internet connection on your first use.");
+                    console.error("Scan Error:", error);
+                    alert("Scanning error: " + error.message);
                 } finally {
-                    // Revert button to original state
                     btn.innerHTML = originalText;
                     btn.disabled = false;
-                    // Reset input so the same image/camera can be triggered again sequentially
                     inputElement.value = '';
                 }
             }
         }
 
-        // Update Live Clock Date & Time Function
+        // Live Clock
         function updateDateTime() {
             const now = new Date();
-            
-            // Format Date as dd-mm-yyyy
             const d = String(now.getDate()).padStart(2, '0');
-            const m = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const m = String(now.getMonth() + 1).padStart(2, '0');
             const y = now.getFullYear();
-            const dateStr = `${d}-${m}-${y}`;
-            
-            // Format Time as 24-hour (HH:MM)
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeStr = `${hours}:${minutes}`;
             
-            // Apply text with Khmer labels
             const dtElement = document.getElementById('currentDateTime');
             if (dtElement) {
-                dtElement.textContent = `កាលបរិច្ឆេទ: ${dateStr} ម៉ោង: ${timeStr}`;
+                dtElement.textContent = `កាលបរិច្ឆេទ: ${d}-${m}-${y} ម៉ោង: ${hours}:${minutes}`;
             }
         }
-        
-        // Call immediately and set interval to update every 60 seconds
         updateDateTime();
         setInterval(updateDateTime, 60000);
 
@@ -827,7 +1055,7 @@
             const address = document.getElementById('inputAddress').value;
             const courierSelect = document.getElementById('inputCourier');
             const courierVal = courierSelect.value;
-            const courierText = courierSelect.options[courierSelect.selectedIndex].text.split(' ')[0]; // Gets Khmer name part
+            const courierText = courierSelect.options[courierSelect.selectedIndex].text.split(' ')[0];
             
             let price = document.getElementById('inputPrice').value.trim();
             const isCod = document.getElementById('inputCod').checked;
@@ -843,22 +1071,16 @@
             document.getElementById('prevCourier').textContent = courierText;
             document.getElementById('prevPrice').textContent = price || '\u00A0';
 
-            // Reset checkboxes
+            // Checkbox highlight
             document.getElementById('chk-virak').classList.remove('checked');
             document.getElementById('chk-jt').classList.remove('checked');
             document.getElementById('chk-capitol').classList.remove('checked');
             document.getElementById('chk-pickup').classList.remove('checked');
 
-            // Set checkbox based on selected value
-            if (courierVal === 'virak') {
-                document.getElementById('chk-virak').classList.add('checked');
-            } else if (courierVal === 'jt') {
-                document.getElementById('chk-jt').classList.add('checked');
-            } else if (courierVal === 'capitol') {
-                document.getElementById('chk-capitol').classList.add('checked');
-            } else if (courierVal === 'pickup') {
-                document.getElementById('chk-pickup').classList.add('checked');
-            }
+            if (courierVal === 'virak') document.getElementById('chk-virak').classList.add('checked');
+            else if (courierVal === 'jt') document.getElementById('chk-jt').classList.add('checked');
+            else if (courierVal === 'capitol') document.getElementById('chk-capitol').classList.add('checked');
+            else if (courierVal === 'pickup') document.getElementById('chk-pickup').classList.add('checked');
         }
 
         function parseSmartText() {
@@ -877,17 +1099,9 @@
 
             let lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             
-            if (lines.length > 0) {
-                document.getElementById('inputName').value = lines[0];
-            }
-
-            if (lines.length > 1) {
-                document.getElementById('inputPhone').value = lines[1];
-            }
-
-            if (lines.length > 2) {
-                document.getElementById('inputAddress').value = lines.slice(2).join('\n');
-            }
+            if (lines.length > 0) document.getElementById('inputName').value = lines[0];
+            if (lines.length > 1) document.getElementById('inputPhone').value = lines[1];
+            if (lines.length > 2) document.getElementById('inputAddress').value = lines.slice(2).join('\n');
 
             let lowerText = rawText.toLowerCase();
             if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ')) {
@@ -903,6 +1117,8 @@
             updateLabel();
         }
 
+        // Initialize on load
+        loadSavedSettings();
         updateLabel();
     </script>
 </body>
