@@ -929,7 +929,8 @@
         // --- OPTIONAL GEMINI AI VISION EXTRACTION ---
         async function extractWithGemini(base64Image, apiKey) {
             const base64Data = base64Image.split(',')[1];
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+
 
             const prompt = `Analyze this shipping/delivery label or customer chat order image (which may be in Khmer and English).
 Extract these exact fields in pure JSON format:
