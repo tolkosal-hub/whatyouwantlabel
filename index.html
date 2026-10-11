@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>WHAT YOU WANT - Label Generator (75x100mm)</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Content:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&display=swap');
 
         :root {
             --label-width: 75mm;
@@ -21,7 +22,7 @@
         }
 
         body {
-            font-family: 'Kantumruy Pro', 'Content', sans-serif;
+            font-family: 'Kantumruy Pro', 'Battambang', sans-serif;
             background-color: #f3f4f6;
             margin: 0;
             padding: 20px;
@@ -434,7 +435,7 @@
                     <label style="margin:0; color: #6d28d9;">⚡ Smart Scan & Paste (Auto-fills):</label>
                 </div>
                 
-                <textarea id="smartPaste" placeholder="Tap here to use phone scanner...&#10;Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()"></textarea>
+                <textarea id="smartPaste" placeholder="Tap here to use phone scanner...&#10;Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()" lang="km" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
                 
                 <div class="scan-instruction">
     📱 <b>How to auto-scan text:</b><br>
@@ -446,22 +447,22 @@
 
             <div class="form-group">
                 <label>លេខអ្នកផ្ញើ (Sender Number):</label>
-                <input type="text" id="inputSender" value="067221000/077221000" oninput="updateLabel()">
+                <input type="text" id="inputSender" value="067221000/077221000" oninput="updateLabel()" spellcheck="false" autocorrect="off">
             </div>
 
             <div class="form-group">
                 <label>ឈ្មោះអ្នកទទួល (Receiver Name):</label>
-                <input type="text" id="inputName" placeholder="បញ្ចូលឈ្មោះអ្នកទទួល" oninput="updateLabel()">
+                <input type="text" id="inputName" placeholder="បញ្ចូលឈ្មោះអ្នកទទួល" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off">
             </div>
 
             <div class="form-group">
                 <label>លេខទូរស័ព្ទ (Phone Number):</label>
-                <input type="text" id="inputPhone" placeholder="បញ្ចូលលេខទូរស័ព្ទ" oninput="updateLabel()">
+                <input type="text" id="inputPhone" placeholder="បញ្ចូលលេខទូរស័ព្ទ" oninput="updateLabel()" spellcheck="false" autocorrect="off">
             </div>
 
             <div class="form-group">
                 <label>ទីតាំង (Address):</label>
-                <textarea id="inputAddress" placeholder="បញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន" oninput="updateLabel()"></textarea>
+                <textarea id="inputAddress" placeholder="បញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off"></textarea>
             </div>
 
             <div class="form-group">
