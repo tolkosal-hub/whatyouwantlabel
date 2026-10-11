@@ -72,7 +72,7 @@
             color: #4b5563;
         }
 
-        .form-group input[type="text"], .form-group textarea, .form-group select {
+        .form-group input[type="text"], .form-group input[type="number"], .form-group textarea, .form-group select {
             padding: 8px 12px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
@@ -169,6 +169,16 @@
             padding: 4px !important;
             text-align: center;
             font-size: 13px !important;
+        }
+
+        /* Hide the up/down arrows in number inputs */
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .qty-input[type=number] {
+            -moz-appearance: textfield;
         }
 
         .print-btn {
@@ -388,7 +398,7 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-            font-size: 8px; /* Slightly smaller to fit rows */
+            font-size: 8px; 
             font-weight: bold;
             margin-top: 2px;
             color: #111;
@@ -396,7 +406,7 @@
 
         .product-row {
             display: flex;
-            flex-wrap: wrap; /* Allows wrapping to new line if too long */
+            flex-wrap: wrap; 
             align-items: center;
             gap: 4px;
             width: 100%;
@@ -579,27 +589,27 @@
                     
                     <div class="main-item">
                         <label><input type="checkbox" id="in-bj" onchange="updateLabel()"> BJ</label>
-                        <input type="text" id="in-qty-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                     </div>
 
                     <div class="main-item">
                         <label><input type="checkbox" id="in-bk" onchange="updateLabel()"> BK</label>
-                        <input type="text" id="in-qty-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                     </div>
 
                     <div class="multi-item-group">
                         <div class="group-title">Soap Razor:</div>
                         <div class="sub-row">
                             <label><input type="checkbox" id="in-soap-green" onchange="updateLabel()"> Green</label>
-                            <input type="text" id="in-qty-soap-green" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-green" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
                         <div class="sub-row">
                             <label><input type="checkbox" id="in-soap-pink" onchange="updateLabel()"> Pink</label>
-                            <input type="text" id="in-qty-soap-pink" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-pink" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
                         <div class="sub-row">
                             <label><input type="checkbox" id="in-soap-yellow" onchange="updateLabel()"> Yellow</label>
-                            <input type="text" id="in-qty-soap-yellow" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-yellow" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
                     </div>
 
@@ -607,11 +617,11 @@
                         <div class="group-title">Oil:</div>
                         <div class="sub-row">
                             <label><input type="checkbox" id="in-oil-bio" onchange="updateLabel()"> Bio-Oil</label>
-                            <input type="text" id="in-qty-oil-bio" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-oil-bio" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
                         <div class="sub-row">
                             <label><input type="checkbox" id="in-oil-palmer" onchange="updateLabel()"> Palmer’s</label>
-                            <input type="text" id="in-qty-oil-palmer" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-oil-palmer" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
                     </div>
 
@@ -619,11 +629,11 @@
                         <div class="group-title">Refill:</div>
                         <div class="sub-row">
                             <label><input type="checkbox" id="in-refill-bj" onchange="updateLabel()"> BJ</label>
-                            <input type="text" id="in-qty-refill-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-refill-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
                         <div class="sub-row">
                             <label><input type="checkbox" id="in-refill-bk" onchange="updateLabel()"> BK</label>
-                            <input type="text" id="in-qty-refill-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-refill-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
                     </div>
 
@@ -984,7 +994,7 @@
                 const checkboxes = document.querySelectorAll('.product-selections input[type="checkbox"]');
                 checkboxes.forEach(cb => cb.checked = false);
                 
-                const qtys = document.querySelectorAll('.product-selections input[type="text"]');
+                const qtys = document.querySelectorAll('.product-selections input[type="number"]');
                 qtys.forEach(qty => qty.value = '');
                 
                 updateLabel(); 
@@ -1006,7 +1016,8 @@
             let phone = "";
             if (phoneMatch) {
                 phone = (phoneMatch[1] || phoneMatch[0]).trim();
-                text = text.replace(phoneMatch[0], '\n[SPLIT_TOKEN]\n');
+                // Use a token that will NOT accidentally get replaced later
+                text = text.replace(phoneMatch[0], '\n___SPLIT___\n');
             }
 
             // 3. Strip out common labels
@@ -1019,8 +1030,8 @@
             let name = "";
             let address = "";
 
-            if (lines.includes('[SPLIT_TOKEN]')) {
-                let splitIndex = lines.indexOf('[SPLIT_TOKEN]');
+            if (lines.includes('___SPLIT___')) {
+                let splitIndex = lines.indexOf('___SPLIT___');
                 name = lines.slice(0, splitIndex).join(' ').trim();
                 address = lines.slice(splitIndex + 1).join('\n').trim();
             } else {
@@ -1035,8 +1046,9 @@
                 }
             }
 
-            // Clean up stray punctuation
-            address = address.replace(/^[\-:]\s*/, '');
+            // Clean up stray punctuation and rogue split tokens just in case
+            address = address.replace(/^[\-:]\s*/, '').replace(/___SPLIT___/g, '').trim();
+            name = name.replace(/___SPLIT___/g, '').trim();
 
             // 5. Apply Values
             if (name) document.getElementById('inputName').value = name;
