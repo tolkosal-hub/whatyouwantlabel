@@ -197,6 +197,25 @@
         .print-btn:hover {
             background-color: #1d4ed8;
         }
+        
+        .new-btn {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .new-btn:hover {
+            background-color: #059669;
+        }
 
         .preview-panel {
             flex: 1;
@@ -552,7 +571,10 @@
     <div class="app-container">
         <!-- Control Form Panel -->
         <div class="control-panel">
-            <h2>WHAT YOU WANT - Label Maker</h2>
+            <h2>
+                WHAT YOU WANT - Label Maker
+                <button class="new-btn" onclick="clearForm()">➕ New Customer</button>
+            </h2>
             
             <div class="form-group paste-box">
                 <div class="paste-header">
@@ -873,7 +895,35 @@
         // --- 1. SET YOUR NEW WEB APP URL HERE ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbycuOhcCoHZbeOKL4Ky2X99VP27k3omgLfjMl6brErwq02OfaPuC0ge-0mzXXPAP6af/exec";
 
-        async function submitAndPrint() {
+        function clearForm() {
+            // Clear text areas and standard inputs
+            document.getElementById('smartPaste').value = '';
+            document.getElementById('inputName').value = '';
+            document.getElementById('inputPhone').value = '';
+            document.getElementById('inputAddress').value = '';
+            document.getElementById('inputPrice').value = '';
+            
+            // Reset to defaults
+            document.getElementById('inputSender').value = '067221000/077221000';
+            document.getElementById('inputCourier').value = 'virak';
+            document.getElementById('inputCod').checked = false;
+            
+            // Uncheck all product checkboxes
+            const checkboxes = document.querySelectorAll('.product-selections input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            
+            // Clear all quantity inputs
+            const qtys = document.querySelectorAll('.product-selections input[type="number"]');
+            qtys.forEach(qty => qty.value = '');
+            
+            // Update the live preview
+            updateLabel();
+            
+            // Focus on the smart paste box ready for the next scan
+            document.getElementById('smartPaste').focus();
+        }
+
+       async function submitAndPrint() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
             const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -882,8 +932,13 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             
             const courierSelect = document.getElementById('inputCourier');
-            let price = document.getElementById('inputPrice').value.trim();
-            if (document.getElementById('inputCod').checked && price !== '') price += ' (COD)';
+            
+            // Get raw price and COD status
+            let rawPrice = document.getElementById('inputPrice').value.trim();
+            let isCodChecked = document.getElementById('inputCod').checked;
+            
+            // Extract ONLY numbers and decimal points (e.g., "17.5$" becomes "17.5")
+            let cleanPrice = rawPrice.replace(/[^\d.]/g, '');
 
             const payload = {
                 date: `${d}-${m}-${y}`,
@@ -901,7 +956,8 @@
                 refillBj: document.getElementById('in-refill-bj').checked ? document.getElementById('in-qty-refill-bj').value : "",
                 refillBk: document.getElementById('in-refill-bk').checked ? document.getElementById('in-qty-refill-bk').value : "",
                 courier: courierSelect.options[courierSelect.selectedIndex].text,
-                totalPrice: price
+                totalPrice: cleanPrice, // Column P (Numbers only)
+                codStatus: isCodChecked ? "COD" : "" // Column Q (COD status)
             };
 
             // Change button text so user knows it's saving
