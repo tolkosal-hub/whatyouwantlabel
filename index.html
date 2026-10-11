@@ -470,7 +470,7 @@
                     <option value="virak">វីរៈប៊ុនថាំ (VET Express)</option>
                     <option value="jt">J&T Express</option>
                     <option value="capitol">កាពីតូល (Capitol)</option>
-                    <option value="pickup">Pick up (មកយកខ្លួនឯង)</option>
+                    <option value="pickup">Pickup (មកយកខ្លួនឯង)</option>
                 </select>
             </div>
 
@@ -573,7 +573,7 @@
                             <span class="checkbox-circle" id="chk-capitol"></span> កាពីតូល
                         </div>
                         <div class="checkbox-item">
-                            <span class="checkbox-circle" id="chk-pickup"></span> Pick up
+                            <span class="checkbox-circle" id="chk-pickup"></span> Pickup
                         </div>
                     </div>
 
@@ -705,7 +705,7 @@
             }
         }
 
-        function parseSmartText() {
+                function parseSmartText() {
             const rawText = document.getElementById('smartPaste').value;
             
             if (!rawText.trim()) {
@@ -719,28 +719,71 @@
                 return;
             }
 
-            let lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            // 1. Clean invisible zero-width spaces (common in Khmer mobile scanning)
+            let text = rawText.replace(/[\u200B-\u200D\uFEFF]/g, '');
+
+            // 2. Smart Phone Number Extraction
+            // Looks for labels like "លេខទូរស័ព្ទ:" followed by digits
+            const phoneRegex = /(?:tel|tel:|phone|លេខទូរស័ព្ទ|លេខទូរសព្ទ|លេខ|Tel|Tel:|Phone)\s*[:៖-]?\s*([0-9\s\-\/\.]{8,20})/i;
+            // Fallback: Just looks for a standard 9-10 digit Cambodian phone format starting with 0
+            const simplePhoneRegex = /(0\d{1,2}[\s\-\.]?\d{3}[\s\-\.]?\d{3,4}(?:\s*[\/,-]\s*0\d{1,2}[\s\-\.]?\d{3}[\s\-\.]?\d{3,4})?)/;
+
+            let phoneMatch = text.match(phoneRegex);
+            if (!phoneMatch || !phoneMatch[1].match(/\d{8,}/)) {
+                phoneMatch = text.match(simplePhoneRegex);
+            }
+
+            let phone = "";
+            if (phoneMatch) {
+                phone = (phoneMatch[1] || phoneMatch[0]).trim();
+                // Replace the entire phone sequence with a split token to divide Name and Address
+                text = text.replace(phoneMatch[0], '\n[SPLIT_TOKEN]\n');
+            }
+
+            // 3. Strip out common labels so they don't appear on the printed label
+            text = text.replace(/(ឈ្មោះអ្នកទទួល|ឈ្មោះ|Name|Receiver|To)\s*[:៖-]?\s*/gi, '');
+            text = text.replace(/(ទីតាំង|អាសយដ្ឋាន|Address|ផ្ញើទៅ|Location)\s*[:៖-]?\s*/gi, '\n');
+
+            // 4. Split the remaining text cleanly
+            let lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             
-            if (lines.length > 0) {
-                document.getElementById('inputName').value = lines[0];
+            let name = "";
+            let address = "";
+
+            if (lines.includes('[SPLIT_TOKEN]')) {
+                let splitIndex = lines.indexOf('[SPLIT_TOKEN]');
+                name = lines.slice(0, splitIndex).join(' ').trim();
+                address = lines.slice(splitIndex + 1).join('\n').trim();
+            } else {
+                // Absolute fallback if no phone number was found at all
+                if (lines.length > 0) name = lines[0];
+                if (lines.length > 1) {
+                    if (!phone) {
+                        phone = lines[1];
+                        address = lines.slice(2).join('\n');
+                    } else {
+                        address = lines.slice(1).join('\n');
+                    }
+                }
             }
 
-            if (lines.length > 1) {
-                document.getElementById('inputPhone').value = lines[1];
-            }
+            // Clean up stray punctuation at the start of address
+            address = address.replace(/^[\-:]\s*/, '');
 
-            if (lines.length > 2) {
-                document.getElementById('inputAddress').value = lines.slice(2).join('\n');
-            }
+            // 5. Apply Values to Inputs
+            if (name) document.getElementById('inputName').value = name;
+            if (phone) document.getElementById('inputPhone').value = phone.replace(/[^\d\/\-]/g, ''); // Keep only numbers and dashes
+            if (address) document.getElementById('inputAddress').value = address;
 
+            // 6. Courier Auto-Detection
             let lowerText = rawText.toLowerCase();
-            if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ')) {
+            if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ') || lowerText.includes('វីរះ')) {
                 document.getElementById('inputCourier').value = 'virak';
-            } else if (lowerText.includes('j&t') || lowerText.includes('jt')) {
+            } else if (lowerText.includes('j&t') || lowerText.includes('jt') || lowerText.includes('ជេអិនធី')) {
                 document.getElementById('inputCourier').value = 'jt';
             } else if (lowerText.includes('កាពីតូល') || lowerText.includes('capitol')) {
                 document.getElementById('inputCourier').value = 'capitol';
-            } else if (lowerText.includes('pick') || lowerText.includes('យកផ្ទាល់')) {
+            } else if (lowerText.includes('pickup') || lowerText.includes('យកផ្ទាល់') || lowerText.includes('យកខ្លួនឯង')) {
                 document.getElementById('inputCourier').value = 'pickup';
             }
 
