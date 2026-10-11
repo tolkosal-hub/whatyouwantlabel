@@ -660,7 +660,7 @@
                 </div>
             </div>
 
-            <button class="print-btn" onclick="window.print()">🖨️ Print Label (75x125mm)</button>
+            <button class="print-btn" onclick="submitAndPrint()">🖨️ Print Label (75x125mm)</button>
         </div>
 
         <!-- Visual Live Preview Panel -->
@@ -870,22 +870,77 @@
     </div>
 
     <script>
-        // Update Live Clock Date & Time Function
-        function updateDateTime() {
+        // --- 1. SET YOUR NEW WEB APP URL HERE ---
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbycuOhcCoHZbeOKL4Ky2X99VP27k3omgLfjMl6brErwq02OfaPuC0ge-0mzXXPAP6af/exec";
+
+        async function submitAndPrint() {
             const now = new Date();
-            
             const d = String(now.getDate()).padStart(2, '0');
             const m = String(now.getMonth() + 1).padStart(2, '0');
             const y = now.getFullYear();
-            const dateStr = `${d}-${m}-${y}`;
-            
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeStr = `${hours}:${minutes}`;
+            
+            const courierSelect = document.getElementById('inputCourier');
+            let price = document.getElementById('inputPrice').value.trim();
+            if (document.getElementById('inputCod').checked && price !== '') price += ' (COD)';
+
+            const payload = {
+                date: `${d}-${m}-${y}`,
+                time: `${hours}:${minutes}`,
+                customerName: document.getElementById('inputName').value,
+                phone: document.getElementById('inputPhone').value,
+                location: document.getElementById('inputAddress').value,
+                bj: document.getElementById('in-bj').checked ? document.getElementById('in-qty-bj').value : "",
+                bk: document.getElementById('in-bk').checked ? document.getElementById('in-qty-bk').value : "",
+                soapGreen: document.getElementById('in-soap-green').checked ? document.getElementById('in-qty-soap-green').value : "",
+                soapPink: document.getElementById('in-soap-pink').checked ? document.getElementById('in-qty-soap-pink').value : "",
+                soapYellow: document.getElementById('in-soap-yellow').checked ? document.getElementById('in-qty-soap-yellow').value : "",
+                oilBio: document.getElementById('in-oil-bio').checked ? document.getElementById('in-qty-oil-bio').value : "",
+                oilPalmer: document.getElementById('in-oil-palmer').checked ? document.getElementById('in-qty-oil-palmer').value : "",
+                refillBj: document.getElementById('in-refill-bj').checked ? document.getElementById('in-qty-refill-bj').value : "",
+                refillBk: document.getElementById('in-refill-bk').checked ? document.getElementById('in-qty-refill-bk').value : "",
+                courier: courierSelect.options[courierSelect.selectedIndex].text,
+                totalPrice: price
+            };
+
+            // Change button text so user knows it's saving
+            const printBtn = document.querySelector('.print-btn');
+            const originalText = printBtn.innerHTML;
+            printBtn.innerHTML = "⏳ Saving to Sheets...";
+
+            try {
+                // AWAIT the fetch so it finishes before printing
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (e) {
+                console.error("Could not save to sheet", e);
+            } finally {
+                // Restore button text
+                printBtn.innerHTML = originalText;
+                // Launch print window AFTER saving
+                setTimeout(() => window.print(), 300);
+            }
+        }
+
+        // Update Live Clock Date & Time Function
+        function updateDateTime() {
+            const now = new Date();
+            const d = String(now.getDate()).padStart(2, '0');
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const y = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
             
             const dtElement = document.getElementById('currentDateTime');
             if (dtElement) {
-                dtElement.textContent = `កាលបរិច្ឆេទ: ${dateStr} ម៉ោង: ${timeStr}`;
+                dtElement.textContent = `កាលបរិច្ឆេទ: ${d}-${m}-${y} ម៉ោង: ${hours}:${minutes}`;
             }
         }
         
@@ -927,20 +982,16 @@
             else if (courierVal === 'pickup') document.getElementById('chk-pickup').classList.add('checked');
 
             // --- Process Products Checkboxes and Quantities ---
-            
-            // BJ
             const isBj = document.getElementById('in-bj').checked;
             const qtyBj = document.getElementById('in-qty-bj').value.trim();
             document.getElementById('lbl-chk-bj').classList.toggle('checked', isBj);
             document.getElementById('lbl-qty-bj').textContent = isBj ? qtyBj : '';
 
-            // BK
             const isBk = document.getElementById('in-bk').checked;
             const qtyBk = document.getElementById('in-qty-bk').value.trim();
             document.getElementById('lbl-chk-bk').classList.toggle('checked', isBk);
             document.getElementById('lbl-qty-bk').textContent = isBk ? qtyBk : '';
 
-            // Soap Razor
             const isSoapGreen = document.getElementById('in-soap-green').checked;
             const qtySoapGreen = document.getElementById('in-qty-soap-green').value.trim();
             document.getElementById('lbl-chk-soap-green').classList.toggle('checked', isSoapGreen);
@@ -956,7 +1007,6 @@
             document.getElementById('lbl-chk-soap-yellow').classList.toggle('checked', isSoapYellow);
             document.getElementById('lbl-qty-soap-yellow').textContent = isSoapYellow ? qtySoapYellow : '';
 
-            // Oil
             const isOilBio = document.getElementById('in-oil-bio').checked;
             const qtyOilBio = document.getElementById('in-qty-oil-bio').value.trim();
             document.getElementById('lbl-chk-oil-bio').classList.toggle('checked', isOilBio);
@@ -967,7 +1017,6 @@
             document.getElementById('lbl-chk-oil-palmer').classList.toggle('checked', isOilPalmer);
             document.getElementById('lbl-qty-oil-palmer').textContent = isOilPalmer ? qtyOilPalmer : '';
 
-            // Refill
             const isRefillBj = document.getElementById('in-refill-bj').checked;
             const qtyRefillBj = document.getElementById('in-qty-refill-bj').value.trim();
             document.getElementById('lbl-chk-refill-bj').classList.toggle('checked', isRefillBj);
@@ -990,7 +1039,6 @@
                 document.getElementById('inputPrice').value = '';
                 document.getElementById('inputCod').checked = false;
                 
-                // Clear all product selections
                 const checkboxes = document.querySelectorAll('.product-selections input[type="checkbox"]');
                 checkboxes.forEach(cb => cb.checked = false);
                 
@@ -1001,10 +1049,8 @@
                 return;
             }
 
-            // 1. Clean invisible zero-width spaces
             let text = rawText.replace(/[\u200B-\u200D\uFEFF]/g, '');
 
-            // 2. Smart Phone Number Extraction
             const phoneRegex = /(?:tel|tel:|phone|លេខទូរស័ព្ទ|លេខទូរសព្ទ|លេខ|Tel|Tel:|Phone)\s*[:៖-]?\s*([0-9\s\-\/\.]{8,20})/i;
             const simplePhoneRegex = /(0\d{1,2}[\s\-\.]?\d{3}[\s\-\.]?\d{3,4}(?:\s*[\/,-]\s*0\d{1,2}[\s\-\.]?\d{3}[\s\-\.]?\d{3,4})?)/;
 
@@ -1016,15 +1062,12 @@
             let phone = "";
             if (phoneMatch) {
                 phone = (phoneMatch[1] || phoneMatch[0]).trim();
-                // Use a token that will NOT accidentally get replaced later
                 text = text.replace(phoneMatch[0], '\n___SPLIT___\n');
             }
 
-            // 3. Strip out common labels
             text = text.replace(/(ឈ្មោះអ្នកទទួល|ឈ្មោះ|Name|Receiver|To)\s*[:៖-]?\s*/gi, '');
             text = text.replace(/(ទីតាំង|អាសយដ្ឋាន|Address|ផ្ញើទៅ|Location)\s*[:៖-]?\s*/gi, '\n');
 
-            // 4. Split the remaining text cleanly
             let lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             
             let name = "";
@@ -1046,16 +1089,13 @@
                 }
             }
 
-            // Clean up stray punctuation and rogue split tokens just in case
             address = address.replace(/^[\-:]\s*/, '').replace(/___SPLIT___/g, '').trim();
             name = name.replace(/___SPLIT___/g, '').trim();
 
-            // 5. Apply Values
             if (name) document.getElementById('inputName').value = name;
             if (phone) document.getElementById('inputPhone').value = phone.replace(/[^\d\/\-]/g, '');
             if (address) document.getElementById('inputAddress').value = address;
 
-            // 6. Courier Auto-Detection
             let lowerText = rawText.toLowerCase();
             if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ') || lowerText.includes('វីរះ')) {
                 document.getElementById('inputCourier').value = 'virak';
