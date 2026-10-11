@@ -2,17 +2,16 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <title>WHAT YOU WANT - Label Generator (75x100mm)</title>
-    <!-- Include Tesseract.js for OCR capability -->
-    <script src="https://unpkg.com/tesseract.js@v4.1.1/dist/tesseract.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>WHAT YOU WANT - Label Generator (75x125mm)</title>
     
     <style>
-        /* Import a clean standard font supporting Khmer */
-        @import url('https://fonts.googleapis.com/css2?family=Content:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&display=swap');
 
         :root {
             --label-width: 75mm;
-            --label-height: 100mm;
+            --label-height: 125mm;
             --primary-yellow: #fef08a;
             --border-yellow: #eab308;
             --dark-border: #ca8a04;
@@ -23,7 +22,7 @@
         }
 
         body {
-            font-family: 'Kantumruy Pro', 'Content', sans-serif;
+            font-family: 'Kantumruy Pro', 'Battambang', sans-serif;
             background-color: #f3f4f6;
             margin: 0;
             padding: 20px;
@@ -32,7 +31,6 @@
             align-items: center;
         }
 
-        /* App Controls / Form Layout */
         .app-container {
             display: flex;
             gap: 30px;
@@ -62,26 +60,6 @@
             align-items: center;
         }
 
-        /* API Settings Button */
-        .api-btn {
-            font-size: 12px;
-            color: #374151;
-            background: #f9fafb;
-            border: 1px solid #d1d5db;
-            padding: 5px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.2s;
-        }
-        
-        .api-btn:hover {
-            background: #e5e7eb;
-            border-color: #9ca3af;
-        }
-
         .form-group {
             display: flex;
             flex-direction: column;
@@ -94,7 +72,7 @@
             color: #4b5563;
         }
 
-        .form-group input, .form-group textarea, .form-group select {
+        .form-group input[type="text"], .form-group textarea, .form-group select {
             padding: 8px 12px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
@@ -104,17 +82,16 @@
 
         .form-group textarea {
             resize: vertical;
-            height: 70px;
+            height: 90px;
         }
 
         .paste-box {
             background: #f9fafb;
-            border: 2px dashed #9ca3af;
+            border: 2px dashed #8b5cf6;
             padding: 12px;
             border-radius: 8px;
         }
 
-        /* Scan Button Styles */
         .paste-header {
             display: flex;
             justify-content: space-between;
@@ -122,28 +99,76 @@
             margin-bottom: 5px;
         }
 
-        .scan-btn {
-            background-color: #8b5cf6; 
-            color: white;
-            border: none;
-            padding: 6px 10px;
+        .scan-instruction {
+            font-size: 12.5px;
+            color: #4c1d95;
+            background: #ede9fe;
+            padding: 8px 10px;
             border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        /* Products Section Styles */
+        .product-selections {
+            display: flex; 
+            flex-direction: column; 
+            border: 1px solid #d1d5db; 
+            padding: 8px 12px; 
+            border-radius: 6px;
+            background: #fafafa;
+            gap: 8px;
+        }
+
+        .product-selections .main-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: space-between;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        
+        .product-selections .multi-item-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        
+        .product-selections .multi-item-group:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
         }
 
-        .scan-btn:hover {
-            background-color: #7c3aed;
+        .product-selections .group-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 2px;
         }
 
-        .scan-btn:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
+        .product-selections .sub-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 15px;
+        }
+
+        .product-selections label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .qty-input {
+            width: 50px;
+            padding: 4px !important;
+            text-align: center;
+            font-size: 13px !important;
         }
 
         .print-btn {
@@ -163,7 +188,6 @@
             background-color: #1d4ed8;
         }
 
-        /* Label Preview Container */
         .preview-panel {
             flex: 1;
             display: flex;
@@ -182,7 +206,6 @@
             font-weight: bold;
         }
 
-        /* --- 75mm x 100mm LABEL STYLING --- */
         .label {
             width: var(--label-width);
             height: var(--label-height);
@@ -196,7 +219,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
-        /* Header Section */
         .label-header {
             display: flex;
             align-items: center;
@@ -205,7 +227,6 @@
             gap: 5px;
         }
 
-        /* Left Panel - SVG Logo */
         .header-logo-container {
             width: 38%;
             display: flex;
@@ -213,7 +234,6 @@
             justify-content: center;
         }
 
-        /* Right Side - Main Title & Info */
         .header-main-content {
             width: 62%;
             display: flex;
@@ -268,7 +288,6 @@
             line-height: 1;
         }
 
-        /* Input Fields Group inside Label */
         .field-container {
             flex: 1; 
             display: flex;
@@ -309,7 +328,6 @@
             line-height: 1.2;
         }
 
-        /* Row split for Delivery Service & Price */
         .row-fields {
             display: flex;
             gap: 5px;
@@ -319,7 +337,6 @@
             flex: 1;
         }
 
-        /* Footer Section */
         .label-footer {
             display: flex;
             align-items: center;
@@ -354,7 +371,58 @@
             background-color: #000;
         }
 
-        /* Customs Icons Layout */
+        .checkbox-square {
+            width: 8px;
+            height: 8px;
+            border: 1.5px solid #000;
+            display: inline-block;
+            border-radius: 1px;
+        }
+
+        .checkbox-square.checked {
+            background-color: #000;
+        }
+
+        /* Products Grid inside the Label */
+        .product-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 8px; /* Slightly smaller to fit rows */
+            font-weight: bold;
+            margin-top: 2px;
+            color: #111;
+        }
+
+        .product-row {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping to new line if too long */
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .item-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-right: 4px;
+        }
+
+        .qty-box-inline {
+            display: inline-block;
+            min-width: 14px;
+            height: 11px;
+            border: 1.5px solid #000;
+            border-radius: 2px;
+            text-align: center;
+            line-height: 9px;
+            font-size: 8px;
+            color: #000;
+            background: #fdfdfd;
+            margin-left: 2px;
+        }
+
         .icons-group {
             display: flex;
             gap: 4px;
@@ -389,7 +457,6 @@
             height: auto;
         }
 
-        /* COD Checkbox Style in Control Panel */
         .price-input-row {
             display: flex;
             gap: 8px;
@@ -417,118 +484,9 @@
             cursor: pointer;
         }
 
-        /* --- SETTINGS MODAL STYLES --- */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(2px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-backdrop.open {
-            display: flex;
-        }
-
-        .modal-box {
-            background: #ffffff;
-            border-radius: 12px;
-            max-width: 480px;
-            width: 90%;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .modal-title {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: #111827;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-close-btn {
-            background: none;
-            border: none;
-            font-size: 18px;
-            color: #6b7280;
-            cursor: pointer;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .btn-group-right {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-secondary {
-            background: #f3f4f6;
-            color: #374151;
-            border: 1px solid #d1d5db;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .btn-secondary:hover {
-            background: #e5e7eb;
-        }
-
-        .btn-danger {
-            background: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #f87171;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .btn-danger:hover {
-            background: #fca5a5;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-
-        /* -------------------------------------------
-           PRINT SETTINGS 
-           ------------------------------------------- */
         @media print {
             @page {
-                size: 75mm 100mm; 
+                size: 75mm 125mm; 
                 margin: 0; 
             }
 
@@ -537,10 +495,10 @@
                 padding: 0 !important;
                 background: none !important;
                 width: 75mm !important; 
-                height: 100mm !important;
+                height: 125mm !important; 
             }
 
-            .control-panel, .preview-label, .modal-backdrop {
+            .control-panel, .preview-label {
                 display: none !important;
             }
 
@@ -557,7 +515,7 @@
                 top: 0 !important;
                 left: 0 !important;
                 width: 75mm !important; 
-                height: 100mm !important; 
+                height: 125mm !important; 
                 margin: 0 !important; 
                 padding: 3mm !important; 
                 border: none !important; 
@@ -567,6 +525,16 @@
                 page-break-inside: avoid !important;
             }
         }
+        
+        /* Mobile responsive adjust */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .paste-box {
+                border-width: 1px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -574,48 +542,92 @@
     <div class="app-container">
         <!-- Control Form Panel -->
         <div class="control-panel">
-            <h2>
-                WHAT YOU WANT - Label Maker
-                <button type="button" class="api-btn" onclick="openSettingsModal()">⚙️ Settings & API</button>
-            </h2>
+            <h2>WHAT YOU WANT - Label Maker</h2>
             
             <div class="form-group paste-box">
                 <div class="paste-header">
-                    <label style="margin:0;">⚡ Quick Smart Paste (Auto-fills):</label>
-                    
-                    <!-- OCR Camera Scan Button -->
-                    <button type="button" id="scanBtn" class="scan-btn" onclick="document.getElementById('cameraInput').click()">
-                        📷 Scan Text
-                    </button>
-                    <!-- Hidden file input set to trigger camera on mobile devices -->
-                    <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;" onchange="processImageScan(this)">
+                    <label style="margin:0; color: #6d28d9;">⚡ Smart Scan & Paste (Auto-fills):</label>
                 </div>
                 
-                <textarea id="smartPaste" placeholder="Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()"></textarea>
-                
-                <div style="font-size: 11px; color: #6b7280; margin-top: 4px;" id="scanTipText">
-                    * <b>Tip:</b> Uses high-contrast scanner. Set a Gemini API key in <b>Settings & API</b> for automated Khmer & English AI extraction.
-                </div>
+                <textarea id="smartPaste" placeholder="Tap here to use phone scanner...&#10;Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()" lang="km" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
             </div>
 
             <div class="form-group">
                 <label>លេខអ្នកផ្ញើ (Sender Number):</label>
-                <input type="text" id="inputSender" value="067221000/077221000" oninput="updateLabel()">
+                <input type="text" id="inputSender" value="067221000/077221000" oninput="updateLabel()" spellcheck="false" autocorrect="off">
             </div>
 
             <div class="form-group">
                 <label>ឈ្មោះអ្នកទទួល (Receiver Name):</label>
-                <input type="text" id="inputName" placeholder="បញ្ចូលឈ្មោះអ្នកទទួល" oninput="updateLabel()">
+                <input type="text" id="inputName" placeholder="បញ្ចូលឈ្មោះអ្នកទទួល" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off">
             </div>
 
             <div class="form-group">
                 <label>លេខទូរស័ព្ទ (Phone Number):</label>
-                <input type="text" id="inputPhone" placeholder="បញ្ចូលលេខទូរស័ព្ទ" oninput="updateLabel()">
+                <input type="text" id="inputPhone" placeholder="បញ្ចូលលេខទូរស័ព្ទ" oninput="updateLabel()" spellcheck="false" autocorrect="off">
             </div>
 
             <div class="form-group">
                 <label>ទីតាំង (Address):</label>
-                <textarea id="inputAddress" placeholder="បញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន" oninput="updateLabel()"></textarea>
+                <textarea id="inputAddress" placeholder="បញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off"></textarea>
+            </div>
+
+            <!-- NEW MULTI-SELECT PRODUCTS SECTION -->
+            <div class="form-group">
+                <label>ទំនិញ (Products):</label>
+                <div class="product-selections">
+                    
+                    <div class="main-item">
+                        <label><input type="checkbox" id="in-bj" onchange="updateLabel()"> BJ</label>
+                        <input type="text" id="in-qty-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                    </div>
+
+                    <div class="main-item">
+                        <label><input type="checkbox" id="in-bk" onchange="updateLabel()"> BK</label>
+                        <input type="text" id="in-qty-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                    </div>
+
+                    <div class="multi-item-group">
+                        <div class="group-title">Soap Razor:</div>
+                        <div class="sub-row">
+                            <label><input type="checkbox" id="in-soap-green" onchange="updateLabel()"> Green</label>
+                            <input type="text" id="in-qty-soap-green" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        </div>
+                        <div class="sub-row">
+                            <label><input type="checkbox" id="in-soap-pink" onchange="updateLabel()"> Pink</label>
+                            <input type="text" id="in-qty-soap-pink" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        </div>
+                        <div class="sub-row">
+                            <label><input type="checkbox" id="in-soap-yellow" onchange="updateLabel()"> Yellow</label>
+                            <input type="text" id="in-qty-soap-yellow" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        </div>
+                    </div>
+
+                    <div class="multi-item-group">
+                        <div class="group-title">Oil:</div>
+                        <div class="sub-row">
+                            <label><input type="checkbox" id="in-oil-bio" onchange="updateLabel()"> Bio-Oil</label>
+                            <input type="text" id="in-qty-oil-bio" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        </div>
+                        <div class="sub-row">
+                            <label><input type="checkbox" id="in-oil-palmer" onchange="updateLabel()"> Palmer’s</label>
+                            <input type="text" id="in-qty-oil-palmer" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        </div>
+                    </div>
+
+                    <div class="multi-item-group">
+                        <div class="group-title">Refill:</div>
+                        <div class="sub-row">
+                            <label><input type="checkbox" id="in-refill-bj" onchange="updateLabel()"> BJ</label>
+                            <input type="text" id="in-qty-refill-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        </div>
+                        <div class="sub-row">
+                            <label><input type="checkbox" id="in-refill-bk" onchange="updateLabel()"> BK</label>
+                            <input type="text" id="in-qty-refill-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
             <div class="form-group">
@@ -624,7 +636,7 @@
                     <option value="virak">វីរៈប៊ុនថាំ (VET Express)</option>
                     <option value="jt">J&T Express</option>
                     <option value="capitol">កាពីតូល (Capitol)</option>
-                    <option value="pickup">Pick up (មកយកខ្លួនឯង)</option>
+                    <option value="pickup">Pickup (មកយកខ្លួនឯង)</option>
                 </select>
             </div>
 
@@ -638,12 +650,12 @@
                 </div>
             </div>
 
-            <button class="print-btn" onclick="window.print()">🖨️ Print Label (75x100mm)</button>
+            <button class="print-btn" onclick="window.print()">🖨️ Print Label (75x125mm)</button>
         </div>
 
         <!-- Visual Live Preview Panel -->
         <div class="preview-panel">
-            <div class="preview-label">Live Preview (75mm x 100mm)</div>
+            <div class="preview-label">Live Preview (75mm x 125mm)</div>
             
             <div class="label" id="labelPreview">
                 <!-- Header -->
@@ -702,6 +714,58 @@
                         <div class="field-content" id="prevAddress">&nbsp;</div>
                     </div>
 
+                    <!-- NEW PRODUCTS LABEL FIELD -->
+                    <div class="label-field">
+                        <div class="field-label-title">ទំនិញ (Products)</div>
+                        <div class="product-grid">
+                            
+                            <div class="product-row">
+                                <div class="item-group">
+                                    <span class="checkbox-square" id="lbl-chk-bj"></span> BJ 
+                                    <span class="qty-box-inline" id="lbl-qty-bj"></span>
+                                </div>
+                                <div class="item-group" style="margin-left: 10px;">
+                                    <span class="checkbox-square" id="lbl-chk-bk"></span> BK 
+                                    <span class="qty-box-inline" id="lbl-qty-bk"></span>
+                                </div>
+                            </div>
+
+                            <div class="product-row">
+                                <span style="margin-right: 4px;">Soap:</span>
+                                <div class="item-group">
+                                    <span class="checkbox-circle" id="lbl-chk-soap-green"></span> Grn <span class="qty-box-inline" id="lbl-qty-soap-green"></span>
+                                </div>
+                                <div class="item-group">
+                                    <span class="checkbox-circle" id="lbl-chk-soap-pink"></span> Pnk <span class="qty-box-inline" id="lbl-qty-soap-pink"></span>
+                                </div>
+                                <div class="item-group">
+                                    <span class="checkbox-circle" id="lbl-chk-soap-yellow"></span> Ylw <span class="qty-box-inline" id="lbl-qty-soap-yellow"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="product-row">
+                                <span style="margin-right: 4px;">Oil:</span>
+                                <div class="item-group">
+                                    <span class="checkbox-circle" id="lbl-chk-oil-bio"></span> Bio <span class="qty-box-inline" id="lbl-qty-oil-bio"></span>
+                                </div>
+                                <div class="item-group">
+                                    <span class="checkbox-circle" id="lbl-chk-oil-palmer"></span> Palmer <span class="qty-box-inline" id="lbl-qty-oil-palmer"></span>
+                                </div>
+                            </div>
+
+                            <div class="product-row">
+                                <span style="margin-right: 4px;">Refill:</span>
+                                <div class="item-group">
+                                    <span class="checkbox-circle" id="lbl-chk-refill-bj"></span> BJ <span class="qty-box-inline" id="lbl-qty-refill-bj"></span>
+                                </div>
+                                <div class="item-group">
+                                    <span class="checkbox-circle" id="lbl-chk-refill-bk"></span> BK <span class="qty-box-inline" id="lbl-qty-refill-bk"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <div class="row-fields">
                         <div class="label-field">
                             <div class="field-label-title">សេវាដឹក</div>
@@ -727,7 +791,7 @@
                             <span class="checkbox-circle" id="chk-capitol"></span> កាពីតូល
                         </div>
                         <div class="checkbox-item">
-                            <span class="checkbox-circle" id="chk-pickup"></span> Pick up
+                            <span class="checkbox-circle" id="chk-pickup"></span> Pickup
                         </div>
                     </div>
 
@@ -795,256 +859,26 @@
         </div>
     </div>
 
-    <!-- API & SETTINGS MODAL -->
-    <div class="modal-backdrop" id="settingsModal">
-        <div class="modal-box">
-            <h3 class="modal-title">
-                API & Application Settings
-                <button type="button" class="modal-close-btn" onclick="closeSettingsModal()">&times;</button>
-            </h3>
-
-            <div class="form-group">
-                <label>Default Sender Number:</label>
-                <input type="text" id="settingDefaultSender" placeholder="067221000/077221000">
-            </div>
-
-            <div class="form-group">
-                <label>Gemini API Key (Optional for Smart AI OCR):</label>
-                <input type="password" id="settingGeminiApiKey" placeholder="AIzaSy...">
-                <small style="color: #6b7280; font-size: 11px;">
-                    If provided, scanned photos are intelligently analyzed by Google Gemini to accurately extract Khmer names, phones, addresses, and couriers directly. If left blank, local Tesseract OCR is used.
-                </small>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-danger" onclick="resetAllSettings()">Reset All Settings</button>
-                <div class="btn-group-right">
-                    <button type="button" class="btn-secondary" onclick="closeSettingsModal()">Cancel</button>
-                    <button type="button" class="btn-primary" onclick="saveSettings()">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // --- SETTINGS & LOCAL STORAGE MANAGEMENT ---
-        const DEFAULT_SENDER = "067221000/077221000";
-
-        function loadSavedSettings() {
-            const savedSender = localStorage.getItem('label_default_sender') || DEFAULT_SENDER;
-            const savedApiKey = localStorage.getItem('label_gemini_api_key') || '';
-
-            document.getElementById('inputSender').value = savedSender;
-            document.getElementById('settingDefaultSender').value = savedSender;
-            document.getElementById('settingGeminiApiKey').value = savedApiKey;
-
-            const tipText = document.getElementById('scanTipText');
-            if (savedApiKey.trim()) {
-                tipText.innerHTML = `* ⚡ <b>AI Vision Active:</b> Scans are parsed with Google Gemini AI for high Khmer & English accuracy.`;
-            } else {
-                tipText.innerHTML = `* <b>Tip:</b> Using local high-contrast OCR. Enter an API Key in <b>Settings & API</b> for automated Khmer & English AI extraction.`;
-            }
-        }
-
-        function openSettingsModal() {
-            document.getElementById('settingsModal').classList.add('open');
-        }
-
-        function closeSettingsModal() {
-            document.getElementById('settingsModal').classList.remove('open');
-        }
-
-        function saveSettings() {
-            const sender = document.getElementById('settingDefaultSender').value.trim() || DEFAULT_SENDER;
-            const apiKey = document.getElementById('settingGeminiApiKey').value.trim();
-
-            localStorage.setItem('label_default_sender', sender);
-            localStorage.setItem('label_gemini_api_key', apiKey);
-
-            document.getElementById('inputSender').value = sender;
-            updateLabel();
-            loadSavedSettings();
-            closeSettingsModal();
-            alert("Settings updated successfully!");
-        }
-
-        function resetAllSettings() {
-            if (confirm("Are you sure you want to reset all saved settings and clear your API key?")) {
-                localStorage.removeItem('label_default_sender');
-                localStorage.removeItem('label_gemini_api_key');
-                loadSavedSettings();
-                updateLabel();
-                closeSettingsModal();
-                alert("Settings have been reset to default.");
-            }
-        }
-
-        // --- PRE-PROCESSING FOR TESSERACT OCR ---
-        function preprocessImage(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        
-                        const MAX_WIDTH = 1500;
-                        let width = img.width;
-                        let height = img.height;
-                        if (width < MAX_WIDTH) {
-                            height = Math.round((height * MAX_WIDTH) / width);
-                            width = MAX_WIDTH;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // Grayscale and Contrast Boost for English text clarity
-                        const imageData = ctx.getImageData(0, 0, width, height);
-                        const data = imageData.data;
-                        
-                        for (let i = 0; i < data.length; i += 4) {
-                            let gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-                            gray = ((gray - 128) * 1.5) + 128; // contrast boost
-                            gray = Math.max(0, Math.min(255, gray));
-                            data[i] = gray;
-                            data[i + 1] = gray;
-                            data[i + 2] = gray;
-                        }
-                        
-                        ctx.putImageData(imageData, 0, 0);
-                        resolve(canvas.toDataURL('image/jpeg', 0.95));
-                    };
-                    img.onerror = reject;
-                    img.src = e.target.result;
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // --- OPTIONAL GEMINI AI VISION EXTRACTION ---
-        async function extractWithGemini(base64Image, apiKey) {
-            const base64Data = base64Image.split(',')[1];
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-            const prompt = `Analyze this shipping/delivery label or customer chat order image (which may be in Khmer and English).
-Extract these exact fields in pure JSON format:
-{
-  "name": "Customer Name or empty string",
-  "phone": "Customer Phone Number or empty string",
-  "address": "Full Shipping Address or empty string",
-  "courier": "virak OR jt OR capitol OR pickup",
-  "price": "Total price if mentioned (e.g. 15$) or empty string",
-  "isCod": true or false
-}
-Return ONLY valid raw JSON with no Markdown backticks.`;
-
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: prompt },
-                        {
-                            inline_data: {
-                                mime_type: "image/jpeg",
-                                data: base64Data
-                            }
-                        }
-                    ]
-                }],
-                generationConfig: {
-                    response_mime_type: "application/json"
-                }
-            };
-
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error?.message || "Gemini API request failed");
-            }
-
-            const jsonResponse = await response.json();
-            const textResponse = jsonResponse.candidates?.[0]?.content?.parts?.[0]?.text;
-            return JSON.parse(textResponse);
-        }
-
-        // --- OCR & SCAN PROCESSING ---
-        async function processImageScan(inputElement) {
-            if (inputElement.files && inputElement.files[0]) {
-                const file = inputElement.files[0];
-                const btn = document.getElementById('scanBtn');
-                const originalText = btn.innerHTML;
-                const apiKey = (localStorage.getItem('label_gemini_api_key') || '').trim();
-
-                btn.disabled = true;
-
-                try {
-                    btn.innerHTML = '⏳ Preparing Image...';
-                    const processedImgUrl = await preprocessImage(file);
-
-                    if (apiKey) {
-                        // Use AI Vision if API Key is configured
-                        btn.innerHTML = '⚡ AI Extracting...';
-                        const aiData = await extractWithGemini(processedImgUrl, apiKey);
-                        
-                        if (aiData.name) document.getElementById('inputName').value = aiData.name;
-                        if (aiData.phone) document.getElementById('inputPhone').value = aiData.phone;
-                        if (aiData.address) document.getElementById('inputAddress').value = aiData.address;
-                        if (aiData.courier) document.getElementById('inputCourier').value = aiData.courier;
-                        if (aiData.price) document.getElementById('inputPrice').value = aiData.price;
-                        if (typeof aiData.isCod === 'boolean') document.getElementById('inputCod').checked = aiData.isCod;
-                        
-                        document.getElementById('smartPaste').value = `${aiData.name || ''}\n${aiData.phone || ''}\n${aiData.address || ''}`;
-                        updateLabel();
-                    } else {
-                        // Fallback to local Tesseract OCR
-                        btn.innerHTML = '⏳ Scanning Text...';
-                        const result = await Tesseract.recognize(processedImgUrl, 'eng+khm', {
-                            logger: m => console.log(m)
-                        });
-                        
-                        const extractedText = result.data.text.trim();
-                        if (extractedText) {
-                            const pasteBox = document.getElementById('smartPaste');
-                            pasteBox.value = pasteBox.value ? pasteBox.value + '\n' + extractedText : extractedText;
-                            parseSmartText();
-                        } else {
-                            alert("No legible text detected. Please try a clearer picture.");
-                        }
-                    }
-                } catch (error) {
-                    console.error("Scan Error:", error);
-                    alert("Scanning error: " + error.message);
-                } finally {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    inputElement.value = '';
-                }
-            }
-        }
-
-        // Live Clock
+        // Update Live Clock Date & Time Function
         function updateDateTime() {
             const now = new Date();
+            
             const d = String(now.getDate()).padStart(2, '0');
             const m = String(now.getMonth() + 1).padStart(2, '0');
             const y = now.getFullYear();
+            const dateStr = `${d}-${m}-${y}`;
+            
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeStr = `${hours}:${minutes}`;
             
             const dtElement = document.getElementById('currentDateTime');
             if (dtElement) {
-                dtElement.textContent = `កាលបរិច្ឆេទ: ${d}-${m}-${y} ម៉ោង: ${hours}:${minutes}`;
+                dtElement.textContent = `កាលបរិច្ឆេទ: ${dateStr} ម៉ោង: ${timeStr}`;
             }
         }
+        
         updateDateTime();
         setInterval(updateDateTime, 60000);
 
@@ -1071,7 +905,7 @@ Return ONLY valid raw JSON with no Markdown backticks.`;
             document.getElementById('prevCourier').textContent = courierText;
             document.getElementById('prevPrice').textContent = price || '\u00A0';
 
-            // Checkbox highlight
+            // Process Courier Checkboxes
             document.getElementById('chk-virak').classList.remove('checked');
             document.getElementById('chk-jt').classList.remove('checked');
             document.getElementById('chk-capitol').classList.remove('checked');
@@ -1081,6 +915,58 @@ Return ONLY valid raw JSON with no Markdown backticks.`;
             else if (courierVal === 'jt') document.getElementById('chk-jt').classList.add('checked');
             else if (courierVal === 'capitol') document.getElementById('chk-capitol').classList.add('checked');
             else if (courierVal === 'pickup') document.getElementById('chk-pickup').classList.add('checked');
+
+            // --- Process Products Checkboxes and Quantities ---
+            
+            // BJ
+            const isBj = document.getElementById('in-bj').checked;
+            const qtyBj = document.getElementById('in-qty-bj').value.trim();
+            document.getElementById('lbl-chk-bj').classList.toggle('checked', isBj);
+            document.getElementById('lbl-qty-bj').textContent = isBj ? qtyBj : '';
+
+            // BK
+            const isBk = document.getElementById('in-bk').checked;
+            const qtyBk = document.getElementById('in-qty-bk').value.trim();
+            document.getElementById('lbl-chk-bk').classList.toggle('checked', isBk);
+            document.getElementById('lbl-qty-bk').textContent = isBk ? qtyBk : '';
+
+            // Soap Razor
+            const isSoapGreen = document.getElementById('in-soap-green').checked;
+            const qtySoapGreen = document.getElementById('in-qty-soap-green').value.trim();
+            document.getElementById('lbl-chk-soap-green').classList.toggle('checked', isSoapGreen);
+            document.getElementById('lbl-qty-soap-green').textContent = isSoapGreen ? qtySoapGreen : '';
+
+            const isSoapPink = document.getElementById('in-soap-pink').checked;
+            const qtySoapPink = document.getElementById('in-qty-soap-pink').value.trim();
+            document.getElementById('lbl-chk-soap-pink').classList.toggle('checked', isSoapPink);
+            document.getElementById('lbl-qty-soap-pink').textContent = isSoapPink ? qtySoapPink : '';
+
+            const isSoapYellow = document.getElementById('in-soap-yellow').checked;
+            const qtySoapYellow = document.getElementById('in-qty-soap-yellow').value.trim();
+            document.getElementById('lbl-chk-soap-yellow').classList.toggle('checked', isSoapYellow);
+            document.getElementById('lbl-qty-soap-yellow').textContent = isSoapYellow ? qtySoapYellow : '';
+
+            // Oil
+            const isOilBio = document.getElementById('in-oil-bio').checked;
+            const qtyOilBio = document.getElementById('in-qty-oil-bio').value.trim();
+            document.getElementById('lbl-chk-oil-bio').classList.toggle('checked', isOilBio);
+            document.getElementById('lbl-qty-oil-bio').textContent = isOilBio ? qtyOilBio : '';
+
+            const isOilPalmer = document.getElementById('in-oil-palmer').checked;
+            const qtyOilPalmer = document.getElementById('in-qty-oil-palmer').value.trim();
+            document.getElementById('lbl-chk-oil-palmer').classList.toggle('checked', isOilPalmer);
+            document.getElementById('lbl-qty-oil-palmer').textContent = isOilPalmer ? qtyOilPalmer : '';
+
+            // Refill
+            const isRefillBj = document.getElementById('in-refill-bj').checked;
+            const qtyRefillBj = document.getElementById('in-qty-refill-bj').value.trim();
+            document.getElementById('lbl-chk-refill-bj').classList.toggle('checked', isRefillBj);
+            document.getElementById('lbl-qty-refill-bj').textContent = isRefillBj ? qtyRefillBj : '';
+
+            const isRefillBk = document.getElementById('in-refill-bk').checked;
+            const qtyRefillBk = document.getElementById('in-qty-refill-bk').value.trim();
+            document.getElementById('lbl-chk-refill-bk').classList.toggle('checked', isRefillBk);
+            document.getElementById('lbl-qty-refill-bk').textContent = isRefillBk ? qtyRefillBk : '';
         }
 
         function parseSmartText() {
@@ -1093,32 +979,85 @@ Return ONLY valid raw JSON with no Markdown backticks.`;
                 document.getElementById('inputCourier').value = 'virak'; 
                 document.getElementById('inputPrice').value = '';
                 document.getElementById('inputCod').checked = false;
+                
+                // Clear all product selections
+                const checkboxes = document.querySelectorAll('.product-selections input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+                
+                const qtys = document.querySelectorAll('.product-selections input[type="text"]');
+                qtys.forEach(qty => qty.value = '');
+                
                 updateLabel(); 
                 return;
             }
 
-            let lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            
-            if (lines.length > 0) document.getElementById('inputName').value = lines[0];
-            if (lines.length > 1) document.getElementById('inputPhone').value = lines[1];
-            if (lines.length > 2) document.getElementById('inputAddress').value = lines.slice(2).join('\n');
+            // 1. Clean invisible zero-width spaces
+            let text = rawText.replace(/[\u200B-\u200D\uFEFF]/g, '');
 
+            // 2. Smart Phone Number Extraction
+            const phoneRegex = /(?:tel|tel:|phone|លេខទូរស័ព្ទ|លេខទូរសព្ទ|លេខ|Tel|Tel:|Phone)\s*[:៖-]?\s*([0-9\s\-\/\.]{8,20})/i;
+            const simplePhoneRegex = /(0\d{1,2}[\s\-\.]?\d{3}[\s\-\.]?\d{3,4}(?:\s*[\/,-]\s*0\d{1,2}[\s\-\.]?\d{3}[\s\-\.]?\d{3,4})?)/;
+
+            let phoneMatch = text.match(phoneRegex);
+            if (!phoneMatch || !phoneMatch[1].match(/\d{8,}/)) {
+                phoneMatch = text.match(simplePhoneRegex);
+            }
+
+            let phone = "";
+            if (phoneMatch) {
+                phone = (phoneMatch[1] || phoneMatch[0]).trim();
+                text = text.replace(phoneMatch[0], '\n[SPLIT_TOKEN]\n');
+            }
+
+            // 3. Strip out common labels
+            text = text.replace(/(ឈ្មោះអ្នកទទួល|ឈ្មោះ|Name|Receiver|To)\s*[:៖-]?\s*/gi, '');
+            text = text.replace(/(ទីតាំង|អាសយដ្ឋាន|Address|ផ្ញើទៅ|Location)\s*[:៖-]?\s*/gi, '\n');
+
+            // 4. Split the remaining text cleanly
+            let lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            let name = "";
+            let address = "";
+
+            if (lines.includes('[SPLIT_TOKEN]')) {
+                let splitIndex = lines.indexOf('[SPLIT_TOKEN]');
+                name = lines.slice(0, splitIndex).join(' ').trim();
+                address = lines.slice(splitIndex + 1).join('\n').trim();
+            } else {
+                if (lines.length > 0) name = lines[0];
+                if (lines.length > 1) {
+                    if (!phone) {
+                        phone = lines[1];
+                        address = lines.slice(2).join('\n');
+                    } else {
+                        address = lines.slice(1).join('\n');
+                    }
+                }
+            }
+
+            // Clean up stray punctuation
+            address = address.replace(/^[\-:]\s*/, '');
+
+            // 5. Apply Values
+            if (name) document.getElementById('inputName').value = name;
+            if (phone) document.getElementById('inputPhone').value = phone.replace(/[^\d\/\-]/g, '');
+            if (address) document.getElementById('inputAddress').value = address;
+
+            // 6. Courier Auto-Detection
             let lowerText = rawText.toLowerCase();
-            if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ')) {
+            if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ') || lowerText.includes('វីរះ')) {
                 document.getElementById('inputCourier').value = 'virak';
-            } else if (lowerText.includes('j&t') || lowerText.includes('jt')) {
+            } else if (lowerText.includes('j&t') || lowerText.includes('jt') || lowerText.includes('ជេអិនធី')) {
                 document.getElementById('inputCourier').value = 'jt';
             } else if (lowerText.includes('កាពីតូល') || lowerText.includes('capitol')) {
                 document.getElementById('inputCourier').value = 'capitol';
-            } else if (lowerText.includes('pickup') || lowerText.includes('យកផ្ទាល់')) {
+            } else if (lowerText.includes('pickup') || lowerText.includes('យកផ្ទាល់') || lowerText.includes('យកខ្លួនឯង')) {
                 document.getElementById('inputCourier').value = 'pickup';
             }
 
             updateLabel();
         }
 
-        // Initialize on load
-        loadSavedSettings();
         updateLabel();
     </script>
 </body>
