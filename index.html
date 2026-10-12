@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>WHAT YOU WANT - Label Generator (75x125mm)</title>
+    <title>WHAT YOU WANT - Label Generator (76x130mm)</title>
+    
+    <!-- Added html2canvas library for saving as image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&display=swap');
 
         :root {
-            --label-width: 75mm;
-            --label-height: 125mm;
+            --label-width: 76mm;
+            --label-height: 130mm;
             --primary-yellow: #fef08a;
             --border-yellow: #eab308;
             --dark-border: #ca8a04;
@@ -240,7 +243,7 @@
             height: var(--label-height);
             background: #FFFBEB;
             border: 3px solid #FACC15;
-            padding: 4mm;
+            padding: 4.2mm; 
             display: flex;
             flex-direction: column;
             position: relative;
@@ -252,8 +255,8 @@
             display: flex;
             align-items: center;
             border-bottom: 1.5px solid #FDE047;
-            padding-bottom: 4px;
-            gap: 5px;
+            padding-bottom: 5px;
+            gap: 6px;
         }
 
         .header-logo-container {
@@ -269,12 +272,12 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 2.5px; 
+            gap: 3px; 
         }
 
         .main-brand {
             font-family: 'Arial Black', 'Kantumruy Pro', sans-serif;
-            font-size: 14px;
+            font-size: 14.5px; 
             font-weight: 900;
             letter-spacing: 0px;
             color: #000;
@@ -284,7 +287,7 @@
         }
 
         .khmer-tag {
-            font-size: 6px;
+            font-size: 6.2px; 
             font-weight: bold;
             color: #1f2937;
             white-space: nowrap;
@@ -292,7 +295,7 @@
         }
 
         .eng-tag {
-            font-size: 5.5px; 
+            font-size: 5.8px; 
             font-weight: bold;
             color: #1f2937;
             white-space: nowrap; 
@@ -300,7 +303,7 @@
         }
 
         .contact-line {
-            font-size: 6px; 
+            font-size: 6.2px; 
             font-weight: bold;
             color: #000;
             display: flex;
@@ -311,7 +314,7 @@
         }
 
         .datetime-line {
-            font-size: 5.5px; 
+            font-size: 5.8px; 
             font-weight: 600;
             color: #4b5563;
             line-height: 1;
@@ -321,16 +324,16 @@
             flex: 1; 
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            margin: 4px 0;
+            gap: 5px; 
+            margin: 5px 0; 
         }
 
         .label-field {
             background: #ffffff;
             border: 2px solid #FACC15;
             border-radius: 8px;
-            padding: 3px 6px;
-            min-height: 20px;
+            padding: 4px 7px; 
+            min-height: 22px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -342,15 +345,15 @@
         }
 
         .field-label-title {
-            font-size: 7.5px;
+            font-size: 8px; 
             color: #713f12;
             font-weight: bold;
             line-height: 1;
-            margin-bottom: 2px;
+            margin-bottom: 3px; 
         }
 
         .field-content {
-            font-size: 10.5px;
+            font-size: 11px; 
             color: #000;
             font-weight: 600;
             word-break: break-word;
@@ -359,7 +362,7 @@
 
         .row-fields {
             display: flex;
-            gap: 5px;
+            gap: 6px; 
         }
 
         .row-fields .label-field {
@@ -371,26 +374,26 @@
             align-items: center;
             justify-content: space-between;
             border-top: 1.5px solid #FDE047;
-            padding-top: 4px;
+            padding-top: 5px; 
         }
 
         .courier-options {
             display: flex;
             flex-direction: column;
-            gap: 2px;
-            font-size: 7.5px;
+            gap: 3px; 
+            font-size: 8px; 
             font-weight: bold;
         }
 
         .checkbox-item {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 4px; 
         }
 
         .checkbox-circle {
-            width: 8px;
-            height: 8px;
+            width: 9px; 
+            height: 9px; 
             border: 1.5px solid #000;
             border-radius: 50%;
             display: inline-block;
@@ -401,11 +404,11 @@
         }
 
         .checkbox-square {
-            width: 8px;
-            height: 8px;
+            width: 9px; 
+            height: 9px; 
             border: 1.5px solid #000;
             display: inline-block;
-            border-radius: 1px;
+            border-radius: 1.5px;
         }
 
         .checkbox-square.checked {
@@ -416,10 +419,10 @@
         .product-grid {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            font-size: 8px; 
+            gap: 5px; 
+            font-size: 8.5px; 
             font-weight: bold;
-            margin-top: 2px;
+            margin-top: 3px; 
             color: #111;
         }
 
@@ -427,51 +430,51 @@
             display: flex;
             flex-wrap: wrap; 
             align-items: center;
-            gap: 4px;
+            gap: 5px; 
             width: 100%;
         }
 
         .item-group {
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 3px; 
             margin-right: 4px;
         }
 
         .qty-box-inline {
             display: inline-block;
-            min-width: 14px;
-            height: 11px;
+            min-width: 15px; 
+            height: 12px; 
             border: 1.5px solid #000;
             border-radius: 2px;
             text-align: center;
-            line-height: 9px;
-            font-size: 8px;
+            line-height: 10px; 
+            font-size: 8.5px; 
             color: #000;
             background: #fdfdfd;
-            margin-left: 2px;
+            margin-left: 3px; 
         }
 
         .icons-group {
             display: flex;
-            gap: 4px;
+            gap: 5px; 
         }
 
         .custom-icon {
-            width: 25px;
-            height: 25px;
+            width: 27px; 
+            height: 27px; 
         }
 
         .warning-container {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 3px;
+            gap: 4px; 
         }
 
         .warning-text {
             text-align: right;
-            font-size: 7px;
+            font-size: 7.5px; 
             font-weight: bold;
             color: #dc2626;
             line-height: 1.1;
@@ -482,7 +485,7 @@
         }
 
         .fragile-badge {
-            width: 55px;
+            width: 58px; 
             height: auto;
         }
 
@@ -515,7 +518,7 @@
 
         @media print {
             @page {
-                size: 75mm 125mm; 
+                size: 76mm 130mm; 
                 margin: 0; 
             }
 
@@ -523,8 +526,8 @@
                 margin: 0 !important;
                 padding: 0 !important;
                 background: none !important;
-                width: 75mm !important; 
-                height: 125mm !important; 
+                width: 76mm !important; 
+                height: 130mm !important; 
             }
 
             .control-panel, .preview-label {
@@ -543,10 +546,10 @@
                 position: absolute !important;
                 top: 0 !important;
                 left: 0 !important;
-                width: 75mm !important; 
-                height: 125mm !important; 
+                width: 76mm !important; 
+                height: 130mm !important; 
                 margin: 0 !important; 
-                padding: 3mm !important; 
+                padding: 4.2mm !important; 
                 border: none !important; 
                 box-sizing: border-box !important;
                 box-shadow: none !important;
@@ -604,7 +607,7 @@
                 <textarea id="inputAddress" placeholder="បញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off"></textarea>
             </div>
 
-            <!-- NEW MULTI-SELECT PRODUCTS SECTION -->
+            <!-- MULTI-SELECT PRODUCTS SECTION -->
             <div class="form-group">
                 <label>ទំនិញ (Products):</label>
                 <div class="product-selections">
@@ -675,19 +678,20 @@
             <div class="form-group">
                 <label>តម្លៃសរុប (Total Price):</label>
                 <div class="price-input-row">
-                    <input type="text" id="inputPrice" placeholder="ឧ. 15$" oninput="updateLabel()">
+                    <!-- Updated with formatPriceInput function -->
+                    <input type="text" id="inputPrice" placeholder="ឧ. 15$" oninput="formatPriceInput(this)">
                     <label class="cod-checkbox-label">
                         <input type="checkbox" id="inputCod" onchange="updateLabel()"> COD
                     </label>
                 </div>
             </div>
 
-            <button class="print-btn" onclick="submitAndPrint()">🖨️ Print Label (75x125mm)</button>
+            <button class="print-btn" onclick="submitAndSave()">💾 Save Label (Image) & Sheets</button>
         </div>
 
         <!-- Visual Live Preview Panel -->
         <div class="preview-panel">
-            <div class="preview-label">Live Preview (75mm x 125mm)</div>
+            <div class="preview-label">Live Preview (76mm x 130mm)</div>
             
             <div class="label" id="labelPreview">
                 <!-- Header -->
@@ -895,35 +899,54 @@
         // --- 1. SET YOUR NEW WEB APP URL HERE ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbycuOhcCoHZbeOKL4Ky2X99VP27k3omgLfjMl6brErwq02OfaPuC0ge-0mzXXPAP6af/exec";
 
+        // NEW: Automatically format the price input field as the user types
+        function formatPriceInput(el) {
+            // Strip out any characters that are not digits or a decimal point
+            let val = el.value.replace(/[^\d.]/g, '');
+            
+            // Handle multiple decimal points (e.g., if user types 15.5.5, it becomes 15.55)
+            let parts = val.split('.');
+            if (parts.length > 2) {
+                val = parts[0] + '.' + parts.slice(1).join('');
+            }
+
+            if (val !== '') {
+                // Append the dollar sign
+                el.value = val + '$';
+                // Move the cursor to be right before the '$' sign so typing continues smoothly
+                el.setSelectionRange(el.value.length - 1, el.value.length - 1);
+            } else {
+                el.value = '';
+            }
+            
+            // Call the original updateLabel function to refresh the preview
+            updateLabel();
+        }
+
         function clearForm() {
-            // Clear text areas and standard inputs
             document.getElementById('smartPaste').value = '';
             document.getElementById('inputName').value = '';
             document.getElementById('inputPhone').value = '';
             document.getElementById('inputAddress').value = '';
             document.getElementById('inputPrice').value = '';
             
-            // Reset to defaults
             document.getElementById('inputSender').value = '067221000/077221000';
             document.getElementById('inputCourier').value = 'virak';
             document.getElementById('inputCod').checked = false;
             
-            // Uncheck all product checkboxes
             const checkboxes = document.querySelectorAll('.product-selections input[type="checkbox"]');
             checkboxes.forEach(cb => cb.checked = false);
             
-            // Clear all quantity inputs
             const qtys = document.querySelectorAll('.product-selections input[type="number"]');
             qtys.forEach(qty => qty.value = '');
             
-            // Update the live preview
             updateLabel();
             
-            // Focus on the smart paste box ready for the next scan
             document.getElementById('smartPaste').focus();
         }
 
-       async function submitAndPrint() {
+       // Save image instead of Printing
+       async function submitAndSave() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
             const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -933,11 +956,9 @@
             
             const courierSelect = document.getElementById('inputCourier');
             
-            // Get raw price and COD status
             let rawPrice = document.getElementById('inputPrice').value.trim();
             let isCodChecked = document.getElementById('inputCod').checked;
-            
-            // Extract ONLY numbers and decimal points (e.g., "17.5$" becomes "17.5")
+            // This safely extracts just the numbers to send to Google Sheets
             let cleanPrice = rawPrice.replace(/[^\d.]/g, '');
 
             const payload = {
@@ -956,17 +977,16 @@
                 refillBj: document.getElementById('in-refill-bj').checked ? document.getElementById('in-qty-refill-bj').value : "",
                 refillBk: document.getElementById('in-refill-bk').checked ? document.getElementById('in-qty-refill-bk').value : "",
                 courier: courierSelect.options[courierSelect.selectedIndex].text,
-                totalPrice: cleanPrice, // Column P (Numbers only)
-                codStatus: isCodChecked ? "COD" : "" // Column Q (COD status)
+                totalPrice: cleanPrice, 
+                codStatus: isCodChecked ? "COD" : ""
             };
 
-            // Change button text so user knows it's saving
             const printBtn = document.querySelector('.print-btn');
             const originalText = printBtn.innerHTML;
             printBtn.innerHTML = "⏳ Saving to Sheets...";
 
             try {
-                // AWAIT the fetch so it finishes before printing
+                // 1. Send data to Google Sheets
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -975,17 +995,40 @@
                     },
                     body: JSON.stringify(payload)
                 });
+                
+                // 2. Prepare for Image Generation
+                printBtn.innerHTML = "🖼️ Generating Image...";
+                const labelElement = document.getElementById('labelPreview');
+                
+                // Use html2canvas to take a snapshot of the label block
+                // scale: 4 produces a very high-quality image
+                const canvas = await html2canvas(labelElement, {
+                    scale: 4, 
+                    useCORS: true, 
+                    backgroundColor: "#FFFBEB"
+                });
+                
+                // 3. Trigger Download
+                const imageURI = canvas.toDataURL("image/png");
+                const link = document.createElement("a");
+                
+                let safeName = payload.customerName ? payload.customerName.replace(/\s+/g, '_') : "Customer";
+                link.download = `Label_${safeName}_${d}${m}${y}.png`;
+                link.href = imageURI;
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
             } catch (e) {
-                console.error("Could not save to sheet", e);
+                console.error("Error saving data or generating image:", e);
+                alert("There was an error creating the label. Please try again.");
             } finally {
                 // Restore button text
                 printBtn.innerHTML = originalText;
-                // Launch print window AFTER saving
-                setTimeout(() => window.print(), 300);
             }
         }
 
-        // Update Live Clock Date & Time Function
         function updateDateTime() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -1026,7 +1069,6 @@
             document.getElementById('prevCourier').textContent = courierText;
             document.getElementById('prevPrice').textContent = price || '\u00A0';
 
-            // Process Courier Checkboxes
             document.getElementById('chk-virak').classList.remove('checked');
             document.getElementById('chk-jt').classList.remove('checked');
             document.getElementById('chk-capitol').classList.remove('checked');
@@ -1037,7 +1079,6 @@
             else if (courierVal === 'capitol') document.getElementById('chk-capitol').classList.add('checked');
             else if (courierVal === 'pickup') document.getElementById('chk-pickup').classList.add('checked');
 
-            // --- Process Products Checkboxes and Quantities ---
             const isBj = document.getElementById('in-bj').checked;
             const qtyBj = document.getElementById('in-qty-bj').value.trim();
             document.getElementById('lbl-chk-bj').classList.toggle('checked', isBj);
