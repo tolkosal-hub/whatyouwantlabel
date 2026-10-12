@@ -691,7 +691,7 @@
             </div>
 
             <!-- BATCH PROCESSING UI -->
-            <div style="background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 8px; margin-top: 15px;">
+            <div id="batchUI" style="background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 8px; margin-top: 15px;">
                 <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #334155;">📦 Batch Processing (Multiple Labels)</h3>
                 
                 <button class="print-btn" id="btnAddBatch" style="width: 100%; margin-top: 0; background-color: #2563eb;" onclick="addToBatch()">
@@ -702,6 +702,18 @@
                 
                 <button class="print-btn" style="width: 100%; background-color: #10b981; opacity: 0.5; margin-top: 10px;" id="btnProcessBatch" onclick="processBatch()" disabled>
                     💾 Save All to Device & Sheets
+                </button>
+            </div>
+
+            <!-- FAIL-SAFE SUCCESS UI (Hidden by default) -->
+            <div id="batchResults" style="display: none; background: #ecfdf5; border: 2px dashed #10b981; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <h3 style="margin: 0 0 10px 0; font-size: 15px; color: #065f46;">✅ Labels Ready!</h3>
+                <p style="font-size: 12px; color: #047857; margin-bottom: 12px;">If the images did not pop up automatically, tap the buttons below to save them.</p>
+                
+                <div id="resultsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div>
+                
+                <button class="new-btn" onclick="resetBatchSystem()" style="width: 100%; margin-top: 15px; background-color: #059669; justify-content: center; font-size: 14px; padding: 10px;">
+                    🔄 Start New Batch
                 </button>
             </div>
         </div>
@@ -919,7 +931,27 @@
         // Global Batch Array
         let labelBatch = [];
 
-        // PRE-GENERATE IMAGE WHEN ADDING TO BATCH (Uses Blob memory limits fix)
+        // This converts the Base64 Canvas snapshot safely into a File without blowing up iOS RAM
+        function dataURLtoFile(dataurl, filename) {
+            let arr = dataurl.split(','),
+                mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]),
+                n = bstr.length,
+                u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            try {
+                return new File([u8arr], filename, {type: mime});
+            } catch(e) {
+                // Fallback for older Safari
+                let blob = new Blob([u8arr], {type: mime});
+                blob.name = filename;
+                return blob;
+            }
+        }
+
+        // PRE-GENERATE IMAGE IMMEDIATELY WHEN ADDING TO BATCH
         async function addToBatch() {
             updateLabel(); 
 
@@ -967,38 +999,26 @@
                     codStatus: isCodChecked ? "COD" : ""
                 };
 
-                // SAFELY TAKE SNAPSHOT
+                // TAKE SNAPSHOT IMMEDIATELY
                 const previewContainer = document.getElementById('labelPreview');
                 const canvas = await html2canvas(previewContainer, {
-                    scale: 3, // Safe scale to prevent mobile RAM crashes
+                    scale: 4, 
                     useCORS: true, 
                     backgroundColor: "#FFFBEB"
                 });
                 
-                // Clean the file name so iOS doesn't throw errors
-                let safeName = payload.customerName ? payload.customerName.replace(/[^a-zA-Z0-9\u1780-\u17FF\s]/g, '').trim().replace(/\s+/g, '_') : "Customer";
+                // Get the string data of the image
+                const imageURI = canvas.toDataURL("image/png");
+                
+                // Safe filename without illegal characters
+                let safeName = payload.customerName ? payload.customerName.replace(/[\/\\?%*:|"<>]/g, '').trim().replace(/\s+/g, '_') : "Customer";
                 if (!safeName) safeName = "Customer";
                 let fileName = `Label_${safeName}_${Date.now()}.png`;
 
-                // SECURE BLOB CONVERSION: This totally bypasses iOS string memory limits!
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                
-                let file;
-                try {
-                    file = new File([blob], fileName, {type: "image/png"});
-                } catch(err) {
-                    file = blob;
-                    file.name = fileName;
-                }
-
-                // Create a temporary low-memory URL
-                const imageURL = URL.createObjectURL(blob);
-
-                // Save to array
+                // Save string data to memory
                 labelBatch.push({
                     payload: payload,
-                    file: file,
-                    imageURI: imageURL, 
+                    imageURI: imageURI, 
                     fileName: fileName
                 });
 
@@ -1006,7 +1026,7 @@
                 clearForm(); 
 
             } catch (e) {
-                console.error("Canvas conversion error:", e);
+                console.error("Canvas error:", e);
                 alert("Error preparing label. Please try again.");
             } finally {
                 btn.innerHTML = `➕ Add to Batch (<span id="batchCount">${labelBatch.length}</span>)`;
@@ -1040,17 +1060,13 @@
             }
         }
 
-        // SHARE INSTANTLY TO BYPASS SAFARI BLOCKS
+        // SAVE DATA AND TRIGGER FAIL-SAFE UI
         function processBatch() {
             if (labelBatch.length === 0) return;
 
             const btn = document.getElementById('btnProcessBatch');
-            const addBtn = document.getElementById('btnAddBatch');
-            const originalText = btn.innerHTML;
-            
-            btn.innerHTML = "📤 Opening Save Menu...";
+            btn.innerHTML = "📤 Sending Data & Saving...";
             btn.disabled = true;
-            addBtn.disabled = true;
 
             // 1. Send all data to Google Sheets silently in the background
             labelBatch.forEach(data => {
@@ -1062,49 +1078,77 @@
                 }).catch(e => console.error("Sheet error", e));
             });
 
-            // 2. Extract safe file objects
-            let generatedFiles = labelBatch.map(d => d.file);
+            // 2. Prepare actual File objects exactly when needed for iOS Share
+            let filesArray = [];
+            labelBatch.forEach(data => {
+                filesArray.push(dataURLtoFile(data.imageURI, data.fileName));
+            });
 
-            // 3. Trigger Share Menu Instantly
-            if (navigator.canShare && navigator.canShare({ files: generatedFiles })) {
+            // 3. Attempt Native Share Menu Instantly (iOS Safari)
+            // CRITICAL FIX: Removed "title" so iOS detects it as pure images and gives the "Save Image" option
+            if (navigator.canShare && navigator.canShare({ files: filesArray })) {
                 navigator.share({
-                    files: generatedFiles,
-                    title: "Batch Labels"
+                    files: filesArray
                 }).then(() => {
-                    finishBatch(btn, addBtn, originalText);
+                    showSuccessUI();
                 }).catch(err => {
-                    console.log("Share failed/cancelled", err);
-                    finishBatch(btn, addBtn, originalText);
+                    console.log("Share skipped/failed. Opening fail-safe UI.", err);
+                    triggerDesktopDownloads();
+                    showSuccessUI();
                 });
             } else {
-                // Fallback for Mac/Desktop (downloads directly to Downloads folder)
-                labelBatch.forEach((data, index) => {
-                    setTimeout(() => {
-                        const link = document.createElement("a");
-                        link.download = data.fileName;
-                        link.href = data.imageURI;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }, index * 600); 
-                });
-                
-                setTimeout(() => {
-                    finishBatch(btn, addBtn, originalText);
-                    alert("✅ Batch complete! Images saved to your Downloads folder.");
-                }, labelBatch.length * 600);
+                // 4. Fallback for Mac/Desktop/Chrome
+                triggerDesktopDownloads();
+                showSuccessUI();
             }
         }
 
-        // Reset memory and UI
-        function finishBatch(btn, addBtn, originalText) {
-            // Unload images to free phone memory
-            labelBatch.forEach(data => URL.revokeObjectURL(data.imageURI));
+        // Auto-download attempt for Mac Desktop
+        function triggerDesktopDownloads() {
+            labelBatch.forEach((data, index) => {
+                setTimeout(() => {
+                    const link = document.createElement("a");
+                    link.download = data.fileName;
+                    link.href = data.imageURI;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, index * 800); // 800ms delay helps avoid aggressive popup blockers
+            });
+        }
+
+        // FAIL-SAFE UI: Shows actual download buttons so you are never stuck!
+        function showSuccessUI() {
+            // Hide the old box
+            document.getElementById('batchUI').style.display = 'none';
+            
+            // Show the success box
+            const resultsDiv = document.getElementById('batchResults');
+            resultsDiv.style.display = 'block';
+
+            let listHTML = '';
+            labelBatch.forEach((item, index) => {
+                listHTML += `
+                <div style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #d1fae5;">
+                    <span style="font-size: 13.5px; font-weight: bold; color: #065f46; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;">${index + 1}. ${item.payload.customerName}</span>
+                    <a href="${item.imageURI}" download="${item.fileName}" style="background: #10b981; color: white; padding: 8px 14px; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">⬇️ Save Image</a>
+                </div>`;
+            });
+            document.getElementById('resultsList').innerHTML = listHTML;
+        }
+
+        function resetBatchSystem() {
             labelBatch = []; 
+            document.getElementById('batchResults').style.display = 'none';
+            document.getElementById('batchUI').style.display = 'block';
+            
+            const btn = document.getElementById('btnProcessBatch');
+            btn.innerHTML = "💾 Save All to Device & Sheets";
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            
             updateBatchUI(); 
-            btn.innerHTML = originalText;
-            addBtn.innerHTML = `➕ Add to Batch (<span id="batchCount">0</span>)`;
-            addBtn.disabled = false;
+            clearForm();
         }
 
         // Format Number Input
