@@ -200,6 +200,10 @@
         .print-btn:hover {
             background-color: #1d4ed8;
         }
+
+        .print-btn:disabled {
+            cursor: not-allowed;
+        }
         
         .new-btn {
             background-color: #10b981;
@@ -576,7 +580,7 @@
         <div class="control-panel">
             <h2>
                 WHAT YOU WANT - Label Maker
-                <button class="new-btn" onclick="clearForm()">➕ New Customer</button>
+                <button class="new-btn" onclick="clearForm()">➕ Clear Form</button>
             </h2>
             
             <div class="form-group paste-box">
@@ -685,7 +689,20 @@
                 </div>
             </div>
 
-            <button class="print-btn" onclick="submitAndSave()">💾 Save Label (Image) & Sheets</button>
+            <!-- BATCH PROCESSING UI -->
+            <div style="background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #334155;">📦 Batch Processing</h3>
+                
+                <button class="print-btn" id="btnAddBatch" style="width: 100%; margin-top: 0; background-color: #2563eb;" onclick="addToBatch()">
+                    ➕ Add to Batch (<span id="batchCount">0</span>)
+                </button>
+                
+                <div id="batchList" style="font-size: 13px; color: #4b5563; margin-top: 10px; max-height: 120px; overflow-y: auto;"></div>
+                
+                <button class="print-btn" style="width: 100%; background-color: #10b981; opacity: 0.5; margin-top: 10px;" id="btnProcessBatch" onclick="processBatch()" disabled>
+                    💾 Save All to Device & Sheets
+                </button>
+            </div>
         </div>
 
         <!-- Visual Live Preview Panel -->
@@ -898,7 +915,193 @@
         // --- 1. SET YOUR NEW WEB APP URL HERE ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbycuOhcCoHZbeOKL4Ky2X99VP27k3omgLfjMl6brErwq02OfaPuC0ge-0mzXXPAP6af/exec";
 
-        // Automatically format the price input field as the user types
+        // Global Batch Array
+        let labelBatch = [];
+
+        // Add Current Form to Batch
+        function addToBatch() {
+            // Force an update to ensure all fields are captured correctly
+            updateLabel(); 
+
+            // Prevent adding empty customer
+            const name = document.getElementById('inputName').value.trim();
+            if (!name) {
+                alert("សូមបញ្ចូលឈ្មោះអ្នកទទួលសិន! (Please enter a receiver name)");
+                return;
+            }
+
+            const now = new Date();
+            const d = String(now.getDate()).padStart(2, '0');
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const y = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const courierSelect = document.getElementById('inputCourier');
+            
+            let rawPrice = document.getElementById('inputPrice').value.trim();
+            let isCodChecked = document.getElementById('inputCod').checked;
+            let cleanPrice = rawPrice.replace(/[^\d.]/g, '');
+
+            const payload = {
+                date: `${d}-${m}-${y}`,
+                time: `${hours}:${minutes}`,
+                customerName: name,
+                phone: document.getElementById('inputPhone').value,
+                location: document.getElementById('inputAddress').value,
+                bj: document.getElementById('in-bj').checked ? document.getElementById('in-qty-bj').value : "",
+                bk: document.getElementById('in-bk').checked ? document.getElementById('in-qty-bk').value : "",
+                soapGreen: document.getElementById('in-soap-green').checked ? document.getElementById('in-qty-soap-green').value : "",
+                soapPink: document.getElementById('in-soap-pink').checked ? document.getElementById('in-qty-soap-pink').value : "",
+                soapYellow: document.getElementById('in-soap-yellow').checked ? document.getElementById('in-qty-soap-yellow').value : "",
+                oilBio: document.getElementById('in-oil-bio').checked ? document.getElementById('in-qty-oil-bio').value : "",
+                oilPalmer: document.getElementById('in-oil-palmer').checked ? document.getElementById('in-qty-oil-palmer').value : "",
+                refillBj: document.getElementById('in-refill-bj').checked ? document.getElementById('in-qty-refill-bj').value : "",
+                refillBk: document.getElementById('in-refill-bk').checked ? document.getElementById('in-qty-refill-bk').value : "",
+                courier: courierSelect.options[courierSelect.selectedIndex].text,
+                totalPrice: cleanPrice, 
+                codStatus: isCodChecked ? "COD" : ""
+            };
+
+            // Grab the exact HTML state of the preview
+            const previewHTML = document.getElementById('labelPreview').innerHTML;
+
+            labelBatch.push({
+                payload: payload,
+                previewHTML: previewHTML
+            });
+
+            updateBatchUI();
+            clearForm(); // Reset form for next entry
+        }
+
+        function updateBatchUI() {
+            const countSpan = document.getElementById('batchCount');
+            const listDiv = document.getElementById('batchList');
+            const processBtn = document.getElementById('btnProcessBatch');
+
+            countSpan.textContent = labelBatch.length;
+            
+            if (labelBatch.length > 0) {
+                processBtn.disabled = false;
+                processBtn.style.opacity = '1';
+                
+                let listHTML = '<ul style="margin: 0; padding-left: 20px;">';
+                labelBatch.forEach((item, index) => {
+                    let priceTag = item.payload.totalPrice ? ` - ${item.payload.totalPrice}$` : '';
+                    let codTag = item.payload.codStatus ? ' (COD)' : '';
+                    listHTML += `<li><strong>${index + 1}.</strong> ${item.payload.customerName}${priceTag}${codTag}</li>`;
+                });
+                listHTML += '</ul>';
+                listDiv.innerHTML = listHTML;
+            } else {
+                processBtn.disabled = true;
+                processBtn.style.opacity = '0.5';
+                listDiv.innerHTML = '';
+            }
+        }
+
+        // Process the entire batch (Sheets + Image Generation)
+        async function processBatch() {
+            if (labelBatch.length === 0) return;
+
+            const btn = document.getElementById('btnProcessBatch');
+            const addBtn = document.getElementById('btnAddBatch');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = "⏳ Processing Data & Images...";
+            btn.disabled = true;
+            addBtn.disabled = true;
+
+            let generatedFiles = [];
+            const previewContainer = document.getElementById('labelPreview');
+            const originalHTML = previewContainer.innerHTML; // Save empty form state
+
+            for (let i = 0; i < labelBatch.length; i++) {
+                let data = labelBatch[i];
+                btn.innerHTML = `⏳ Generating Label ${i+1} of ${labelBatch.length}...`;
+
+                // 1. Send data to Google Sheets
+                try {
+                    await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data.payload)
+                    });
+                } catch (e) {
+                    console.error("Sheet error for customer", data.payload.customerName, e);
+                }
+                
+                // 2. Inject stored HTML into preview container temporarily
+                previewContainer.innerHTML = data.previewHTML;
+                
+                // Give the browser a split second to paint the injected DOM
+                await new Promise(r => setTimeout(r, 150)); 
+                
+                // 3. Take snapshot with html2canvas
+                const canvas = await html2canvas(previewContainer, {
+                    scale: 4, 
+                    useCORS: true, 
+                    backgroundColor: "#FFFBEB"
+                });
+                
+                // 4. Convert to File Object
+                const imageURI = canvas.toDataURL("image/png");
+                let safeName = data.payload.customerName ? data.payload.customerName.replace(/\s+/g, '_') : "Customer";
+                let fileName = `Label_${safeName}_${data.payload.date.replace(/-/g, '')}.png`;
+
+                let arr = imageURI.split(','), mime = arr[0].match(/:(.*?);/)[1];
+                let bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                let blob = new Blob([u8arr], {type:mime});
+                let file = new File([blob], fileName, {type: mime});
+
+                generatedFiles.push(file);
+            }
+
+            // Restore the empty form preview HTML
+            previewContainer.innerHTML = originalHTML;
+            btn.innerHTML = "📤 Opening Save Menu...";
+
+            // 5. Trigger Batch Download/Share
+            if (navigator.canShare && navigator.canShare({ files: generatedFiles })) {
+                try {
+                    // This opens the iPhone/iPad Share Sheet -> User taps "Save Images"
+                    await navigator.share({
+                        files: generatedFiles,
+                        title: "Batch Labels"
+                    });
+                } catch (err) {
+                    console.log("Share failed/cancelled", err);
+                }
+            } else {
+                // Fallback for Desktop/Older devices (downloads sequentially)
+                generatedFiles.forEach((file, index) => {
+                    setTimeout(() => {
+                        const link = document.createElement("a");
+                        link.download = file.name;
+                        link.href = URL.createObjectURL(file);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }, index * 600); // 600ms delay between each download to avoid browser blocks
+                });
+                alert("✅ Batch processing complete! Data sent to Sheets and images are downloading.");
+            }
+
+            // Reset Batch
+            labelBatch = [];
+            updateBatchUI();
+            btn.innerHTML = originalText;
+            addBtn.disabled = false;
+        }
+
+        // Formatting Number Input
         function formatPriceInput(el) {
             let val = el.value.replace(/[^\d.]/g, '');
             let parts = val.split('.');
@@ -934,110 +1137,6 @@
             updateLabel();
             
             document.getElementById('smartPaste').focus();
-        }
-
-       // Save image with native iOS support
-       async function submitAndSave() {
-            const now = new Date();
-            const d = String(now.getDate()).padStart(2, '0');
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const y = now.getFullYear();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            
-            const courierSelect = document.getElementById('inputCourier');
-            
-            let rawPrice = document.getElementById('inputPrice').value.trim();
-            let isCodChecked = document.getElementById('inputCod').checked;
-            let cleanPrice = rawPrice.replace(/[^\d.]/g, '');
-
-            const payload = {
-                date: `${d}-${m}-${y}`,
-                time: `${hours}:${minutes}`,
-                customerName: document.getElementById('inputName').value,
-                phone: document.getElementById('inputPhone').value,
-                location: document.getElementById('inputAddress').value,
-                bj: document.getElementById('in-bj').checked ? document.getElementById('in-qty-bj').value : "",
-                bk: document.getElementById('in-bk').checked ? document.getElementById('in-qty-bk').value : "",
-                soapGreen: document.getElementById('in-soap-green').checked ? document.getElementById('in-qty-soap-green').value : "",
-                soapPink: document.getElementById('in-soap-pink').checked ? document.getElementById('in-qty-soap-pink').value : "",
-                soapYellow: document.getElementById('in-soap-yellow').checked ? document.getElementById('in-qty-soap-yellow').value : "",
-                oilBio: document.getElementById('in-oil-bio').checked ? document.getElementById('in-qty-oil-bio').value : "",
-                oilPalmer: document.getElementById('in-oil-palmer').checked ? document.getElementById('in-qty-oil-palmer').value : "",
-                refillBj: document.getElementById('in-refill-bj').checked ? document.getElementById('in-qty-refill-bj').value : "",
-                refillBk: document.getElementById('in-refill-bk').checked ? document.getElementById('in-qty-refill-bk').value : "",
-                courier: courierSelect.options[courierSelect.selectedIndex].text,
-                totalPrice: cleanPrice, 
-                codStatus: isCodChecked ? "COD" : ""
-            };
-
-            const printBtn = document.querySelector('.print-btn');
-            const originalText = printBtn.innerHTML;
-            printBtn.innerHTML = "⏳ Saving to Sheets...";
-
-            try {
-                // 1. Send data to Google Sheets
-                await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                // 2. Prepare for Image Generation
-                printBtn.innerHTML = "🖼️ Generating Image...";
-                const labelElement = document.getElementById('labelPreview');
-                
-                const canvas = await html2canvas(labelElement, {
-                    scale: 4, 
-                    useCORS: true, 
-                    backgroundColor: "#FFFBEB"
-                });
-                
-                // 3. Process the Image Download/Share
-                const imageURI = canvas.toDataURL("image/png");
-                let safeName = payload.customerName ? payload.customerName.replace(/\s+/g, '_') : "Customer";
-                let fileName = `Label_${safeName}_${d}${m}${y}.png`;
-
-                // Convert Base64 URI to a Blob for iOS Native Sharing
-                let arr = imageURI.split(','), mime = arr[0].match(/:(.*?);/)[1];
-                let bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-                while(n--){
-                    u8arr[n] = bstr.charCodeAt(n);
-                }
-                let blob = new Blob([u8arr], {type:mime});
-                let file = new File([blob], fileName, {type: mime});
-
-                // Check if device supports the native Web Share API with Files (iOS Safari does)
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        // This opens the iPhone/iPad Share Sheet -> User taps "Save Image"
-                        await navigator.share({
-                            files: [file],
-                            title: fileName
-                        });
-                    } catch (err) {
-                        console.log("User cancelled sharing or it failed.", err);
-                    }
-                } else {
-                    // Fallback for Desktop/Older devices that don't support file sharing
-                    const link = document.createElement("a");
-                    link.download = fileName;
-                    link.href = imageURI;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-
-            } catch (e) {
-                console.error("Error saving data or generating image:", e);
-                alert("There was an error creating the label. Please try again.");
-            } finally {
-                // Restore button text
-                printBtn.innerHTML = originalText;
-            }
         }
 
         function updateDateTime() {
