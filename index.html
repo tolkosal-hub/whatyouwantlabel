@@ -678,8 +678,7 @@
             <div class="form-group">
                 <label>តម្លៃសរុប (Total Price):</label>
                 <div class="price-input-row">
-                    <!-- Updated with formatPriceInput function -->
-                    <input type="text" id="inputPrice" placeholder="ឧ. 15$" oninput="formatPriceInput(this)">
+                    <input type="text" id="inputPrice" inputmode="decimal" placeholder="ឧ. 15$" oninput="formatPriceInput(this)">
                     <label class="cod-checkbox-label">
                         <input type="checkbox" id="inputCod" onchange="updateLabel()"> COD
                     </label>
@@ -899,27 +898,19 @@
         // --- 1. SET YOUR NEW WEB APP URL HERE ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbycuOhcCoHZbeOKL4Ky2X99VP27k3omgLfjMl6brErwq02OfaPuC0ge-0mzXXPAP6af/exec";
 
-        // NEW: Automatically format the price input field as the user types
+        // Automatically format the price input field as the user types
         function formatPriceInput(el) {
-            // Strip out any characters that are not digits or a decimal point
             let val = el.value.replace(/[^\d.]/g, '');
-            
-            // Handle multiple decimal points (e.g., if user types 15.5.5, it becomes 15.55)
             let parts = val.split('.');
             if (parts.length > 2) {
                 val = parts[0] + '.' + parts.slice(1).join('');
             }
-
             if (val !== '') {
-                // Append the dollar sign
                 el.value = val + '$';
-                // Move the cursor to be right before the '$' sign so typing continues smoothly
                 el.setSelectionRange(el.value.length - 1, el.value.length - 1);
             } else {
                 el.value = '';
             }
-            
-            // Call the original updateLabel function to refresh the preview
             updateLabel();
         }
 
@@ -945,7 +936,7 @@
             document.getElementById('smartPaste').focus();
         }
 
-       // Save image instead of Printing
+       // Save image with native iOS support
        async function submitAndSave() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -958,7 +949,6 @@
             
             let rawPrice = document.getElementById('inputPrice').value.trim();
             let isCodChecked = document.getElementById('inputCod').checked;
-            // This safely extracts just the numbers to send to Google Sheets
             let cleanPrice = rawPrice.replace(/[^\d.]/g, '');
 
             const payload = {
@@ -1000,25 +990,46 @@
                 printBtn.innerHTML = "🖼️ Generating Image...";
                 const labelElement = document.getElementById('labelPreview');
                 
-                // Use html2canvas to take a snapshot of the label block
-                // scale: 4 produces a very high-quality image
                 const canvas = await html2canvas(labelElement, {
                     scale: 4, 
                     useCORS: true, 
                     backgroundColor: "#FFFBEB"
                 });
                 
-                // 3. Trigger Download
+                // 3. Process the Image Download/Share
                 const imageURI = canvas.toDataURL("image/png");
-                const link = document.createElement("a");
-                
                 let safeName = payload.customerName ? payload.customerName.replace(/\s+/g, '_') : "Customer";
-                link.download = `Label_${safeName}_${d}${m}${y}.png`;
-                link.href = imageURI;
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                let fileName = `Label_${safeName}_${d}${m}${y}.png`;
+
+                // Convert Base64 URI to a Blob for iOS Native Sharing
+                let arr = imageURI.split(','), mime = arr[0].match(/:(.*?);/)[1];
+                let bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                let blob = new Blob([u8arr], {type:mime});
+                let file = new File([blob], fileName, {type: mime});
+
+                // Check if device supports the native Web Share API with Files (iOS Safari does)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        // This opens the iPhone/iPad Share Sheet -> User taps "Save Image"
+                        await navigator.share({
+                            files: [file],
+                            title: fileName
+                        });
+                    } catch (err) {
+                        console.log("User cancelled sharing or it failed.", err);
+                    }
+                } else {
+                    // Fallback for Desktop/Older devices that don't support file sharing
+                    const link = document.createElement("a");
+                    link.download = fileName;
+                    link.href = imageURI;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
 
             } catch (e) {
                 console.error("Error saving data or generating image:", e);
