@@ -1069,7 +1069,7 @@
                 </select>
             </div>
 
-            <!-- TOTAL PRICE + COD + SHOW PRICE ON LABEL (Default: Unticked) -->
+            <!-- TOTAL PRICE + COD + SHOW PRICE ON LABEL -->
             <div class="form-group">
                 <label>តម្លៃសរុប (Total Price):</label>
                 <div class="price-input-row">
@@ -1359,16 +1359,35 @@
         let savedOrders = [];
         let editingOrderId = null;
 
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', () => {
+        // Initialize on page load (Cloud Fetch included here)
+        window.addEventListener('DOMContentLoaded', async () => {
             initDatePicker();
             loadSavedOrdersFromStorage();
+            
+            // ☁️ FETCH LATEST ORDERS FROM CLOUD DATABASE (GOOGLE SHEETS) ON STARTUP
+            await fetchOrdersFromCloud();
+
             updateDateTime();
             setInterval(updateDateTime, 60000);
             onFormStatusChange();
             updateLabel();
             renderOrdersTable();
         });
+
+        // Sync from Cloud Google Sheets
+        async function fetchOrdersFromCloud() {
+            try {
+                const response = await fetch(WEB_APP_URL);
+                const cloudOrders = await response.json();
+                if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
+                    savedOrders = cloudOrders;
+                    persistOrdersToStorage();
+                    renderOrdersTable();
+                }
+            } catch (e) {
+                console.log("Using local offline storage cache.", e);
+            }
+        }
 
         function initDatePicker() {
             const now = new Date();
@@ -1508,7 +1527,7 @@
             return items;
         }
 
-        // EDIT ORDER FUNCTION: Loads existing order back into the form to fix mistakes
+        // EDIT ORDER FUNCTION
         function editOrder(orderId) {
             const target = savedOrders.find(o => o.id === orderId);
             if (!target) return;
@@ -1527,7 +1546,6 @@
             document.getElementById('inputCod').checked = (p.codStatus === 'COD');
             document.getElementById('inputShowPrice').checked = (p.showPriceOnLabel === true);
 
-            // Populate products & quantities
             const setProd = (chkId, qtyId, val) => {
                 const hasVal = val !== undefined && val !== null && String(val).trim() !== '';
                 document.getElementById(chkId).checked = hasVal;
@@ -1544,7 +1562,6 @@
             setProd('in-refill-bj', 'in-qty-refill-bj', p.refillBj);
             setProd('in-refill-bk', 'in-qty-refill-bk', p.refillBk);
 
-            // Show Edit Banner & highlight form
             document.getElementById('editingBanner').style.display = 'flex';
             document.getElementById('editingBannerText').textContent = `✏️ កំពុងកែប្រែការកម្ម៉ង់របស់៖ ${p.customerName}`;
             document.getElementById('mainAppContainer').classList.add('editing-active');
@@ -1553,7 +1570,6 @@
             updateLabel();
             renderOrdersTable();
 
-            // Smooth scroll up to the form
             document.getElementById('mainAppContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
@@ -1593,10 +1609,11 @@
                 let showPriceOnLabel = document.getElementById('inputShowPrice').checked;
                 let cleanPrice = rawPrice.replace(/[^\d.]/g, '');
 
-                // Preserve original date/time if editing an existing order
                 let existingOrder = editingOrderId ? savedOrders.find(o => o.id === editingOrderId) : null;
+                let generatedId = existingOrder ? existingOrder.id : ('ORD_' + Date.now());
 
                 const payload = {
+                    id: generatedId,
                     date: existingOrder ? existingOrder.payload.date : formattedDate,
                     time: existingOrder ? existingOrder.payload.time : `${hours}:${minutes}`,
                     sender: document.getElementById('inputSender').value.trim(),
@@ -1620,7 +1637,6 @@
                     showPriceOnLabel: showPriceOnLabel
                 };
 
-                // Capture fresh high-res snapshot of the label (reflects new delivery service, Show Price on label, etc.)
                 const previewContainer = document.getElementById('labelPreview');
                 const canvas = await html2canvas(previewContainer, {
                     scale: 4, 
@@ -1632,7 +1648,7 @@
                 let safeName = payload.customerName.replace(/[\/\\?%*:|"<>]/g, '').trim().replace(/\s+/g, '_') || "Customer";
                 let fileName = `Label_${safeName}_${Date.now()}.png`;
 
-                // Send data to Google Sheets
+                // Send data to Cloud Google Sheets
                 fetch(WEB_APP_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -1643,7 +1659,6 @@
                 const isConfirmed = (orderStatus === 'Confirmed');
 
                 if (editingOrderId && existingOrder) {
-                    // Update existing record in place
                     existingOrder.payload = payload;
                     existingOrder.imageURI = imageURI;
                     existingOrder.fileName = fileName;
@@ -1653,9 +1668,8 @@
                     document.getElementById('editingBanner').style.display = 'none';
                     document.getElementById('mainAppContainer').classList.remove('editing-active');
                 } else {
-                    // Create new order record
                     const newOrderRecord = {
-                        id: 'ORD_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                        id: generatedId,
                         selected: isConfirmed,
                         payload: payload,
                         imageURI: imageURI,
@@ -1857,7 +1871,7 @@
             renderOrdersTable();
         }
 
-        // BATCH PRINT / SAVE IMAGES AT ONCE (STRICTLY CONFIRMED ORDERS ONLY)
+        // BATCH PRINT / SAVE IMAGES
         function exportSelectedOrders() {
             const selectedConfirmedOrders = getFilteredOrders().filter(
                 o => o.selected && normalizeOrderStatus(o.payload.orderStatus) === 'Confirmed'
@@ -1916,7 +1930,6 @@
             });
         }
 
-        // Format Number Input
         function formatPriceInput(el) {
             let val = el.value.replace(/[^\d.]/g, '');
             let parts = val.split('.');
@@ -1945,10 +1958,8 @@
             
             document.getElementById('inputSender').value = '067221000/077221000';
             document.getElementById('inputCourier').value = 'virak';
-            // Default: Confirmed
             document.getElementById('inputOrderStatus').value = 'Confirmed';
             document.getElementById('inputCod').checked = false;
-            // Default: Do NOT tick Show Price on label
             document.getElementById('inputShowPrice').checked = false;
             
             const checkboxes = document.querySelectorAll('.product-selections input[type="checkbox"]');
