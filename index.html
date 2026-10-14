@@ -1319,7 +1319,7 @@
         </div>
 
         <div class="rule-banner">
-            ℹ️ <strong>លក្ខខណ្ឌប្រព័ន្ធ (System Rule):</strong> ការកម្ម៉ង់ដែលស្ថិតក្នុងស្ថានភាព <strong>⏳ Pre-order</strong> ត្រូវបានរក្សាទុកក្នុង Cloud ប៉ុណ្ណោះ។ មានតែការកម្ម៉ង់ដែលមានស្ថានភាព <strong>✅ Confirmed</strong> ទើបអាចជ្រើសរើសដើម្បី Print ឬ Save ជារូបភាពបាន។ ចុចប៊ូតុង <strong>✏️ Edit</strong> ដើម្បីកែប្រែព័ត៌មាន។
+            ℹ️ <strong>លក្ខខណ្ឌប្រព័ន្ធ (System Rule):</strong> ការកម្ម៉ង់ដែលស្ថិតក្នុងស្ថានភាព <strong>⏳ Pre-order</strong> ត្រូវបានរក្សាទុកក្នុង Cloud & Google Sheets ប៉ុណ្ណោះ។ មានតែការកម្ម៉ង់ដែលមានស្ថានភាព <strong>✅ Confirmed</strong> ទើបអាចជ្រើសរើសដើម្បី Print ឬ Save ជារូបភាពបាន។
         </div>
 
         <div class="summary-stats">
@@ -1353,6 +1353,9 @@
     </div>
 
     <script>
+        // --- GOOGLE APPS SCRIPT WEB APP URL ---
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbycuOhcCoHZbeOKL4Ky2X99VP27k3omgLfjMl6brErwq02OfaPuC0ge-0mzXXPAP6af/exec";
+
         // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyC0u5MbOdDCcbeoRSPBHQF0jtXuoZMTG5s",
@@ -1398,11 +1401,11 @@
                         payload: data
                     });
                 });
-                persistOrdersToStorage(); // local backup
+                persistOrdersToStorage();
                 renderOrdersTable();
             }, (error) => {
                 console.error("Firebase sync error:", error);
-                loadSavedOrdersFromStorage(); // Fallback to local cache if offline
+                loadSavedOrdersFromStorage();
                 renderOrdersTable();
             });
         }
@@ -1439,7 +1442,7 @@
                 btn.innerHTML = "🔄 Update Customer Order (រក្សាទុកការកែប្រែ)";
                 btn.style.backgroundColor = "#d97706";
                 hint.style.color = "#92400e";
-                hint.innerHTML = "✏️ កំពុងកែប្រែ៖ ចុចប៊ូតុងខាងលើដើម្បីបង្កើតរូបភាព Label ថ្មី និងរក្សាទុកការកែប្រែលើ Cloud។";
+                hint.innerHTML = "✏️ កំពុងកែប្រែ៖ ចុចប៊ូតុងខាងលើដើម្បីបង្កើតរូបភាព Label ថ្មី និងរក្សាទុកការកែប្រែលើ Cloud & Sheets។";
                 return;
             }
 
@@ -1447,12 +1450,12 @@
                 btn.innerHTML = "💾 Save Confirmed Order (Ready to Print & Cloud)";
                 btn.style.backgroundColor = "#059669";
                 hint.style.color = "#065f46";
-                hint.innerHTML = "✅ ស្ថានភាព Confirmed៖ រក្សាទុកទៅ Cloud និងអាច Print ឬ Save ជារូបភាពបានភ្លាមៗ។";
+                hint.innerHTML = "✅ ស្ថានភាព Confirmed៖ រក្សាទុកទៅ Cloud & Google Sheets និងអាច Print ឬ Save ជារូបភាពបានភ្លាមៗ។";
             } else {
-                btn.innerHTML = "💾 Save Pre-order (Cloud System Only)";
+                btn.innerHTML = "💾 Save Pre-order (Cloud & Sheets Only)";
                 btn.style.backgroundColor = "#2563eb";
                 hint.style.color = "#92400e";
-                hint.innerHTML = "⚠️ ស្ថានភាព Pre-order អាចត្រឹមរក្សាទុកក្នុង Cloud ប៉ុណ្ណោះ។ ប្ដូរទៅ Confirmed ទើបអាច Print ឬ Save ជារូបភាពបាន។";
+                hint.innerHTML = "⚠️ ស្ថានភាព Pre-order អាចត្រឹមរក្សាទុកក្នុង Cloud & Google Sheets ប៉ុណ្ណោះ។";
             }
         }
 
@@ -1592,7 +1595,7 @@
             renderOrdersTable();
         }
 
-        // SAVE OR UPDATE CUSTOMER ORDER IN FIREBASE
+        // SAVE OR UPDATE CUSTOMER ORDER IN FIREBASE & GOOGLE SHEETS
         async function saveCustomerOrder() {
             updateLabel();
 
@@ -1603,7 +1606,7 @@
             }
 
             const btn = document.getElementById('btnSaveCustomer');
-            btn.innerHTML = editingOrderId ? "⏳ Updating Cloud Order..." : "⏳ Saving to Cloud...";
+            btn.innerHTML = editingOrderId ? "⏳ Updating Cloud & Sheets..." : "⏳ Saving to Cloud & Sheets...";
             btn.disabled = true;
 
             try {
@@ -1659,7 +1662,16 @@
                 let safeName = payload.customerName.replace(/[\/\\?%*:|"<>]/g, '').trim().replace(/\s+/g, '_') || "Customer";
                 payload.fileName = `Label_${safeName}_${Date.now()}.png`;
 
+                // 1. SAVE TO FIREBASE FIRESTORE
                 await db.collection(COLLECTION_NAME).doc(generatedId).set(payload, { merge: true });
+
+                // 2. SEND TO GOOGLE SHEETS WEB APP URL
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(err => console.log("Google Sheets sync notice:", err));
 
                 editingOrderId = null;
                 document.getElementById('editingBanner').style.display = 'none';
@@ -1668,8 +1680,8 @@
                 clearForm();
 
             } catch (e) {
-                console.error("Firebase save error:", e);
-                alert("Error saving order to Firebase cloud.");
+                console.error("Save error:", e);
+                alert("Error saving order.");
             } finally {
                 btn.disabled = false;
                 onFormStatusChange();
@@ -1821,6 +1833,18 @@
                 await db.collection(COLLECTION_NAME).doc(orderId).update({
                     orderStatus: newStatus
                 });
+                
+                // Also update Google Sheets in background
+                const target = savedOrders.find(o => o.id === orderId);
+                if (target) {
+                    target.payload.orderStatus = newStatus;
+                    fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(target.payload)
+                    }).catch(err => console.log("Sheets sync error:", err));
+                }
             } catch (e) {
                 console.error("Status update error:", e);
             }
