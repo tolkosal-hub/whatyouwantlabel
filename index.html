@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>WHAT YOU WANT - Label Generator (76x130mm)</title>
+    <title>WHAT YOU WANT - Label Generator & Order Tracker (76x130mm)</title>
     
-    <!-- Added html2canvas library for saving as image -->
+    <!-- html2canvas library for saving as image -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
@@ -32,6 +32,84 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 20px;
+        }
+
+        /* TOP FILTER & CALENDAR BAR */
+        .top-bar {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            padding: 16px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+            justify-content: space-between;
+            border-left: 5px solid #2563eb;
+        }
+
+        .top-bar-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .top-bar-group label {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .top-bar-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .top-bar input[type="date"],
+        .top-bar input[type="text"],
+        .top-bar select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13.5px;
+            background: #f9fafb;
+        }
+
+        .search-btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .reset-filter-btn {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .reset-filter-btn:hover {
+            background-color: #4b5563;
         }
 
         .app-container {
@@ -43,17 +121,24 @@
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: box-shadow 0.2s, border 0.2s;
+        }
+
+        .app-container.editing-active {
+            border: 2px solid #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
         }
 
         .control-panel {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 14px;
         }
 
         .control-panel h2 {
             margin-top: 0;
+            margin-bottom: 4px;
             font-size: 20px;
             color: #1f2937;
             border-bottom: 2px solid #e5e7eb;
@@ -61,6 +146,36 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .editing-banner {
+            display: none;
+            background: #fffbeb;
+            border: 1.5px solid #f59e0b;
+            color: #92400e;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .cancel-edit-btn {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .cancel-edit-btn:hover {
+            background: #dc2626;
         }
 
         .form-group {
@@ -75,7 +190,10 @@
             color: #4b5563;
         }
 
-        .form-group input[type="text"], .form-group input[type="number"], .form-group textarea, .form-group select {
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
             padding: 8px 12px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
@@ -85,7 +203,7 @@
 
         .form-group textarea {
             resize: vertical;
-            height: 90px;
+            height: 75px;
         }
 
         .paste-box {
@@ -102,14 +220,11 @@
             margin-bottom: 5px;
         }
 
-        .scan-instruction {
-            font-size: 12.5px;
-            color: #4c1d95;
-            background: #ede9fe;
-            padding: 8px 10px;
-            border-radius: 6px;
-            margin-top: 8px;
-            line-height: 1.4;
+        /* Status & Courier 2-column Row */
+        .two-col-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
         /* Products Section Styles */
@@ -174,7 +289,6 @@
             font-size: 13px !important;
         }
 
-        /* Hide the up/down arrows in number inputs */
         .qty-input::-webkit-outer-spin-button,
         .qty-input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -190,11 +304,10 @@
             border: none;
             padding: 12px;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
-            margin-top: 10px;
         }
 
         .print-btn:hover {
@@ -243,6 +356,7 @@
             font-weight: bold;
         }
 
+        /* PHYSICAL LABEL STYLES (76x130mm) */
         .label {
             width: var(--label-width);
             height: var(--label-height);
@@ -420,7 +534,6 @@
             background-color: #000;
         }
 
-        /* Products Grid inside the Label */
         .product-grid {
             display: flex;
             flex-direction: column;
@@ -494,14 +607,17 @@
             height: auto;
         }
 
+        /* PRICE + COD + SHOW PRICE ROW */
         .price-input-row {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .price-input-row input[type="text"] {
             flex: 1;
+            min-width: 110px;
         }
 
         .cod-checkbox-label {
@@ -515,10 +631,233 @@
             white-space: nowrap;
         }
 
-        .cod-checkbox-label input {
+        .show-price-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12.5px;
+            font-weight: bold;
+            color: #059669;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            padding: 5px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .cod-checkbox-label input,
+        .show-price-checkbox-label input {
             width: 16px;
             height: 16px;
             cursor: pointer;
+            margin: 0;
+        }
+
+        /* BOTTOM DAILY ORDERS TRACKING TABLE */
+        .tracking-section {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tracking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .tracking-header h2 {
+            margin: 0;
+            font-size: 19px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tracking-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 9px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .action-btn:hover {
+            opacity: 0.92;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-blue { background-color: #2563eb; color: #fff; }
+        .btn-green { background-color: #10b981; color: #fff; }
+        .btn-red { background-color: #ef4444; color: #fff; }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 900px;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .orders-table th {
+            background-color: #f8fafc;
+            color: #334155;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .orders-table tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .orders-table tr.editing-row {
+            background-color: #fffbeb !important;
+        }
+
+        .status-badge-select {
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .status-preorder {
+            background-color: #fef3c7;
+            color: #92400e;
+            border-color: #fde68a;
+        }
+
+        .status-confirmed {
+            background-color: #d1fae5;
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .product-pill {
+            display: inline-block;
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin: 2px 2px 2px 0;
+        }
+
+        .small-icon-btn {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            color: #1f2937;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .small-icon-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .edit-icon-btn {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        .edit-icon-btn:hover {
+            background: #dbeafe;
+        }
+
+        .locked-badge {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px dashed #f59e0b;
+            border-radius: 5px;
+            padding: 4px 7px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            cursor: not-allowed;
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .stat-card span {
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .rule-banner {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e3a8a;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            margin-bottom: 12px;
         }
 
         @media print {
@@ -535,7 +874,7 @@
                 height: 130mm !important; 
             }
 
-            .control-panel, .preview-label {
+            .top-bar, .control-panel, .preview-label, .tracking-section {
                 display: none !important;
             }
 
@@ -545,6 +884,7 @@
                 margin: 0 !important;
                 box-shadow: none !important;
                 background: none !important;
+                border: none !important;
             }
 
             .label {
@@ -568,43 +908,92 @@
             .app-container {
                 flex-direction: column;
             }
-            .paste-box {
-                border-width: 1px;
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .two-col-row {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+    <!-- 1. TOP BAR: CALENDAR PICKER & SEARCH / STATUS FILTER -->
+    <div class="top-bar">
+        <div class="top-bar-group">
+            <label>📅 កាលបរិច្ឆេទ (Order Date Picker):</label>
+            <div class="top-bar-controls">
+                <input type="date" id="orderDatePicker" onchange="onDatePickerChange()">
+                <label style="display:flex; align-items:center; gap:5px; font-weight:600; cursor:pointer; font-size:12.5px;">
+                    <input type="checkbox" id="showAllDates" onchange="renderOrdersTable()"> បង្ហាញគ្រប់ថ្ងៃ (Show All Dates)
+                </label>
+            </div>
+        </div>
+
+        <div class="top-bar-group" style="flex: 1; min-width: 280px;">
+            <label>🔍 ស្វែងរកអតិថិជន និងស្ថានភាព (Search Customer & Sell Status):</label>
+            <div class="top-bar-controls">
+                <input type="text" id="searchCustomerInput" placeholder="វាយឈ្មោះ ឬ លេខទូរស័ព្ទ..." style="flex:1;" oninput="renderOrdersTable()">
+                <select id="filterStatusSelect" onchange="renderOrdersTable()">
+                    <option value="ALL">គ្រប់ស្ថានភាព (All Status)</option>
+                    <option value="Confirmed">✅ Confirmed</option>
+                    <option value="Pre-order">⏳ Pre-order</option>
+                </select>
+                <button class="search-btn" onclick="renderOrdersTable()">🔍 Search</button>
+                <button class="reset-filter-btn" onclick="resetSearchFilters()">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN BUILDER & LIVE PREVIEW -->
+    <div class="app-container" id="mainAppContainer">
         <!-- Control Form Panel -->
         <div class="control-panel">
             <h2>
                 WHAT YOU WANT - Label Maker
                 <button class="new-btn" onclick="clearForm()">➕ Clear Form</button>
             </h2>
+
+            <!-- EDIT MODE BANNER -->
+            <div class="editing-banner" id="editingBanner">
+                <span id="editingBannerText">✏️ កំពុងកែប្រែការកម្ម៉ង់ (Editing Order)</span>
+                <button class="cancel-edit-btn" onclick="cancelEditOrder()">✖ បោះបង់ (Cancel Edit)</button>
+            </div>
             
             <div class="form-group paste-box">
                 <div class="paste-header">
                     <label style="margin:0; color: #6d28d9;">⚡ Smart Scan & Paste (Auto-fills):</label>
                 </div>
-                
                 <textarea id="smartPaste" placeholder="Tap here to use phone scanner...&#10;Line 1: ឈ្មោះអ្នកទទួល&#10;Line 2: លេខទូរស័ព្ទ&#10;Line 3: ទីតាំង..." oninput="parseSmartText()" lang="km" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
             </div>
 
-            <div class="form-group">
-                <label>លេខអ្នកផ្ញើ (Sender Number):</label>
-                <input type="text" id="inputSender" value="067221000/077221000" oninput="updateLabel()" spellcheck="false" autocorrect="off">
+            <div class="two-col-row">
+                <div class="form-group">
+                    <label>លេខអ្នកផ្ញើ (Sender Number):</label>
+                    <input type="text" id="inputSender" value="067221000/077221000" oninput="updateLabel()" spellcheck="false" autocorrect="off">
+                </div>
+
+                <div class="form-group">
+                    <label>ស្ថានភាពកម្ម៉ង់ (Order Status):</label>
+                    <select id="inputOrderStatus" onchange="onFormStatusChange()">
+                        <option value="Confirmed" selected>✅ Confirmed (អាច Print / Save រូបភាព)</option>
+                        <option value="Pre-order">⏳ Pre-order (រក្សាទុកក្នុងប្រព័ន្ធ & Sheets)</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>ឈ្មោះអ្នកទទួល (Receiver Name):</label>
-                <input type="text" id="inputName" placeholder="បញ្ចូលឈ្មោះអ្នកទទួល" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off">
-            </div>
+            <div class="two-col-row">
+                <div class="form-group">
+                    <label>ឈ្មោះអ្នកទទួល (Receiver Name):</label>
+                    <input type="text" id="inputName" placeholder="បញ្ចូលឈ្មោះអ្នកទទួល" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off">
+                </div>
 
-            <div class="form-group">
-                <label>លេខទូរស័ព្ទ (Phone Number):</label>
-                <input type="text" id="inputPhone" placeholder="បញ្ចូលលេខទូរស័ព្ទ" oninput="updateLabel()" spellcheck="false" autocorrect="off">
+                <div class="form-group">
+                    <label>លេខទូរស័ព្ទ (Phone Number):</label>
+                    <input type="text" id="inputPhone" placeholder="បញ្ចូលលេខទូរស័ព្ទ" oninput="updateLabel()" spellcheck="false" autocorrect="off">
+                </div>
             </div>
 
             <div class="form-group">
@@ -680,6 +1069,7 @@
                 </select>
             </div>
 
+            <!-- TOTAL PRICE + COD + SHOW PRICE ON LABEL (Default: Unticked) -->
             <div class="form-group">
                 <label>តម្លៃសរុប (Total Price):</label>
                 <div class="price-input-row">
@@ -687,34 +1077,20 @@
                     <label class="cod-checkbox-label">
                         <input type="checkbox" id="inputCod" onchange="updateLabel()"> COD
                     </label>
+                    <label class="show-price-checkbox-label" title="បើដោះធីក តម្លៃនឹងបញ្ជូនទៅ Google Sheets ធម្មតា តែមិនបង្ហាញលើក្រដាស Label ទេ">
+                        <input type="checkbox" id="inputShowPrice" onchange="updateLabel()"> Show Price on label
+                    </label>
                 </div>
             </div>
 
-            <!-- BATCH PROCESSING UI -->
-            <div id="batchUI" style="background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #334155;">📦 Batch Processing (Multiple Labels)</h3>
-                
-                <button class="print-btn" id="btnAddBatch" style="width: 100%; margin-top: 0; background-color: #2563eb;" onclick="addToBatch()">
-                    ➕ Add to Batch (<span id="batchCount">0</span>)
+            <!-- SAVE PURCHASE & ADD CUSTOMER BUTTON -->
+            <div style="background: #f8fafc; border: 2px dashed #93c5fd; padding: 14px; border-radius: 8px; margin-top: 6px;">
+                <button class="print-btn" id="btnSaveCustomer" style="width: 100%; background-color: #059669;" onclick="saveCustomerOrder()">
+                    💾 Save Confirmed Order (Ready to Print & Sheets)
                 </button>
-                
-                <div id="batchList" style="font-size: 13px; color: #4b5563; margin-top: 10px; max-height: 120px; overflow-y: auto;"></div>
-                
-                <button class="print-btn" style="width: 100%; background-color: #10b981; opacity: 0.5; margin-top: 10px;" id="btnProcessBatch" onclick="processBatch()" disabled>
-                    💾 Save All to Device & Sheets
-                </button>
-            </div>
-
-            <!-- FAIL-SAFE SUCCESS UI (Hidden by default) -->
-            <div id="batchResults" style="display: none; background: #ecfdf5; border: 2px dashed #10b981; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                <h3 style="margin: 0 0 10px 0; font-size: 15px; color: #065f46;">✅ Labels Ready!</h3>
-                <p style="font-size: 12px; color: #047857; margin-bottom: 12px;">If the images did not pop up automatically, tap the buttons below to save them.</p>
-                
-                <div id="resultsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div>
-                
-                <button class="new-btn" onclick="resetBatchSystem()" style="width: 100%; margin-top: 15px; background-color: #059669; justify-content: center; font-size: 14px; padding: 10px;">
-                    🔄 Start New Batch
-                </button>
+                <div id="saveStatusHint" style="font-size: 12px; color: #065f46; margin-top: 8px; text-align: center; font-weight: 600;">
+                    ✅ ស្ថានភាព Confirmed៖ រក្សាទុកទៅ Google Sheets និងអាច Print ឬ Save ជារូបភាពបានភ្លាមៗ។
+                </div>
             </div>
         </div>
 
@@ -779,7 +1155,7 @@
                         <div class="field-content" id="prevAddress">&nbsp;</div>
                     </div>
 
-                    <!-- NEW PRODUCTS LABEL FIELD -->
+                    <!-- PRODUCTS LABEL FIELD -->
                     <div class="label-field">
                         <div class="field-label-title">ទំនិញ (Products)</div>
                         <div class="product-grid">
@@ -924,14 +1300,181 @@
         </div>
     </div>
 
+    <!-- 3. BOTTOM SECTION: DAILY ORDERS TRACKING TABLE -->
+    <div class="tracking-section">
+        <div class="tracking-header">
+            <h2>📋 Daily Orders Tracking (តារាងតាមដានការកម្ម៉ង់ប្រចាំថ្ងៃ)</h2>
+            <div class="tracking-actions">
+                <button class="action-btn btn-blue" id="btnPrintSelected" onclick="exportSelectedOrders()" disabled>
+                    🖼️ Print / Save Selected Confirmed (<span id="selectedCount">0</span>)
+                </button>
+                <button class="action-btn btn-green" id="btnPrintAllVisible" onclick="exportAllFilteredOrders()" disabled>
+                    📦 Print / Save All Confirmed (<span id="confirmedVisibleCount">0</span>)
+                </button>
+                <button class="action-btn btn-red" onclick="clearAllSavedOrders()">
+                    🗑️ Clear History
+                </button>
+            </div>
+        </div>
+
+        <div class="rule-banner">
+            ℹ️ <strong>លក្ខខណ្ឌប្រព័ន្ធ (System Rule):</strong> ការកម្ម៉ង់ដែលស្ថិតក្នុងស្ថានភាព <strong>⏳ Pre-order</strong> ត្រូវបានរក្សាទុកក្នុងប្រព័ន្ធ និង Google Sheets ប៉ុណ្ណោះ។ មានតែការកម្ម៉ង់ដែលមានស្ថានភាព <strong>✅ Confirmed</strong> ទើបអាចជ្រើសរើសដើម្បី Print ឬ Save ជារូបភាពបាន។ ចុចប៊ូតុង <strong>✏️ Edit</strong> ដើម្បីកែប្រែព័ត៌មានខុសឆ្គង។
+        </div>
+
+        <div class="summary-stats">
+            <div class="stat-card">ចំនួនការកម្ម៉ង់បង្ហាញ (Shown Orders): <span id="statTotalOrders">0</span></div>
+            <div class="stat-card">⏳ Pre-order (Saved Only): <span id="statPreOrder">0</span></div>
+            <div class="stat-card">✅ Confirmed (Ready to Print): <span id="statConfirmed">0</span></div>
+            <div class="stat-card">💰 តម្លៃសរុប (Total Revenue): <span id="statTotalRevenue">0$</span></div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th style="width: 36px;"><input type="checkbox" id="selectAllCheckbox" title="Select all Confirmed orders" onchange="toggleSelectAllOrders(this)"></th>
+                        <th>#</th>
+                        <th>កាលបរិច្ឆេទ (Date)</th>
+                        <th>ឈ្មោះអតិថិជន (Customer)</th>
+                        <th>លេខទូរស័ព្ទ (Phone)</th>
+                        <th>ទីតាំង (Location)</th>
+                        <th>ទំនិញ (Ordered Products)</th>
+                        <th>សេវាដឹក & តម្លៃ</th>
+                        <th>ស្ថានភាព (Status)</th>
+                        <th>សកម្មភាព (Actions)</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- Dynamic Rows Injected Here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
-        // --- 1. SET YOUR NEW WEB APP URL HERE ---
+        // --- 1. SET YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbycuOhcCoHZbeOKL4Ky2X99VP27k3omgLfjMl6brErwq02OfaPuC0ge-0mzXXPAP6af/exec";
 
-        // Global Batch Array
-        let labelBatch = [];
+        const STORAGE_KEY = "WYW_SAVED_ORDERS_V1";
+        let savedOrders = [];
+        let editingOrderId = null;
 
-        // This converts the Base64 Canvas snapshot safely into a File without blowing up iOS RAM
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initDatePicker();
+            loadSavedOrdersFromStorage();
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+            onFormStatusChange();
+            updateLabel();
+            renderOrdersTable();
+        });
+
+        function initDatePicker() {
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            document.getElementById('orderDatePicker').value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        function getFormattedPickerDate() {
+            const val = document.getElementById('orderDatePicker').value;
+            if (!val) {
+                const now = new Date();
+                return `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+            }
+            const [y, m, d] = val.split('-');
+            return `${d}-${m}-${y}`;
+        }
+
+        function onDatePickerChange() {
+            updateDateTime();
+            renderOrdersTable();
+        }
+
+        function onFormStatusChange() {
+            const status = document.getElementById('inputOrderStatus').value;
+            const btn = document.getElementById('btnSaveCustomer');
+            const hint = document.getElementById('saveStatusHint');
+
+            if (editingOrderId) {
+                btn.innerHTML = "🔄 Update Customer Order (រក្សាទុកការកែប្រែ)";
+                btn.style.backgroundColor = "#d97706";
+                hint.style.color = "#92400e";
+                hint.innerHTML = "✏️ កំពុងកែប្រែ៖ ចុចប៊ូតុងខាងលើដើម្បីបង្កើតរូបភាព Label ថ្មី និងរក្សាទុកការកែប្រែ។";
+                return;
+            }
+
+            if (status === 'Confirmed') {
+                btn.innerHTML = "💾 Save Confirmed Order (Ready to Print & Sheets)";
+                btn.style.backgroundColor = "#059669";
+                hint.style.color = "#065f46";
+                hint.innerHTML = "✅ ស្ថានភាព Confirmed៖ រក្សាទុកទៅ Google Sheets និងអាច Print ឬ Save ជារូបភាពបានភ្លាមៗ។";
+            } else {
+                btn.innerHTML = "💾 Save Pre-order (System & Google Sheets Only)";
+                btn.style.backgroundColor = "#2563eb";
+                hint.style.color = "#92400e";
+                hint.innerHTML = "⚠️ ស្ថានភាព Pre-order អាចត្រឹមរក្សាទុកក្នុងប្រព័ន្ធ និង Google Sheets ប៉ុណ្ណោះ។ ប្ដូរទៅ Confirmed ទើបអាច Print ឬ Save ជារូបភាពបាន។";
+            }
+        }
+
+        function resetSearchFilters() {
+            document.getElementById('searchCustomerInput').value = '';
+            document.getElementById('filterStatusSelect').value = 'ALL';
+            document.getElementById('showAllDates').checked = false;
+            renderOrdersTable();
+        }
+
+        function normalizeOrderStatus(rawStatus) {
+            if (!rawStatus || rawStatus === 'Pre-delivery') return 'Pre-order';
+            return rawStatus;
+        }
+
+        function getCourierKeyFromText(courierVal, courierText) {
+            if (courierVal && ['virak', 'jt', 'capitol', 'pickup'].includes(courierVal)) {
+                return courierVal;
+            }
+            const t = (courierText || '').toLowerCase();
+            if (t.includes('j&t') || t.includes('jt')) return 'jt';
+            if (t.includes('កាពីតូល') || t.includes('capitol')) return 'capitol';
+            if (t.includes('pickup')) return 'pickup';
+            return 'virak';
+        }
+
+        function loadSavedOrdersFromStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    savedOrders = JSON.parse(raw);
+                    savedOrders.forEach(item => {
+                        if (item.payload) {
+                            item.payload.orderStatus = normalizeOrderStatus(item.payload.orderStatus);
+                            if (item.payload.orderStatus !== 'Confirmed') {
+                                item.selected = false;
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Failed to load orders from storage:", e);
+                savedOrders = [];
+            }
+        }
+
+        function persistOrdersToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(savedOrders));
+            } catch (e) {
+                console.warn("Storage quota reached, trimming oldest image snapshots...", e);
+                if (savedOrders.length > 40) {
+                    savedOrders = savedOrders.slice(-40);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedOrders));
+                }
+            }
+        }
+
+        // Convert Base64 DataURL safely into a File object for iOS Share Sheet
         function dataURLtoFile(dataurl, filename) {
             let arr = dataurl.split(','),
                 mime = arr[0].match(/:(.*?);/)[1],
@@ -944,16 +1487,87 @@
             try {
                 return new File([u8arr], filename, {type: mime});
             } catch(e) {
-                // Fallback for older Safari
                 let blob = new Blob([u8arr], {type: mime});
                 blob.name = filename;
                 return blob;
             }
         }
 
-        // PRE-GENERATE IMAGE IMMEDIATELY WHEN ADDING TO BATCH
-        async function addToBatch() {
-            updateLabel(); 
+        // Helper to build readable product list for the Tracking Table
+        function buildProductSummaryList(p) {
+            const items = [];
+            if (p.bj) items.push(`BJ (${p.bj})`);
+            if (p.bk) items.push(`BK (${p.bk})`);
+            if (p.soapGreen) items.push(`Soap Grn (${p.soapGreen})`);
+            if (p.soapPink) items.push(`Soap Pnk (${p.soapPink})`);
+            if (p.soapYellow) items.push(`Soap Ylw (${p.soapYellow})`);
+            if (p.oilBio) items.push(`Bio-Oil (${p.oilBio})`);
+            if (p.oilPalmer) items.push(`Palmer (${p.oilPalmer})`);
+            if (p.refillBj) items.push(`Refill BJ (${p.refillBj})`);
+            if (p.refillBk) items.push(`Refill BK (${p.refillBk})`);
+            return items;
+        }
+
+        // EDIT ORDER FUNCTION: Loads existing order back into the form to fix mistakes
+        function editOrder(orderId) {
+            const target = savedOrders.find(o => o.id === orderId);
+            if (!target) return;
+
+            editingOrderId = orderId;
+            const p = target.payload;
+
+            document.getElementById('smartPaste').value = '';
+            document.getElementById('inputSender').value = p.sender || '067221000/077221000';
+            document.getElementById('inputOrderStatus').value = normalizeOrderStatus(p.orderStatus);
+            document.getElementById('inputName').value = p.customerName || '';
+            document.getElementById('inputPhone').value = p.phone || '';
+            document.getElementById('inputAddress').value = p.location || '';
+            document.getElementById('inputCourier').value = getCourierKeyFromText(p.courierVal, p.courier);
+            document.getElementById('inputPrice').value = p.totalPrice ? `${p.totalPrice}$` : '';
+            document.getElementById('inputCod').checked = (p.codStatus === 'COD');
+            document.getElementById('inputShowPrice').checked = (p.showPriceOnLabel === true);
+
+            // Populate products & quantities
+            const setProd = (chkId, qtyId, val) => {
+                const hasVal = val !== undefined && val !== null && String(val).trim() !== '';
+                document.getElementById(chkId).checked = hasVal;
+                document.getElementById(qtyId).value = hasVal ? val : '';
+            };
+
+            setProd('in-bj', 'in-qty-bj', p.bj);
+            setProd('in-bk', 'in-qty-bk', p.bk);
+            setProd('in-soap-green', 'in-qty-soap-green', p.soapGreen);
+            setProd('in-soap-pink', 'in-qty-soap-pink', p.soapPink);
+            setProd('in-soap-yellow', 'in-qty-soap-yellow', p.soapYellow);
+            setProd('in-oil-bio', 'in-qty-oil-bio', p.oilBio);
+            setProd('in-oil-palmer', 'in-qty-oil-palmer', p.oilPalmer);
+            setProd('in-refill-bj', 'in-qty-refill-bj', p.refillBj);
+            setProd('in-refill-bk', 'in-qty-refill-bk', p.refillBk);
+
+            // Show Edit Banner & highlight form
+            document.getElementById('editingBanner').style.display = 'flex';
+            document.getElementById('editingBannerText').textContent = `✏️ កំពុងកែប្រែការកម្ម៉ង់របស់៖ ${p.customerName}`;
+            document.getElementById('mainAppContainer').classList.add('editing-active');
+
+            onFormStatusChange();
+            updateLabel();
+            renderOrdersTable();
+
+            // Smooth scroll up to the form
+            document.getElementById('mainAppContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function cancelEditOrder() {
+            editingOrderId = null;
+            document.getElementById('editingBanner').style.display = 'none';
+            document.getElementById('mainAppContainer').classList.remove('editing-active');
+            clearForm();
+            renderOrdersTable();
+        }
+
+        // SAVE OR UPDATE CUSTOMER ORDER
+        async function saveCustomerOrder() {
+            updateLabel();
 
             const name = document.getElementById('inputName').value.trim();
             if (!name) {
@@ -961,151 +1575,336 @@
                 return;
             }
 
-            const btn = document.getElementById('btnAddBatch');
-            btn.innerHTML = "⏳ Preparing Label...";
+            const btn = document.getElementById('btnSaveCustomer');
+            btn.innerHTML = editingOrderId ? "⏳ Updating Order & Label..." : "⏳ Saving Order...";
             btn.disabled = true;
 
             try {
                 const now = new Date();
-                const d = String(now.getDate()).padStart(2, '0');
-                const m = String(now.getMonth() + 1).padStart(2, '0');
-                const y = now.getFullYear();
+                const formattedDate = getFormattedPickerDate();
                 const hours = String(now.getHours()).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');
                 
                 const courierSelect = document.getElementById('inputCourier');
+                const orderStatus = document.getElementById('inputOrderStatus').value;
                 
                 let rawPrice = document.getElementById('inputPrice').value.trim();
                 let isCodChecked = document.getElementById('inputCod').checked;
+                let showPriceOnLabel = document.getElementById('inputShowPrice').checked;
                 let cleanPrice = rawPrice.replace(/[^\d.]/g, '');
 
+                // Preserve original date/time if editing an existing order
+                let existingOrder = editingOrderId ? savedOrders.find(o => o.id === editingOrderId) : null;
+
                 const payload = {
-                    date: `${d}-${m}-${y}`,
-                    time: `${hours}:${minutes}`,
+                    date: existingOrder ? existingOrder.payload.date : formattedDate,
+                    time: existingOrder ? existingOrder.payload.time : `${hours}:${minutes}`,
+                    sender: document.getElementById('inputSender').value.trim(),
+                    orderStatus: orderStatus,
                     customerName: name,
-                    phone: document.getElementById('inputPhone').value,
-                    location: document.getElementById('inputAddress').value,
-                    bj: document.getElementById('in-bj').checked ? document.getElementById('in-qty-bj').value : "",
-                    bk: document.getElementById('in-bk').checked ? document.getElementById('in-qty-bk').value : "",
-                    soapGreen: document.getElementById('in-soap-green').checked ? document.getElementById('in-qty-soap-green').value : "",
-                    soapPink: document.getElementById('in-soap-pink').checked ? document.getElementById('in-qty-soap-pink').value : "",
-                    soapYellow: document.getElementById('in-soap-yellow').checked ? document.getElementById('in-qty-soap-yellow').value : "",
-                    oilBio: document.getElementById('in-oil-bio').checked ? document.getElementById('in-qty-oil-bio').value : "",
-                    oilPalmer: document.getElementById('in-oil-palmer').checked ? document.getElementById('in-qty-oil-palmer').value : "",
-                    refillBj: document.getElementById('in-refill-bj').checked ? document.getElementById('in-qty-refill-bj').value : "",
-                    refillBk: document.getElementById('in-refill-bk').checked ? document.getElementById('in-qty-refill-bk').value : "",
+                    phone: document.getElementById('inputPhone').value.trim(),
+                    location: document.getElementById('inputAddress').value.trim(),
+                    bj: document.getElementById('in-bj').checked ? (document.getElementById('in-qty-bj').value || "1") : "",
+                    bk: document.getElementById('in-bk').checked ? (document.getElementById('in-qty-bk').value || "1") : "",
+                    soapGreen: document.getElementById('in-soap-green').checked ? (document.getElementById('in-qty-soap-green').value || "1") : "",
+                    soapPink: document.getElementById('in-soap-pink').checked ? (document.getElementById('in-qty-soap-pink').value || "1") : "",
+                    soapYellow: document.getElementById('in-soap-yellow').checked ? (document.getElementById('in-qty-soap-yellow').value || "1") : "",
+                    oilBio: document.getElementById('in-oil-bio').checked ? (document.getElementById('in-qty-oil-bio').value || "1") : "",
+                    oilPalmer: document.getElementById('in-oil-palmer').checked ? (document.getElementById('in-qty-oil-palmer').value || "1") : "",
+                    refillBj: document.getElementById('in-refill-bj').checked ? (document.getElementById('in-qty-refill-bj').value || "1") : "",
+                    refillBk: document.getElementById('in-refill-bk').checked ? (document.getElementById('in-qty-refill-bk').value || "1") : "",
+                    courierVal: courierSelect.value,
                     courier: courierSelect.options[courierSelect.selectedIndex].text,
-                    totalPrice: cleanPrice, 
-                    codStatus: isCodChecked ? "COD" : ""
+                    totalPrice: cleanPrice,
+                    codStatus: isCodChecked ? "COD" : "",
+                    showPriceOnLabel: showPriceOnLabel
                 };
 
-                // TAKE SNAPSHOT IMMEDIATELY
+                // Capture fresh high-res snapshot of the label (reflects new delivery service, Show Price on label, etc.)
                 const previewContainer = document.getElementById('labelPreview');
                 const canvas = await html2canvas(previewContainer, {
                     scale: 4, 
                     useCORS: true, 
                     backgroundColor: "#FFFBEB"
                 });
-                
-                // Get the string data of the image
                 const imageURI = canvas.toDataURL("image/png");
-                
-                // Safe filename without illegal characters
-                let safeName = payload.customerName ? payload.customerName.replace(/[\/\\?%*:|"<>]/g, '').trim().replace(/\s+/g, '_') : "Customer";
-                if (!safeName) safeName = "Customer";
+
+                let safeName = payload.customerName.replace(/[\/\\?%*:|"<>]/g, '').trim().replace(/\s+/g, '_') || "Customer";
                 let fileName = `Label_${safeName}_${Date.now()}.png`;
 
-                // Save string data to memory
-                labelBatch.push({
-                    payload: payload,
-                    imageURI: imageURI, 
-                    fileName: fileName
-                });
-
-                updateBatchUI();
-                clearForm(); 
-
-            } catch (e) {
-                console.error("Canvas error:", e);
-                alert("Error preparing label. Please try again.");
-            } finally {
-                btn.innerHTML = `➕ Add to Batch (<span id="batchCount">${labelBatch.length}</span>)`;
-                btn.disabled = false;
-            }
-        }
-
-        function updateBatchUI() {
-            const countSpan = document.getElementById('batchCount');
-            const listDiv = document.getElementById('batchList');
-            const processBtn = document.getElementById('btnProcessBatch');
-
-            if (countSpan) countSpan.textContent = labelBatch.length;
-            
-            if (labelBatch.length > 0) {
-                processBtn.disabled = false;
-                processBtn.style.opacity = '1';
-                
-                let listHTML = '<ul style="margin: 0; padding-left: 20px;">';
-                labelBatch.forEach((item, index) => {
-                    let priceTag = item.payload.totalPrice ? ` - ${item.payload.totalPrice}$` : '';
-                    let codTag = item.payload.codStatus ? ' (COD)' : '';
-                    listHTML += `<li><strong>${index + 1}.</strong> ${item.payload.customerName}${priceTag}${codTag}</li>`;
-                });
-                listHTML += '</ul>';
-                listDiv.innerHTML = listHTML;
-            } else {
-                processBtn.disabled = true;
-                processBtn.style.opacity = '0.5';
-                listDiv.innerHTML = '';
-            }
-        }
-
-        // SAVE DATA AND TRIGGER FAIL-SAFE UI
-        function processBatch() {
-            if (labelBatch.length === 0) return;
-
-            const btn = document.getElementById('btnProcessBatch');
-            btn.innerHTML = "📤 Sending Data & Saving...";
-            btn.disabled = true;
-
-            // 1. Send all data to Google Sheets silently in the background
-            labelBatch.forEach(data => {
+                // Send data to Google Sheets
                 fetch(WEB_APP_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data.payload)
-                }).catch(e => console.error("Sheet error", e));
-            });
+                    body: JSON.stringify(payload)
+                }).catch(e => console.error("Sheet sync error:", e));
 
-            // 2. Prepare actual File objects exactly when needed for iOS Share
-            let filesArray = [];
-            labelBatch.forEach(data => {
-                filesArray.push(dataURLtoFile(data.imageURI, data.fileName));
-            });
+                const isConfirmed = (orderStatus === 'Confirmed');
 
-            // 3. Attempt Native Share Menu Instantly (iOS Safari)
-            // CRITICAL FIX: Removed "title" so iOS detects it as pure images and gives the "Save Image" option
-            if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-                navigator.share({
-                    files: filesArray
-                }).then(() => {
-                    showSuccessUI();
-                }).catch(err => {
-                    console.log("Share skipped/failed. Opening fail-safe UI.", err);
-                    triggerDesktopDownloads();
-                    showSuccessUI();
-                });
-            } else {
-                // 4. Fallback for Mac/Desktop/Chrome
-                triggerDesktopDownloads();
-                showSuccessUI();
+                if (editingOrderId && existingOrder) {
+                    // Update existing record in place
+                    existingOrder.payload = payload;
+                    existingOrder.imageURI = imageURI;
+                    existingOrder.fileName = fileName;
+                    existingOrder.selected = isConfirmed;
+
+                    editingOrderId = null;
+                    document.getElementById('editingBanner').style.display = 'none';
+                    document.getElementById('mainAppContainer').classList.remove('editing-active');
+                } else {
+                    // Create new order record
+                    const newOrderRecord = {
+                        id: 'ORD_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                        selected: isConfirmed,
+                        payload: payload,
+                        imageURI: imageURI,
+                        fileName: fileName
+                    };
+                    savedOrders.unshift(newOrderRecord);
+                }
+
+                persistOrdersToStorage();
+                renderOrdersTable();
+                clearForm();
+
+            } catch (e) {
+                console.error("Save error:", e);
+                alert("Error saving customer order. Please try again.");
+            } finally {
+                btn.disabled = false;
+                onFormStatusChange();
             }
         }
 
-        // Auto-download attempt for Mac Desktop
-        function triggerDesktopDownloads() {
-            labelBatch.forEach((data, index) => {
+        // FILTER & RENDER DAILY ORDERS TABLE
+        function getFilteredOrders() {
+            const showAllDates = document.getElementById('showAllDates').checked;
+            const selectedDate = getFormattedPickerDate();
+            const searchQuery = document.getElementById('searchCustomerInput').value.trim().toLowerCase();
+            const statusFilter = document.getElementById('filterStatusSelect').value;
+
+            return savedOrders.filter(item => {
+                const p = item.payload;
+                const currentStatus = normalizeOrderStatus(p.orderStatus);
+                const matchDate = showAllDates || (p.date === selectedDate);
+                const matchStatus = (statusFilter === 'ALL') || (currentStatus === statusFilter);
+                const matchSearch = !searchQuery ||
+                    (p.customerName && p.customerName.toLowerCase().includes(searchQuery)) ||
+                    (p.phone && p.phone.toLowerCase().includes(searchQuery)) ||
+                    (p.location && p.location.toLowerCase().includes(searchQuery));
+                return matchDate && matchStatus && matchSearch;
+            });
+        }
+
+        function renderOrdersTable() {
+            const tbody = document.getElementById('ordersTableBody');
+            const filtered = getFilteredOrders();
+
+            let preCount = 0;
+            let confCount = 0;
+            let totalRev = 0;
+            let selectedConfirmedCount = 0;
+
+            filtered.forEach(item => {
+                const st = normalizeOrderStatus(item.payload.orderStatus);
+                if (st === 'Confirmed') {
+                    confCount++;
+                    if (item.selected) selectedConfirmedCount++;
+                } else {
+                    preCount++;
+                    item.selected = false;
+                }
+
+                const numPrice = parseFloat(item.payload.totalPrice);
+                if (!isNaN(numPrice)) totalRev += numPrice;
+            });
+
+            document.getElementById('statTotalOrders').textContent = filtered.length;
+            document.getElementById('statPreOrder').textContent = preCount;
+            document.getElementById('statConfirmed').textContent = confCount;
+            document.getElementById('statTotalRevenue').textContent = `${totalRev.toFixed(2).replace(/\.00$/, '')}$`;
+
+            document.getElementById('selectedCount').textContent = selectedConfirmedCount;
+            document.getElementById('confirmedVisibleCount').textContent = confCount;
+            document.getElementById('btnPrintSelected').disabled = (selectedConfirmedCount === 0);
+            document.getElementById('btnPrintAllVisible').disabled = (confCount === 0);
+
+            const selectAllCb = document.getElementById('selectAllCheckbox');
+            selectAllCb.disabled = (confCount === 0);
+            selectAllCb.checked = (confCount > 0 && selectedConfirmedCount === confCount);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 25px; color: #6b7280;">
+                            មិនមានទិន្នន័យការកម្ម៉ង់សម្រាប់ការស្វែងរកនេះទេ (No orders found for the current filter).
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((item, idx) => {
+                const p = item.payload;
+                const products = buildProductSummaryList(p);
+                const productsHTML = products.length > 0
+                    ? products.map(prod => `<span class="product-pill">${prod}</span>`).join('')
+                    : `<span style="color:#9ca3af;">-</span>`;
+
+                const statusVal = normalizeOrderStatus(p.orderStatus);
+                const isConfirmed = (statusVal === 'Confirmed');
+                const statusClass = isConfirmed ? 'status-confirmed' : 'status-preorder';
+                const isBeingEdited = (item.id === editingOrderId);
+
+                const priceDisplay = p.totalPrice ? `${p.totalPrice}$` : '0$';
+                const codBadge = p.codStatus ? ` <strong style="color:#2563eb;">(COD)</strong>` : '';
+                const priceVisibilityBadge = p.showPriceOnLabel
+                    ? `<div style="font-size:10.5px; color:#059669; font-weight:600;">(Shown on label)</div>`
+                    : `<div style="font-size:10.5px; color:#6b7280;">(Hidden on label)</div>`;
+
+                const downloadButtonHTML = isConfirmed
+                    ? `<a href="${item.imageURI}" download="${item.fileName}" class="small-icon-btn" title="Save single label image">⬇️ Image</a>`
+                    : `<span class="locked-badge" title="Pre-order មិនអាច Print/Save រូបភាពបានទេ។ សូមប្ដូរទៅ Confirmed សិន!">🔒 Locked</span>`;
+
+                return `
+                    <tr class="${isBeingEdited ? 'editing-row' : ''}">
+                        <td>
+                            <input type="checkbox" 
+                                ${isConfirmed && item.selected ? 'checked' : ''} 
+                                ${!isConfirmed ? 'disabled title="Only Confirmed orders can be selected for printing"' : ''}
+                                onchange="toggleOrderSelection('${item.id}', this.checked)">
+                        </td>
+                        <td><strong>${idx + 1}</strong></td>
+                        <td style="white-space:nowrap;">${p.date}<br><span style="font-size:11px; color:#6b7280;">${p.time || ''}</span></td>
+                        <td><strong>${p.customerName}</strong></td>
+                        <td style="white-space:nowrap;">${p.phone || '-'}</td>
+                        <td style="max-width: 190px; word-break: break-word;">${p.location || '-'}</td>
+                        <td>${productsHTML}</td>
+                        <td style="white-space:nowrap;">
+                            <div>${p.courier.split(' ')[0]}</div>
+                            <div><strong>${priceDisplay}</strong>${codBadge}</div>
+                            ${priceVisibilityBadge}
+                        </td>
+                        <td>
+                            <select class="status-badge-select ${statusClass}" onchange="updateOrderStatus('${item.id}', this.value)">
+                                <option value="Confirmed" ${statusVal === 'Confirmed' ? 'selected' : ''}>✅ Confirmed</option>
+                                <option value="Pre-order" ${statusVal === 'Pre-order' ? 'selected' : ''}>⏳ Pre-order</option>
+                            </select>
+                        </td>
+                        <td style="white-space:nowrap;">
+                            <button class="small-icon-btn edit-icon-btn" onclick="editOrder('${item.id}')" title="Edit customer order & regenerate label">✏️ Edit</button>
+                            ${downloadButtonHTML}
+                            <button class="small-icon-btn" style="color:#dc2626;" onclick="deleteOrder('${item.id}')" title="Delete order">✖</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleOrderSelection(orderId, isChecked) {
+            const target = savedOrders.find(o => o.id === orderId);
+            if (!target) return;
+
+            if (normalizeOrderStatus(target.payload.orderStatus) !== 'Confirmed') {
+                alert("មានតែការកម្ម៉ង់ដែលមានស្ថានភាព Confirmed ប៉ុណ្ណោះទើបអាច Print ឬ Save ជារូបភាពបាន!");
+                renderOrdersTable();
+                return;
+            }
+
+            target.selected = isChecked;
+            persistOrdersToStorage();
+            renderOrdersTable();
+        }
+
+        function toggleSelectAllOrders(checkbox) {
+            const filtered = getFilteredOrders();
+            filtered.forEach(item => {
+                if (normalizeOrderStatus(item.payload.orderStatus) === 'Confirmed') {
+                    item.selected = checkbox.checked;
+                } else {
+                    item.selected = false;
+                }
+            });
+            persistOrdersToStorage();
+            renderOrdersTable();
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const target = savedOrders.find(o => o.id === orderId);
+            if (target) {
+                target.payload.orderStatus = newStatus;
+                target.selected = (newStatus === 'Confirmed');
+                persistOrdersToStorage();
+                renderOrdersTable();
+            }
+        }
+
+        function deleteOrder(orderId) {
+            if (!confirm("តើអ្នកពិតជាចង់លុបការកម្ម៉ង់នេះមែនទេ? (Delete this order from tracking?)")) return;
+            if (editingOrderId === orderId) {
+                cancelEditOrder();
+            }
+            savedOrders = savedOrders.filter(o => o.id !== orderId);
+            persistOrdersToStorage();
+            renderOrdersTable();
+        }
+
+        function clearAllSavedOrders() {
+            if (!confirm("តើអ្នកចង់លុបប្រវត្តិការកម្ម៉ង់ទាំងអស់មែនទេ? (Clear all saved orders from this device?)")) return;
+            if (editingOrderId) cancelEditOrder();
+            savedOrders = [];
+            persistOrdersToStorage();
+            renderOrdersTable();
+        }
+
+        // BATCH PRINT / SAVE IMAGES AT ONCE (STRICTLY CONFIRMED ORDERS ONLY)
+        function exportSelectedOrders() {
+            const selectedConfirmedOrders = getFilteredOrders().filter(
+                o => o.selected && normalizeOrderStatus(o.payload.orderStatus) === 'Confirmed'
+            );
+            if (selectedConfirmedOrders.length === 0) {
+                alert("សូមជ្រើសរើសការកម្ម៉ង់ដែលមានស្ថានភាព Confirmed យ៉ាងហោចណាស់ 1 ដើម្បី Save រូបភាព!");
+                return;
+            }
+            exportOrderImagesBatch(selectedConfirmedOrders);
+        }
+
+        function exportAllFilteredOrders() {
+            const confirmedOrders = getFilteredOrders().filter(
+                o => normalizeOrderStatus(o.payload.orderStatus) === 'Confirmed'
+            );
+            if (confirmedOrders.length === 0) {
+                alert("មិនមានការកម្ម៉ង់ដែលមានស្ថានភាព Confirmed ដើម្បី Print / Save រូបភាពទេ!");
+                return;
+            }
+            exportOrderImagesBatch(confirmedOrders);
+        }
+
+        function exportOrderImagesBatch(ordersList) {
+            const validConfirmedList = ordersList.filter(
+                o => normalizeOrderStatus(o.payload.orderStatus) === 'Confirmed'
+            );
+            if (validConfirmedList.length === 0) return;
+
+            let filesArray = [];
+            validConfirmedList.forEach(data => {
+                filesArray.push(dataURLtoFile(data.imageURI, data.fileName));
+            });
+
+            if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+                navigator.share({
+                    files: filesArray
+                }).catch(err => {
+                    console.log("Share skipped or cancelled, falling back to sequential download.", err);
+                    triggerDesktopDownloads(validConfirmedList);
+                });
+            } else {
+                triggerDesktopDownloads(validConfirmedList);
+            }
+        }
+
+        function triggerDesktopDownloads(ordersList) {
+            ordersList.forEach((data, index) => {
                 setTimeout(() => {
                     const link = document.createElement("a");
                     link.download = data.fileName;
@@ -1113,42 +1912,8 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                }, index * 800); // 800ms delay helps avoid aggressive popup blockers
+                }, index * 650);
             });
-        }
-
-        // FAIL-SAFE UI: Shows actual download buttons so you are never stuck!
-        function showSuccessUI() {
-            // Hide the old box
-            document.getElementById('batchUI').style.display = 'none';
-            
-            // Show the success box
-            const resultsDiv = document.getElementById('batchResults');
-            resultsDiv.style.display = 'block';
-
-            let listHTML = '';
-            labelBatch.forEach((item, index) => {
-                listHTML += `
-                <div style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #d1fae5;">
-                    <span style="font-size: 13.5px; font-weight: bold; color: #065f46; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;">${index + 1}. ${item.payload.customerName}</span>
-                    <a href="${item.imageURI}" download="${item.fileName}" style="background: #10b981; color: white; padding: 8px 14px; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">⬇️ Save Image</a>
-                </div>`;
-            });
-            document.getElementById('resultsList').innerHTML = listHTML;
-        }
-
-        function resetBatchSystem() {
-            labelBatch = []; 
-            document.getElementById('batchResults').style.display = 'none';
-            document.getElementById('batchUI').style.display = 'block';
-            
-            const btn = document.getElementById('btnProcessBatch');
-            btn.innerHTML = "💾 Save All to Device & Sheets";
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            
-            updateBatchUI(); 
-            clearForm();
         }
 
         // Format Number Input
@@ -1168,6 +1933,10 @@
         }
 
         function clearForm() {
+            editingOrderId = null;
+            document.getElementById('editingBanner').style.display = 'none';
+            document.getElementById('mainAppContainer').classList.remove('editing-active');
+
             document.getElementById('smartPaste').value = '';
             document.getElementById('inputName').value = '';
             document.getElementById('inputPhone').value = '';
@@ -1176,7 +1945,11 @@
             
             document.getElementById('inputSender').value = '067221000/077221000';
             document.getElementById('inputCourier').value = 'virak';
+            // Default: Confirmed
+            document.getElementById('inputOrderStatus').value = 'Confirmed';
             document.getElementById('inputCod').checked = false;
+            // Default: Do NOT tick Show Price on label
+            document.getElementById('inputShowPrice').checked = false;
             
             const checkboxes = document.querySelectorAll('.product-selections input[type="checkbox"]');
             checkboxes.forEach(cb => cb.checked = false);
@@ -1184,27 +1957,23 @@
             const qtys = document.querySelectorAll('.product-selections input[type="number"]');
             qtys.forEach(qty => qty.value = '');
             
+            onFormStatusChange();
             updateLabel();
-            
+            renderOrdersTable();
             document.getElementById('smartPaste').focus();
         }
 
         function updateDateTime() {
             const now = new Date();
-            const d = String(now.getDate()).padStart(2, '0');
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const y = now.getFullYear();
+            const formattedDate = getFormattedPickerDate();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             
             const dtElement = document.getElementById('currentDateTime');
             if (dtElement) {
-                dtElement.textContent = `កាលបរិច្ឆេទ: ${d}-${m}-${y} ម៉ោង: ${hours}:${minutes}`;
+                dtElement.textContent = `កាលបរិច្ឆេទ: ${formattedDate} ម៉ោង: ${hours}:${minutes}`;
             }
         }
-        
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
 
         function updateLabel() {
             const sender = document.getElementById('inputSender').value;
@@ -1217,9 +1986,16 @@
             
             let price = document.getElementById('inputPrice').value.trim();
             const isCod = document.getElementById('inputCod').checked;
+            const showPrice = document.getElementById('inputShowPrice').checked;
 
-            if (isCod && price !== '') {
-                price += ' (COD)';
+            let displayPriceOnLabel = '';
+            if (showPrice) {
+                displayPriceOnLabel = price;
+                if (isCod && displayPriceOnLabel !== '') {
+                    displayPriceOnLabel += ' (COD)';
+                } else if (isCod && displayPriceOnLabel === '') {
+                    displayPriceOnLabel = 'COD';
+                }
             }
 
             document.getElementById('prevSender').textContent = sender || '\u00A0';
@@ -1227,7 +2003,7 @@
             document.getElementById('prevPhone').textContent = phone || '\u00A0';
             document.getElementById('prevAddress').innerHTML = address ? address.replace(/\n/g, '<br>') : '\u00A0';
             document.getElementById('prevCourier').textContent = courierText;
-            document.getElementById('prevPrice').textContent = price || '\u00A0';
+            document.getElementById('prevPrice').textContent = displayPriceOnLabel || '\u00A0';
 
             document.getElementById('chk-virak').classList.remove('checked');
             document.getElementById('chk-jt').classList.remove('checked');
@@ -1295,6 +2071,7 @@
                 document.getElementById('inputCourier').value = 'virak'; 
                 document.getElementById('inputPrice').value = '';
                 document.getElementById('inputCod').checked = false;
+                document.getElementById('inputShowPrice').checked = false;
                 
                 const checkboxes = document.querySelectorAll('.product-selections input[type="checkbox"]');
                 checkboxes.forEach(cb => cb.checked = false);
@@ -1366,8 +2143,6 @@
 
             updateLabel();
         }
-
-        updateLabel();
     </script>
 </body>
 </html>
