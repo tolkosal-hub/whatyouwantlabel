@@ -1375,19 +1375,22 @@
         });
 
         // Sync from Cloud Google Sheets
-        async function fetchOrdersFromCloud() {
-            try {
-                const response = await fetch(WEB_APP_URL);
-                const cloudOrders = await response.json();
-                if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
-                    savedOrders = cloudOrders;
-                    persistOrdersToStorage();
-                    renderOrdersTable();
-                }
-            } catch (e) {
-                console.log("Using local offline storage cache.", e);
-            }
+async function fetchOrdersFromCloud() {
+    try {
+        const response = await fetch(WEB_APP_URL, {
+            method: 'GET',
+            redirect: 'follow'
+        });
+        const cloudOrders = await response.json();
+        if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
+            savedOrders = cloudOrders;
+            persistOrdersToStorage();
+            renderOrdersTable();
         }
+    } catch (e) {
+        console.log("Loading from local device cache.", e);
+    }
+}
 
         function initDatePicker() {
             const now = new Date();
