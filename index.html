@@ -1141,6 +1141,12 @@
                             <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
 
+                        <!-- NEW B-Man PRODUCT ADDED HERE -->
+                        <div class="main-item">
+                            <label><input type="checkbox" id="in-bman" onchange="updateLabel()"> B-Man</label>
+                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bman" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        </div>
+
                         <div class="multi-item-group">
                             <div class="group-title">Soap Razor:</div>
                             <div class="sub-row">
@@ -1309,6 +1315,11 @@
                                     <div class="item-group" style="margin-left: 10px;">
                                         <span class="checkbox-square" id="lbl-chk-bk"></span> BK 
                                         <span class="qty-box-inline" id="lbl-qty-bk"></span>
+                                    </div>
+                                    <!-- NEW B-Man PRODUCT ADDED TO LABEL -->
+                                    <div class="item-group" style="margin-left: 10px;">
+                                        <span class="checkbox-square" id="lbl-chk-bman"></span> B-Man 
+                                        <span class="qty-box-inline" id="lbl-qty-bman"></span>
                                     </div>
                                 </div>
 
@@ -1719,6 +1730,7 @@
             const items = [];
             if (p.bj) items.push(`BJ (${p.bj})`);
             if (p.bk) items.push(`BK (${p.bk})`);
+            if (p.bMan) items.push(`B-Man (${p.bMan})`); // <--- NEW: B-Man in Summary
             if (p.soapGreen) items.push(`Soap Grn (${p.soapGreen})`);
             if (p.soapPink) items.push(`Soap Pnk (${p.soapPink})`);
             if (p.soapYellow) items.push(`Soap Ylw (${p.soapYellow})`);
@@ -1769,6 +1781,7 @@
 
             setProd('in-bj', 'in-qty-bj', p.bj);
             setProd('in-bk', 'in-qty-bk', p.bk);
+            setProd('in-bman', 'in-qty-bman', p.bMan); // <--- NEW: Populate B-Man in Edit Mode
             setProd('in-soap-green', 'in-qty-soap-green', p.soapGreen);
             setProd('in-soap-pink', 'in-qty-soap-pink', p.soapPink);
             setProd('in-soap-yellow', 'in-qty-soap-yellow', p.soapYellow);
@@ -1810,12 +1823,10 @@
 
             const formattedDate = getFormattedPickerDate();
 
-            // --- NEW: Duplicate Entry Check ---
-            // Only check for duplicates if it is a NEW order (not editing)
+            // --- Duplicate Entry Check ---
             if (!editingOrderId) {
                 const isDuplicate = savedOrders.some(order => {
                     const p = order.payload;
-                    // Check if date, name, and phone match perfectly (case-insensitive for name)
                     return p.date === formattedDate && 
                            p.customerName.toLowerCase() === name.toLowerCase() && 
                            p.phone === phone;
@@ -1828,7 +1839,6 @@
                     }
                 }
             }
-            // -----------------------------------
 
             const btn = document.getElementById('btnSaveCustomer');
             btn.innerHTML = editingOrderId ? "⏳ Updating Cloud & Sheets..." : "⏳ Saving to Cloud & Sheets...";
@@ -1867,6 +1877,7 @@
                     platform: platformVal,
                     bj: document.getElementById('in-bj').checked ? (document.getElementById('in-qty-bj').value || "1") : "",
                     bk: document.getElementById('in-bk').checked ? (document.getElementById('in-qty-bk').value || "1") : "",
+                    bMan: document.getElementById('in-bman').checked ? (document.getElementById('in-qty-bman').value || "1") : "", // <--- NEW: B-Man Payload
                     soapGreen: document.getElementById('in-soap-green').checked ? (document.getElementById('in-qty-soap-green').value || "1") : "",
                     soapPink: document.getElementById('in-soap-pink').checked ? (document.getElementById('in-qty-soap-pink').value || "1") : "",
                     soapYellow: document.getElementById('in-soap-yellow').checked ? (document.getElementById('in-qty-soap-yellow').value || "1") : "",
@@ -2254,6 +2265,7 @@
 
             setLbl('in-bj', 'in-qty-bj', 'lbl-chk-bj', 'lbl-qty-bj');
             setLbl('in-bk', 'in-qty-bk', 'lbl-chk-bk', 'lbl-qty-bk');
+            setLbl('in-bman', 'in-qty-bman', 'lbl-chk-bman', 'lbl-qty-bman'); // <--- NEW: B-Man Label Link
             setLbl('in-soap-green', 'in-qty-soap-green', 'lbl-chk-soap-green', 'lbl-qty-soap-green');
             setLbl('in-soap-pink', 'in-qty-soap-pink', 'lbl-chk-soap-pink', 'lbl-qty-soap-pink');
             setLbl('in-soap-yellow', 'in-qty-soap-yellow', 'lbl-chk-soap-yellow', 'lbl-qty-soap-yellow');
