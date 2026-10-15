@@ -1801,10 +1801,34 @@
             updateLabel();
 
             const name = document.getElementById('inputName').value.trim();
+            const phone = document.getElementById('inputPhone').value.trim();
+
             if (!name) {
                 alert("សូមបញ្ចូលឈ្មោះអ្នកទទួលសិន! (Please enter a receiver name)");
                 return;
             }
+
+            const formattedDate = getFormattedPickerDate();
+
+            // --- NEW: Duplicate Entry Check ---
+            // Only check for duplicates if it is a NEW order (not editing)
+            if (!editingOrderId) {
+                const isDuplicate = savedOrders.some(order => {
+                    const p = order.payload;
+                    // Check if date, name, and phone match perfectly (case-insensitive for name)
+                    return p.date === formattedDate && 
+                           p.customerName.toLowerCase() === name.toLowerCase() && 
+                           p.phone === phone;
+                });
+
+                if (isDuplicate) {
+                    const proceed = confirm("⚠️ ការព្រមាន (Warning): \nអតិថិជននេះ (ឈ្មោះ និងលេខទូរស័ព្ទដូចគ្នា) ត្រូវបានកត់ត្រារួចហើយនៅថ្ងៃនេះ!\n\nតើអ្នកពិតជាចង់រក្សាទុកទិន្នន័យនេះជាន់គ្នាម្ដងទៀតមែនទេ? \n(This customer has already been recorded today! Do you want to proceed?)");
+                    if (!proceed) {
+                        return; // Stop the save process if the user clicks Cancel
+                    }
+                }
+            }
+            // -----------------------------------
 
             const btn = document.getElementById('btnSaveCustomer');
             btn.innerHTML = editingOrderId ? "⏳ Updating Cloud & Sheets..." : "⏳ Saving to Cloud & Sheets...";
@@ -1812,7 +1836,6 @@
 
             try {
                 const now = new Date();
-                const formattedDate = getFormattedPickerDate();
                 const hours = String(now.getHours()).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');
                 
@@ -1839,7 +1862,7 @@
                     sender: document.getElementById('inputSender').value.trim(),
                     orderStatus: orderStatus,
                     customerName: name,
-                    phone: document.getElementById('inputPhone').value.trim(),
+                    phone: phone, 
                     location: document.getElementById('inputAddress').value.trim(),
                     platform: platformVal,
                     bj: document.getElementById('in-bj').checked ? (document.getElementById('in-qty-bj').value || "1") : "",
