@@ -9,9 +9,10 @@
     <!-- html2canvas library for saving as image -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <!-- Firebase App & Firestore Compat SDKs -->
+    <!-- Firebase App, Firestore & Auth Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;600;700&display=swap');
@@ -1029,7 +1030,7 @@
         <div class="login-box">
             <h2>🔒 Welcome to<br>What You Want</h2>
             <div class="login-group">
-                <label>Username</label>
+                <label>Username (Email)</label>
                 <input type="text" id="loginUser" placeholder="Enter username" onkeydown="if(event.key==='Enter') document.getElementById('loginPass').focus()">
             </div>
             <div class="login-group">
@@ -1141,7 +1142,6 @@
                             <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                         </div>
 
-                        <!-- NEW B-Man PRODUCT ADDED HERE -->
                         <div class="main-item">
                             <label><input type="checkbox" id="in-bman" onchange="updateLabel()"> B-Man</label>
                             <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bman" class="qty-input" placeholder="Qty" oninput="updateLabel()">
@@ -1201,7 +1201,6 @@
                         </select>
                     </div>
                     
-                    <!-- NEW PLATFORM / ORDERED FROM FIELD -->
                     <div class="form-group">
                         <label>ប្រភពកម្ម៉ង់ (Ordered from):</label>
                         <div style="display: flex; gap: 5px;">
@@ -1316,7 +1315,6 @@
                                         <span class="checkbox-square" id="lbl-chk-bk"></span> BK 
                                         <span class="qty-box-inline" id="lbl-qty-bk"></span>
                                     </div>
-                                    <!-- NEW B-Man PRODUCT ADDED TO LABEL -->
                                     <div class="item-group" style="margin-left: 10px;">
                                         <span class="checkbox-square" id="lbl-chk-bman"></span> B-Man 
                                         <span class="qty-box-inline" id="lbl-qty-bman"></span>
@@ -1458,7 +1456,7 @@
                 <h2>📋 Daily Orders Tracking (តារាងតាមដានការកម្ម៉ង់ប្រចាំថ្ងៃ)</h2>
                 <div class="tracking-actions">
                     <button class="action-btn btn-blue" id="btnPrintSelected" onclick="exportSelectedOrders()" disabled>
-                        🖼️ Print / Save Selected Confirmed (<span id="selectedCount">0</span>)
+                        🖼️ Print / Save Selected (<span id="selectedCount">0</span>)
                     </button>
                     <button class="action-btn btn-green" id="btnPrintAllVisible" onclick="exportAllFilteredOrders()" disabled>
                         📦 Print / Save All Confirmed (<span id="confirmedVisibleCount">0</span>)
@@ -1505,33 +1503,6 @@
     </div> <!-- END appWrapper -->
 
     <script>
-        // --- LOGIN AUTHENTICATION LOGIC ---
-        function checkLogin() {
-            const user = document.getElementById('loginUser').value.trim();
-            const pass = document.getElementById('loginPass').value.trim();
-            const err = document.getElementById('loginError');
-            
-            if (user === 'Admin' && pass === '251123') {
-                sessionStorage.setItem('isAdminLoggedIn', 'true');
-                showApp();
-            } else {
-                err.style.display = 'block';
-            }
-        }
-
-        function showApp() {
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('appWrapper').style.display = 'flex';
-        }
-        
-        function signOut() {
-            sessionStorage.removeItem('isAdminLoggedIn');
-            document.getElementById('appWrapper').style.display = 'none';
-            document.getElementById('loginOverlay').style.display = 'flex';
-            document.getElementById('loginPass').value = '';
-            document.getElementById('loginError').style.display = 'none';
-        }
-
         // --- GOOGLE APPS SCRIPT WEB APP URL ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbycuOhcCoHZbeOKL4Ky2X99VP27k3omgLfjMl6brErwq02OfaPuC0ge-0mzXXPAP6af/exec";
 
@@ -1557,23 +1528,76 @@
 
         // Initialize on page load & fetch from Firebase
         window.addEventListener('DOMContentLoaded', async () => {
-            // CHECK LOGIN FIRST
-            if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
-                showApp();
-            } else {
-                document.getElementById('loginUser').focus();
-            }
+            
+            // --- SECURE FIREBASE AUTH LISTENER ---
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    sessionStorage.setItem('isAdminLoggedIn', 'true');
+                    showApp();
+                    // ✅ Fetch data AFTER the user is securely logged in
+                    initRealtimeFirebaseSync();
+                } else {
+                    sessionStorage.removeItem('isAdminLoggedIn');
+                    document.getElementById('appWrapper').style.display = 'none';
+                    document.getElementById('loginOverlay').style.display = 'flex';
+                    document.getElementById('loginUser').focus();
+                }
+            });
 
             initDatePicker();
             updateDateTime();
             setInterval(updateDateTime, 60000);
             
-            // ☁️ REAL-TIME CLOUD SYNC FROM FIREBASE FIRESTORE
-            initRealtimeFirebaseSync();
-
             onFormStatusChange();
             updateLabel();
         });
+
+        // --- LOGIN AUTHENTICATION LOGIC ---
+        function checkLogin() {
+            let user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const err = document.getElementById('loginError');
+            
+            // Helper: Format "Admin" to the email set up in Firebase Auth
+            if (user.toLowerCase() === 'admin') {
+                user = 'admin@whatyouwant.com';
+            }
+
+            const loginBtn = document.querySelector('.login-btn');
+            loginBtn.textContent = "Authenticating...";
+            loginBtn.disabled = true;
+
+            // Secure Firebase Authentication
+            firebase.auth().signInWithEmailAndPassword(user, pass)
+                .then((userCredential) => {
+                    showApp();
+                    loginBtn.textContent = "Login to System";
+                    loginBtn.disabled = false;
+                    err.style.display = 'none';
+                })
+                .catch((error) => {
+                    err.style.display = 'block';
+                    err.innerText = "❌ Incorrect Username or Password!";
+                    loginBtn.textContent = "Login to System";
+                    loginBtn.disabled = false;
+                });
+        }
+
+        function showApp() {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('appWrapper').style.display = 'flex';
+        }
+        
+        function signOut() {
+            // Sign out of Firebase securely
+            firebase.auth().signOut().then(() => {
+                sessionStorage.removeItem('isAdminLoggedIn');
+                document.getElementById('appWrapper').style.display = 'none';
+                document.getElementById('loginOverlay').style.display = 'flex';
+                document.getElementById('loginPass').value = '';
+                document.getElementById('loginError').style.display = 'none';
+            });
+        }
 
         // Toggle visibility for "Other" Platform input
         function togglePlatformOther() {
@@ -1730,7 +1754,7 @@
             const items = [];
             if (p.bj) items.push(`BJ (${p.bj})`);
             if (p.bk) items.push(`BK (${p.bk})`);
-            if (p.bMan) items.push(`B-Man (${p.bMan})`); // <--- NEW: B-Man in Summary
+            if (p.bMan) items.push(`B-Man (${p.bMan})`);
             if (p.soapGreen) items.push(`Soap Grn (${p.soapGreen})`);
             if (p.soapPink) items.push(`Soap Pnk (${p.soapPink})`);
             if (p.soapYellow) items.push(`Soap Ylw (${p.soapYellow})`);
@@ -1781,7 +1805,7 @@
 
             setProd('in-bj', 'in-qty-bj', p.bj);
             setProd('in-bk', 'in-qty-bk', p.bk);
-            setProd('in-bman', 'in-qty-bman', p.bMan); // <--- NEW: Populate B-Man in Edit Mode
+            setProd('in-bman', 'in-qty-bman', p.bMan);
             setProd('in-soap-green', 'in-qty-soap-green', p.soapGreen);
             setProd('in-soap-pink', 'in-qty-soap-pink', p.soapPink);
             setProd('in-soap-yellow', 'in-qty-soap-yellow', p.soapYellow);
@@ -1877,7 +1901,7 @@
                     platform: platformVal,
                     bj: document.getElementById('in-bj').checked ? (document.getElementById('in-qty-bj').value || "1") : "",
                     bk: document.getElementById('in-bk').checked ? (document.getElementById('in-qty-bk').value || "1") : "",
-                    bMan: document.getElementById('in-bman').checked ? (document.getElementById('in-qty-bman').value || "1") : "", // <--- NEW: B-Man Payload
+                    bMan: document.getElementById('in-bman').checked ? (document.getElementById('in-qty-bman').value || "1") : "",
                     soapGreen: document.getElementById('in-soap-green').checked ? (document.getElementById('in-qty-soap-green').value || "1") : "",
                     soapPink: document.getElementById('in-soap-pink').checked ? (document.getElementById('in-qty-soap-pink').value || "1") : "",
                     soapYellow: document.getElementById('in-soap-yellow').checked ? (document.getElementById('in-qty-soap-yellow').value || "1") : "",
@@ -2265,7 +2289,7 @@
 
             setLbl('in-bj', 'in-qty-bj', 'lbl-chk-bj', 'lbl-qty-bj');
             setLbl('in-bk', 'in-qty-bk', 'lbl-chk-bk', 'lbl-qty-bk');
-            setLbl('in-bman', 'in-qty-bman', 'lbl-chk-bman', 'lbl-qty-bman'); // <--- NEW: B-Man Label Link
+            setLbl('in-bman', 'in-qty-bman', 'lbl-chk-bman', 'lbl-qty-bman'); 
             setLbl('in-soap-green', 'in-qty-soap-green', 'lbl-chk-soap-green', 'lbl-qty-soap-green');
             setLbl('in-soap-pink', 'in-qty-soap-pink', 'lbl-chk-soap-pink', 'lbl-qty-soap-pink');
             setLbl('in-soap-yellow', 'in-qty-soap-yellow', 'lbl-chk-soap-yellow', 'lbl-qty-soap-yellow');
