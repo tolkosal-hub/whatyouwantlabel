@@ -1193,12 +1193,14 @@
                 <div class="two-col-row">
                     <div class="form-group">
                         <label>សេវាដឹក (Delivery Service):</label>
-                        <select id="inputCourier" onchange="updateLabel()">
-                            <option value="virak">វីរៈប៊ុនថាំ (VET Express)</option>
-                            <option value="jt">J&T Express</option>
-                            <option value="capitol">កាពីតូល (Capitol)</option>
-                            <option value="pickup">Pickup (មកយកខ្លួនឯង)</option>
-                        </select>
+                        <div style="display: flex; gap: 5px;">
+                            <select id="inputCourier" onchange="toggleCourierOther(); updateLabel();" style="flex: 1;">
+                                <option value="virak">វីរៈប៊ុនថាំ (Virak Buntham)</option>
+                                <option value="jalat">ចល័តឡូជីស្ទីក (Jalat Logistic)</option>
+                                <option value="Other">Other (Please specify)</option>
+                            </select>
+                            <input type="text" id="inputCourierOther" placeholder="Specify..." style="display: none; flex: 1;" oninput="updateLabel()">
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -1376,13 +1378,10 @@
                                 <span class="checkbox-circle" id="chk-virak"></span> វីរៈប៊ុនថាំ
                             </div>
                             <div class="checkbox-item">
-                                <span class="checkbox-circle" id="chk-jt"></span> J&T
+                                <span class="checkbox-circle" id="chk-jalat"></span> ចល័តឡូជីស្ទីក
                             </div>
                             <div class="checkbox-item">
-                                <span class="checkbox-circle" id="chk-capitol"></span> កាពីតូល
-                            </div>
-                            <div class="checkbox-item">
-                                <span class="checkbox-circle" id="chk-pickup"></span> Pickup
+                                <span class="checkbox-circle" id="chk-other-courier"></span> ផ្សេងៗ (Other)
                             </div>
                         </div>
 
@@ -1610,6 +1609,18 @@
                 otherInput.value = '';
             }
         }
+        
+        // Toggle visibility for "Other" Courier input
+        function toggleCourierOther() {
+            const courier = document.getElementById('inputCourier').value;
+            const otherInput = document.getElementById('inputCourierOther');
+            if (courier === 'Other') {
+                otherInput.style.display = 'block';
+            } else {
+                otherInput.style.display = 'none';
+                otherInput.value = '';
+            }
+        }
 
         // Real-time listener: Any change on any device instantly updates the table
         function initRealtimeFirebaseSync() {
@@ -1694,14 +1705,13 @@
         }
 
         function getCourierKeyFromText(courierVal, courierText) {
-            if (courierVal && ['virak', 'jt', 'capitol', 'pickup'].includes(courierVal)) {
+            if (courierVal && ['virak', 'jalat', 'Other'].includes(courierVal)) {
                 return courierVal;
             }
             const t = (courierText || '').toLowerCase();
-            if (t.includes('j&t') || t.includes('jt')) return 'jt';
-            if (t.includes('កាពីតូល') || t.includes('capitol')) return 'capitol';
-            if (t.includes('pickup')) return 'pickup';
-            return 'virak';
+            if (t.includes('ចល័ត') || t.includes('jalat')) return 'jalat';
+            if (t.includes('វីរៈ') || t.includes('vet') || t.includes('virak')) return 'virak';
+            return 'Other'; // Fallback to other if unrecognized
         }
 
         function loadSavedOrdersFromStorage() {
@@ -1778,11 +1788,25 @@
             document.getElementById('inputName').value = p.customerName || '';
             document.getElementById('inputPhone').value = p.phone || '';
             document.getElementById('inputAddress').value = p.location || '';
-            document.getElementById('inputCourier').value = getCourierKeyFromText(p.courierVal, p.courier);
             document.getElementById('inputPrice').value = p.totalPrice ? `${p.totalPrice}$` : '';
             document.getElementById('inputCod').checked = (p.codStatus === 'COD');
             document.getElementById('inputShowPrice').checked = (p.showPriceOnLabel === true);
             
+            // Set Courier Field
+            const pCourierVal = getCourierKeyFromText(p.courierVal, p.courier);
+            const courierSelect = document.getElementById('inputCourier');
+            const courierOther = document.getElementById('inputCourierOther');
+            
+            if (['virak', 'jalat'].includes(pCourierVal)) {
+                courierSelect.value = pCourierVal;
+                courierOther.style.display = 'none';
+                courierOther.value = '';
+            } else {
+                courierSelect.value = 'Other';
+                courierOther.style.display = 'block';
+                courierOther.value = p.courier === 'Other' ? '' : p.courier;
+            }
+
             // Set Platform Field
             const pPlatform = p.platform || 'Facebook';
             const platformSelect = document.getElementById('inputPlatform');
@@ -1873,9 +1897,20 @@
                 const hours = String(now.getHours()).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');
                 
-                const courierSelect = document.getElementById('inputCourier');
                 const orderStatus = document.getElementById('inputOrderStatus').value;
                 
+                // Get Courier specific field details 
+                const courierSelect = document.getElementById('inputCourier');
+                let courierVal = courierSelect.value;
+                let courierTextToSave = "";
+
+                if (courierVal === 'Other') {
+                    // Send exactly what user typed directly into the Google Sheet text field.
+                    courierTextToSave = document.getElementById('inputCourierOther').value.trim() || 'Other';
+                } else {
+                    courierTextToSave = courierSelect.options[courierSelect.selectedIndex].text;
+                }
+
                 // Get Platform
                 let platformVal = document.getElementById('inputPlatform').value;
                 if (platformVal === 'Other') {
@@ -1909,8 +1944,8 @@
                     oilPalmer: document.getElementById('in-oil-palmer').checked ? (document.getElementById('in-qty-oil-palmer').value || "1") : "",
                     refillBj: document.getElementById('in-refill-bj').checked ? (document.getElementById('in-qty-refill-bj').value || "1") : "",
                     refillBk: document.getElementById('in-refill-bk').checked ? (document.getElementById('in-qty-refill-bk').value || "1") : "",
-                    courierVal: courierSelect.value,
-                    courier: courierSelect.options[courierSelect.selectedIndex].text,
+                    courierVal: courierVal,
+                    courier: courierTextToSave,
                     totalPrice: cleanPrice,
                     codStatus: isCodChecked ? "COD" : "",
                     showPriceOnLabel: showPriceOnLabel,
@@ -2212,6 +2247,9 @@
             
             document.getElementById('inputSender').value = '067221000/077221000';
             document.getElementById('inputCourier').value = 'virak';
+            document.getElementById('inputCourierOther').style.display = 'none';
+            document.getElementById('inputCourierOther').value = '';
+
             document.getElementById('inputOrderStatus').value = 'Confirmed';
             document.getElementById('inputCod').checked = false;
             document.getElementById('inputShowPrice').checked = false;
@@ -2247,7 +2285,13 @@
             const address = document.getElementById('inputAddress').value;
             const courierSelect = document.getElementById('inputCourier');
             const courierVal = courierSelect.value;
-            const courierText = courierSelect.options[courierSelect.selectedIndex].text.split(' ')[0];
+            
+            let courierText = '';
+            if (courierVal === 'Other') {
+                courierText = document.getElementById('inputCourierOther').value.trim() || 'ផ្សេងៗ';
+            } else {
+                courierText = courierSelect.options[courierSelect.selectedIndex].text.split(' ')[0];
+            }
             
             let price = document.getElementById('inputPrice').value.trim();
             const isCod = document.getElementById('inputCod').checked;
@@ -2271,14 +2315,12 @@
             document.getElementById('prevPrice').textContent = displayPriceOnLabel || '\u00A0';
 
             document.getElementById('chk-virak').classList.remove('checked');
-            document.getElementById('chk-jt').classList.remove('checked');
-            document.getElementById('chk-capitol').classList.remove('checked');
-            document.getElementById('chk-pickup').classList.remove('checked');
+            document.getElementById('chk-jalat').classList.remove('checked');
+            document.getElementById('chk-other-courier').classList.remove('checked');
 
             if (courierVal === 'virak') document.getElementById('chk-virak').classList.add('checked');
-            else if (courierVal === 'jt') document.getElementById('chk-jt').classList.add('checked');
-            else if (courierVal === 'capitol') document.getElementById('chk-capitol').classList.add('checked');
-            else if (courierVal === 'pickup') document.getElementById('chk-pickup').classList.add('checked');
+            else if (courierVal === 'jalat') document.getElementById('chk-jalat').classList.add('checked');
+            else if (courierVal === 'Other') document.getElementById('chk-other-courier').classList.add('checked');
 
             const setLbl = (chkInId, qtyInId, chkLblId, qtyLblId) => {
                 const isChk = document.getElementById(chkInId).checked;
@@ -2347,14 +2389,11 @@
             let lowerText = rawText.toLowerCase();
             if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ')) {
                 document.getElementById('inputCourier').value = 'virak';
-            } else if (lowerText.includes('j&t') || lowerText.includes('jt')) {
-                document.getElementById('inputCourier').value = 'jt';
-            } else if (lowerText.includes('កាពីតូល') || lowerText.includes('capitol')) {
-                document.getElementById('inputCourier').value = 'capitol';
-            } else if (lowerText.includes('pickup') || lowerText.includes('យកផ្ទាល់')) {
-                document.getElementById('inputCourier').value = 'pickup';
-            }
+            } else if (lowerText.includes('ចល័ត') || lowerText.includes('jalat')) {
+                document.getElementById('inputCourier').value = 'jalat';
+            } 
 
+            toggleCourierOther();
             updateLabel();
         }
     </script>
