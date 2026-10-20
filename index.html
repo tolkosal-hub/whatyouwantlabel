@@ -337,14 +337,6 @@
             background: #fafafa;
             gap: 8px;
         }
-
-        .product-selections .main-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 6px;
-            border-bottom: 1px dashed #e5e7eb;
-        }
         
         .product-selections .multi-item-group {
             display: flex;
@@ -532,11 +524,13 @@
             line-height: 1;
         }
 
+        /* --- UPDATED: LARGER DATE/TIME FONT --- */
         .datetime-line {
-            font-size: 5.8px; 
-            font-weight: 600;
-            color: #4b5563;
-            line-height: 1;
+            font-size: 8px; 
+            font-weight: bold;
+            color: #111;
+            line-height: 1.1;
+            margin-top: 1px;
         }
 
         .field-container {
@@ -1132,19 +1126,20 @@
                     <label>ទំនិញ (Products):</label>
                     <div class="product-selections">
                         
-                        <div class="main-item">
-                            <label><input type="checkbox" id="in-bj" onchange="updateLabel()"> BJ</label>
-                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                        </div>
-
-                        <div class="main-item">
-                            <label><input type="checkbox" id="in-bk" onchange="updateLabel()"> BK</label>
-                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                        </div>
-
-                        <div class="main-item">
-                            <label><input type="checkbox" id="in-bman" onchange="updateLabel()"> B-Man</label>
-                            <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bman" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                        <div class="multi-item-group">
+                            <div class="group-title">Bikini Razor:</div>
+                            <div class="sub-row">
+                                <label><input type="checkbox" id="in-bj" onchange="updateLabel()"> BJ</label>
+                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            </div>
+                            <div class="sub-row">
+                                <label><input type="checkbox" id="in-bk" onchange="updateLabel()"> BK</label>
+                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            </div>
+                            <div class="sub-row">
+                                <label><input type="checkbox" id="in-bman" onchange="updateLabel()"> B-Man</label>
+                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bman" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            </div>
                         </div>
 
                         <div class="multi-item-group">
@@ -1231,7 +1226,7 @@
                     <div class="price-input-row">
                         <input type="text" id="inputPrice" inputmode="decimal" placeholder="ឧ. 15$" oninput="formatPriceInput(this)">
                         <label class="cod-checkbox-label">
-                            <input type="checkbox" id="inputCod" onchange="updateLabel()"> COD
+                            <input type="checkbox" id="inputCod" onchange="onCodChange()"> COD
                         </label>
                         <label class="show-price-checkbox-label" title="បើដោះធីក តម្លៃនឹងបញ្ជូនទៅ Cloud ធម្មតា តែមិនបង្ហាញលើក្រដាស Label ទេ">
                             <input type="checkbox" id="inputShowPrice" onchange="updateLabel()"> Show Price on label
@@ -1316,18 +1311,17 @@
                             <div class="field-label-title">ទំនិញ (Products)</div>
                             <div class="product-grid">
                                 
+                                <!-- UPDATED BIKINI LABEL CLASSIFICATION -->
                                 <div class="product-row">
+                                    <span style="margin-right: 4px;">Bikini:</span>
                                     <div class="item-group">
-                                        <span class="checkbox-square" id="lbl-chk-bj"></span> BJ 
-                                        <span class="qty-box-inline" id="lbl-qty-bj"></span>
+                                        <span class="checkbox-circle" id="lbl-chk-bj"></span> BJ <span class="qty-box-inline" id="lbl-qty-bj"></span>
                                     </div>
-                                    <div class="item-group" style="margin-left: 10px;">
-                                        <span class="checkbox-square" id="lbl-chk-bk"></span> BK 
-                                        <span class="qty-box-inline" id="lbl-qty-bk"></span>
+                                    <div class="item-group">
+                                        <span class="checkbox-circle" id="lbl-chk-bk"></span> BK <span class="qty-box-inline" id="lbl-qty-bk"></span>
                                     </div>
-                                    <div class="item-group" style="margin-left: 10px;">
-                                        <span class="checkbox-square" id="lbl-chk-bman"></span> B-Man 
-                                        <span class="qty-box-inline" id="lbl-qty-bman"></span>
+                                    <div class="item-group">
+                                        <span class="checkbox-circle" id="lbl-chk-bman"></span> B-Man <span class="qty-box-inline" id="lbl-qty-bman"></span>
                                     </div>
                                 </div>
 
@@ -1474,8 +1468,9 @@
                     <button class="action-btn btn-green" id="btnPrintAllVisible" onclick="exportAllFilteredOrders()" disabled>
                         📦 Print / Save All Confirmed (<span id="confirmedVisibleCount">0</span>)
                     </button>
-                    <button class="action-btn btn-red" onclick="clearAllSavedOrders()">
-                        🗑️ Clear Cloud History
+                    <!-- UPDATED BUTTON: DELETE SELECTED -->
+                    <button class="action-btn btn-red" id="btnDeleteSelected" onclick="deleteSelectedOrders()" disabled>
+                        🗑️ Delete Selected
                     </button>
                 </div>
             </div>
@@ -1495,7 +1490,7 @@
                 <table class="orders-table">
                     <thead>
                         <tr>
-                            <th style="width: 36px;"><input type="checkbox" id="selectAllCheckbox" title="Select all Confirmed orders" onchange="toggleSelectAllOrders(this)"></th>
+                            <th style="width: 36px;"><input type="checkbox" id="selectAllCheckbox" title="Select all orders" onchange="toggleSelectAllOrders(this)"></th>
                             <th>#</th>
                             <th>កាលបរិច្ឆេទ (Date)</th>
                             <th>ឈ្មោះអតិថិជន (Customer)</th>
@@ -1547,7 +1542,6 @@
                 if (user) {
                     sessionStorage.setItem('isAdminLoggedIn', 'true');
                     showApp();
-                    // ✅ Fetch data AFTER the user is securely logged in
                     initRealtimeFirebaseSync();
                 } else {
                     sessionStorage.removeItem('isAdminLoggedIn');
@@ -1571,7 +1565,6 @@
             const pass = document.getElementById('loginPass').value.trim();
             const err = document.getElementById('loginError');
             
-            // Helper: Format "Admin" to the email set up in Firebase Auth
             if (user.toLowerCase() === 'admin') {
                 user = 'admin@whatyouwant.com';
             }
@@ -1580,7 +1573,6 @@
             loginBtn.textContent = "Authenticating...";
             loginBtn.disabled = true;
 
-            // Secure Firebase Authentication
             firebase.auth().signInWithEmailAndPassword(user, pass)
                 .then((userCredential) => {
                     showApp();
@@ -1602,7 +1594,6 @@
         }
         
         function signOut() {
-            // Sign out of Firebase securely
             firebase.auth().signOut().then(() => {
                 sessionStorage.removeItem('isAdminLoggedIn');
                 document.getElementById('appWrapper').style.display = 'none';
@@ -1612,7 +1603,6 @@
             });
         }
 
-        // Toggle visibility for "Other" Platform input
         function togglePlatformOther() {
             const platform = document.getElementById('inputPlatform').value;
             const otherInput = document.getElementById('inputPlatformOther');
@@ -1624,7 +1614,6 @@
             }
         }
         
-        // Toggle visibility for "Other" Courier input
         function toggleCourierOther() {
             const courier = document.getElementById('inputCourier').value;
             const otherInput = document.getElementById('inputCourierOther');
@@ -1636,7 +1625,6 @@
             }
         }
 
-        // Real-time listener: Any change on any device instantly updates the table
         function initRealtimeFirebaseSync() {
             db.collection(COLLECTION_NAME).orderBy("createdAt", "desc").onSnapshot((snapshot) => {
                 savedOrders = [];
@@ -1901,7 +1889,7 @@
                 if (isDuplicate) {
                     const proceed = confirm("⚠️ ការព្រមាន (Warning): \nអតិថិជននេះ (ឈ្មោះ និងលេខទូរស័ព្ទដូចគ្នា) ត្រូវបានកត់ត្រារួចហើយនៅថ្ងៃនេះ!\n\nតើអ្នកពិតជាចង់រក្សាទុកទិន្នន័យនេះជាន់គ្នាម្ដងទៀតមែនទេ? \n(This customer has already been recorded today! Do you want to proceed?)");
                     if (!proceed) {
-                        return; // Stop the save process if the user clicks Cancel
+                        return;
                     }
                 }
             }
@@ -1917,19 +1905,16 @@
                 
                 const orderStatus = document.getElementById('inputOrderStatus').value;
                 
-                // Get Courier specific field details 
                 const courierSelect = document.getElementById('inputCourier');
                 let courierVal = courierSelect.value;
                 let courierTextToSave = "";
 
                 if (courierVal === 'Other') {
-                    // Send exactly what user typed directly into the Google Sheet text field.
                     courierTextToSave = document.getElementById('inputCourierOther').value.trim() || 'Other';
                 } else {
                     courierTextToSave = courierSelect.options[courierSelect.selectedIndex].text;
                 }
 
-                // Get Platform
                 let platformVal = document.getElementById('inputPlatform').value;
                 if (platformVal === 'Other') {
                     platformVal = document.getElementById('inputPlatformOther').value.trim() || 'Other';
@@ -1983,10 +1968,10 @@
                 let safeName = payload.customerName.replace(/[\/\\?%*:|"<>]/g, '').trim().replace(/\s+/g, '_') || "Customer";
                 payload.fileName = `Label_${safeName}_${Date.now()}.png`;
 
-                // 1. SAVE TO FIREBASE FIRESTORE
+                // 1. SAVE TO FIREBASE
                 await db.collection(COLLECTION_NAME).doc(generatedId).set(payload, { merge: true });
 
-                // 2. SEND TO GOOGLE SHEETS WEB APP URL
+                // 2. SEND TO GOOGLE SHEETS
                 fetch(WEB_APP_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -2028,6 +2013,14 @@
             });
         }
 
+        function toggleSelectAllOrders(checkbox) {
+            const filtered = getFilteredOrders();
+            filtered.forEach(item => {
+                item.selected = checkbox.checked; 
+            });
+            renderOrdersTable();
+        }
+
         function renderOrdersTable() {
             const tbody = document.getElementById('ordersTableBody');
             const filtered = getFilteredOrders();
@@ -2036,6 +2029,7 @@
             let confCount = 0;
             let totalRev = 0;
             let selectedConfirmedCount = 0;
+            let totalSelectedCount = 0;
 
             filtered.forEach(item => {
                 const st = normalizeOrderStatus(item.payload.orderStatus);
@@ -2044,8 +2038,9 @@
                     if (item.selected) selectedConfirmedCount++;
                 } else {
                     preCount++;
-                    item.selected = false;
                 }
+                
+                if (item.selected) totalSelectedCount++;
 
                 const numPrice = parseFloat(item.payload.totalPrice);
                 if (!isNaN(numPrice)) totalRev += numPrice;
@@ -2058,12 +2053,16 @@
 
             document.getElementById('selectedCount').textContent = selectedConfirmedCount;
             document.getElementById('confirmedVisibleCount').textContent = confCount;
+            
             document.getElementById('btnPrintSelected').disabled = (selectedConfirmedCount === 0);
             document.getElementById('btnPrintAllVisible').disabled = (confCount === 0);
+            
+            const btnDelete = document.getElementById('btnDeleteSelected');
+            if (btnDelete) btnDelete.disabled = (totalSelectedCount === 0);
 
             const selectAllCb = document.getElementById('selectAllCheckbox');
-            selectAllCb.disabled = (confCount === 0);
-            selectAllCb.checked = (confCount > 0 && selectedConfirmedCount === confCount);
+            selectAllCb.disabled = (filtered.length === 0);
+            selectAllCb.checked = (filtered.length > 0 && totalSelectedCount === filtered.length);
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `
@@ -2101,8 +2100,7 @@
                     <tr class="${isBeingEdited ? 'editing-row' : ''}">
                         <td>
                             <input type="checkbox" 
-                                ${isConfirmed && item.selected ? 'checked' : ''} 
-                                ${!isConfirmed ? 'disabled' : ''}
+                                ${item.selected ? 'checked' : ''} 
                                 onchange="toggleOrderSelection('${item.id}', this.checked)">
                         </td>
                         <td><strong>${idx + 1}</strong></td>
@@ -2142,23 +2140,12 @@
             renderOrdersTable();
         }
 
-        function toggleSelectAllOrders(checkbox) {
-            const filtered = getFilteredOrders();
-            filtered.forEach(item => {
-                if (normalizeOrderStatus(item.payload.orderStatus) === 'Confirmed') {
-                    item.selected = checkbox.checked;
-                }
-            });
-            renderOrdersTable();
-        }
-
         async function updateOrderStatusFirebase(orderId, newStatus) {
             try {
                 await db.collection(COLLECTION_NAME).doc(orderId).update({
                     orderStatus: newStatus
                 });
                 
-                // Also update Google Sheets in background
                 const target = savedOrders.find(o => o.id === orderId);
                 if (target) {
                     target.payload.orderStatus = newStatus;
@@ -2174,40 +2161,68 @@
             }
         }
 
+        // DELETE SINGLE ORDER (Firebase & Sheets)
         async function deleteOrder(orderId) {
-    if (!confirm("តើអ្នកពិតជាចង់លុបការកម្ម៉ង់នេះមែនទេ?")) return;
-    try {
-        if (editingOrderId === orderId) cancelEditOrder();
-        
-        // 1. Delete from Firebase Firestore
-        await db.collection(COLLECTION_NAME).doc(orderId).delete();
-        
-        // 2. Delete from Google Sheets by sending action: "delete"
-        fetch(WEB_APP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: "delete",
-                id: orderId
-            })
-        }).catch(err => console.log("Sheets delete sync error:", err));
-
-    } catch (e) {
-        console.error("Delete error:", e);
-    }
-}
-
-        async function clearAllSavedOrders() {
-            if (!confirm("តើអ្នកចង់លុបប្រវត្តិការកម្ម៉ង់ទាំងអស់ពី Cloud មែនទេ?")) return;
+            if (!confirm("តើអ្នកពិតជាចង់លុបការកម្ម៉ង់នេះមែនទេ?")) return;
             try {
-                if (editingOrderId) cancelEditOrder();
-                const snapshot = await db.collection(COLLECTION_NAME).get();
-                const batch = db.batch();
-                snapshot.docs.forEach((doc) => batch.delete(doc.ref));
-                await batch.commit();
+                if (editingOrderId === orderId) cancelEditOrder();
+                
+                // 1. Delete from Firebase
+                await db.collection(COLLECTION_NAME).doc(orderId).delete();
+                
+                // 2. Delete from Sheets
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: "delete",
+                        id: orderId
+                    })
+                }).catch(err => console.log("Sheets delete sync error:", err));
+
             } catch (e) {
-                console.error("Clear all error:", e);
+                console.error("Delete error:", e);
+            }
+        }
+
+        // BATCH DELETE SELECTED ORDERS (Firebase & Sheets)
+        async function deleteSelectedOrders() {
+            const selectedOrders = getFilteredOrders().filter(o => o.selected);
+            
+            if (selectedOrders.length === 0) return;
+
+            if (!confirm(`តើអ្នកពិតជាចង់លុបការកម្ម៉ង់ទាំង ${selectedOrders.length} នេះមែនទេ? \n(Are you sure you want to delete these ${selectedOrders.length} selected orders?)`)) {
+                return;
+            }
+
+            try {
+                const batch = db.batch();
+                
+                selectedOrders.forEach(order => {
+                    if (editingOrderId === order.id) cancelEditOrder();
+                    
+                    // 1. Firebase Batch Delete
+                    const docRef = db.collection(COLLECTION_NAME).doc(order.id);
+                    batch.delete(docRef);
+                    
+                    // 2. Sheets Delete Sync
+                    fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: "delete",
+                            id: order.id
+                        })
+                    }).catch(err => console.log("Sheets delete sync error:", err));
+                });
+
+                await batch.commit();
+
+            } catch (e) {
+                console.error("Batch delete error:", e);
+                alert("មានបញ្ហាក្នុងការលុបទិន្នន័យ (Error deleting selected orders).");
             }
         }
 
@@ -2265,6 +2280,14 @@
             if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
             el.value = val !== '' ? val + '$' : '';
             if (el.value) el.setSelectionRange(el.value.length - 1, el.value.length - 1);
+            updateLabel();
+        }
+
+        // --- NEW: COD TOGGLE HANDLER ---
+        function onCodChange() {
+            const isCod = document.getElementById('inputCod').checked;
+            // The Show Price checkbox will now perfectly mirror the COD checkbox
+            document.getElementById('inputShowPrice').checked = isCod;
             updateLabel();
         }
 
