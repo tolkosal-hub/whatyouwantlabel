@@ -1161,6 +1161,14 @@
                                 <label><input type="checkbox" id="in-soap-yellow" onchange="updateLabel()"> Yellow</label>
                                 <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-yellow" class="qty-input" placeholder="Qty" oninput="updateLabel()">
                             </div>
+                            <div class="sub-row">
+                                <label><input type="checkbox" id="in-soap-purple" onchange="updateLabel()"> Purple</label>
+                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-purple" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            </div>
+                            <div class="sub-row">
+                                <label><input type="checkbox" id="in-soap-darkgreen" onchange="updateLabel()"> Dark Green</label>
+                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-darkgreen" class="qty-input" placeholder="Qty" oninput="updateLabel()">
+                            </div>
                         </div>
 
                         <div class="multi-item-group">
@@ -1333,6 +1341,12 @@
                                     </div>
                                     <div class="item-group">
                                         <span class="checkbox-circle" id="lbl-chk-soap-yellow"></span> Ylw <span class="qty-box-inline" id="lbl-qty-soap-yellow"></span>
+                                    </div>
+                                    <div class="item-group">
+                                        <span class="checkbox-circle" id="lbl-chk-soap-purple"></span> Pur <span class="qty-box-inline" id="lbl-qty-soap-purple"></span>
+                                    </div>
+                                    <div class="item-group">
+                                        <span class="checkbox-circle" id="lbl-chk-soap-darkgreen"></span> D.Grn <span class="qty-box-inline" id="lbl-qty-soap-darkgreen"></span>
                                     </div>
                                 </div>
                                 
@@ -1768,6 +1782,8 @@
             if (p.soapGreen) items.push(`Soap Grn (${p.soapGreen})`);
             if (p.soapPink) items.push(`Soap Pnk (${p.soapPink})`);
             if (p.soapYellow) items.push(`Soap Ylw (${p.soapYellow})`);
+            if (p.soapPurple) items.push(`Soap Pur (${p.soapPurple})`);
+            if (p.soapDarkGreen) items.push(`Soap D.Grn (${p.soapDarkGreen})`);
             if (p.oilBio) items.push(`Bio-Oil (${p.oilBio})`);
             if (p.oilPalmer) items.push(`Palmer (${p.oilPalmer})`);
             if (p.refillBj) items.push(`Refill BJ (${p.refillBj})`);
@@ -1833,6 +1849,8 @@
             setProd('in-soap-green', 'in-qty-soap-green', p.soapGreen);
             setProd('in-soap-pink', 'in-qty-soap-pink', p.soapPink);
             setProd('in-soap-yellow', 'in-qty-soap-yellow', p.soapYellow);
+            setProd('in-soap-purple', 'in-qty-soap-purple', p.soapPurple);
+            setProd('in-soap-darkgreen', 'in-qty-soap-darkgreen', p.soapDarkGreen);
             setProd('in-oil-bio', 'in-qty-oil-bio', p.oilBio);
             setProd('in-oil-palmer', 'in-qty-oil-palmer', p.oilPalmer);
             setProd('in-refill-bj', 'in-qty-refill-bj', p.refillBj);
@@ -1940,6 +1958,8 @@
                     soapGreen: document.getElementById('in-soap-green').checked ? (document.getElementById('in-qty-soap-green').value || "1") : "",
                     soapPink: document.getElementById('in-soap-pink').checked ? (document.getElementById('in-qty-soap-pink').value || "1") : "",
                     soapYellow: document.getElementById('in-soap-yellow').checked ? (document.getElementById('in-qty-soap-yellow').value || "1") : "",
+                    soapPurple: document.getElementById('in-soap-purple').checked ? (document.getElementById('in-qty-soap-purple').value || "1") : "",
+                    soapDarkGreen: document.getElementById('in-soap-darkgreen').checked ? (document.getElementById('in-qty-soap-darkgreen').value || "1") : "",
                     oilBio: document.getElementById('in-oil-bio').checked ? (document.getElementById('in-qty-oil-bio').value || "1") : "",
                     oilPalmer: document.getElementById('in-oil-palmer').checked ? (document.getElementById('in-qty-oil-palmer').value || "1") : "",
                     refillBj: document.getElementById('in-refill-bj').checked ? (document.getElementById('in-qty-refill-bj').value || "1") : "",
@@ -2155,14 +2175,28 @@
         }
 
         async function deleteOrder(orderId) {
-            if (!confirm("តើអ្នកពិតជាចង់លុបការកម្ម៉ង់នេះមែនទេ?")) return;
-            try {
-                if (editingOrderId === orderId) cancelEditOrder();
-                await db.collection(COLLECTION_NAME).doc(orderId).delete();
-            } catch (e) {
-                console.error("Delete error:", e);
-            }
-        }
+    if (!confirm("តើអ្នកពិតជាចង់លុបការកម្ម៉ង់នេះមែនទេ?")) return;
+    try {
+        if (editingOrderId === orderId) cancelEditOrder();
+        
+        // 1. Delete from Firebase Firestore
+        await db.collection(COLLECTION_NAME).doc(orderId).delete();
+        
+        // 2. Delete from Google Sheets by sending action: "delete"
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: "delete",
+                id: orderId
+            })
+        }).catch(err => console.log("Sheets delete sync error:", err));
+
+    } catch (e) {
+        console.error("Delete error:", e);
+    }
+}
 
         async function clearAllSavedOrders() {
             if (!confirm("តើអ្នកចង់លុបប្រវត្តិការកម្ម៉ង់ទាំងអស់ពី Cloud មែនទេ?")) return;
@@ -2335,6 +2369,8 @@
             setLbl('in-soap-green', 'in-qty-soap-green', 'lbl-chk-soap-green', 'lbl-qty-soap-green');
             setLbl('in-soap-pink', 'in-qty-soap-pink', 'lbl-chk-soap-pink', 'lbl-qty-soap-pink');
             setLbl('in-soap-yellow', 'in-qty-soap-yellow', 'lbl-chk-soap-yellow', 'lbl-qty-soap-yellow');
+            setLbl('in-soap-purple', 'in-qty-soap-purple', 'lbl-chk-soap-purple', 'lbl-qty-soap-purple');
+            setLbl('in-soap-darkgreen', 'in-qty-soap-darkgreen', 'lbl-chk-soap-darkgreen', 'lbl-qty-soap-darkgreen');
             setLbl('in-oil-bio', 'in-qty-oil-bio', 'lbl-chk-oil-bio', 'lbl-qty-oil-bio');
             setLbl('in-oil-palmer', 'in-qty-oil-palmer', 'lbl-chk-oil-palmer', 'lbl-qty-oil-palmer');
             setLbl('in-refill-bj', 'in-qty-refill-bj', 'lbl-chk-refill-bj', 'lbl-qty-refill-bj');
