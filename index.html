@@ -524,7 +524,6 @@
             line-height: 1;
         }
 
-        /* --- UPDATED: LARGER DATE/TIME FONT --- */
         .datetime-line {
             font-size: 8px; 
             font-weight: bold;
@@ -1198,7 +1197,7 @@
                         <label>សេវាដឹក (Delivery Service):</label>
                         <div style="display: flex; gap: 5px;">
                             <select id="inputCourier" onchange="toggleCourierOther(); updateLabel();" style="flex: 1;">
-                                <option value="virak">វីរៈប៊ុនថាំ (Virak Buntham)</option>
+                                <option value="virak">វីរៈប៊ុនថាំ (VET Express)</option>
                                 <option value="jalat">ចល័តឡូជីស្ទីក (Jalat Logistic)</option>
                                 <option value="Other">Other (Please specify)</option>
                             </select>
@@ -1311,7 +1310,6 @@
                             <div class="field-label-title">ទំនិញ (Products)</div>
                             <div class="product-grid">
                                 
-                                <!-- UPDATED BIKINI LABEL CLASSIFICATION -->
                                 <div class="product-row">
                                     <span style="margin-right: 4px;">Bikini:</span>
                                     <div class="item-group">
@@ -1370,6 +1368,7 @@
                         <div class="row-fields">
                             <div class="label-field">
                                 <div class="field-label-title">សេវាដឹក</div>
+                                <!-- SHOWS ONLY វីរៈប៊ុនថាំ ON THE LABEL -->
                                 <div class="field-content" id="prevCourier">វីរៈប៊ុនថាំ</div>
                             </div>
                             <div class="label-field">
@@ -1382,6 +1381,7 @@
                     <!-- Footer -->
                     <div class="label-footer">
                         <div class="courier-options">
+                            <!-- SHOWS ONLY វីរៈប៊ុនថាំ ON THE LABEL -->
                             <div class="checkbox-item">
                                 <span class="checkbox-circle" id="chk-virak"></span> វីរៈប៊ុនថាំ
                             </div>
@@ -1468,7 +1468,6 @@
                     <button class="action-btn btn-green" id="btnPrintAllVisible" onclick="exportAllFilteredOrders()" disabled>
                         📦 Print / Save All Confirmed (<span id="confirmedVisibleCount">0</span>)
                     </button>
-                    <!-- UPDATED BUTTON: DELETE SELECTED -->
                     <button class="action-btn btn-red" id="btnDeleteSelected" onclick="deleteSelectedOrders()" disabled>
                         🗑️ Delete Selected
                     </button>
@@ -2113,7 +2112,7 @@
                         <td style="max-width: 190px; word-break: break-word;">${p.location || '-'}</td>
                         <td>${productsHTML}</td>
                         <td style="white-space:nowrap;">
-                            <div>${p.courier ? p.courier.split(' ')[0] : ''}</div>
+                            <div>${p.courier ? p.courier.replace(/\s*\(.*?\)\s*/g, '') : ''}</div>
                             <div><strong>${priceDisplay}</strong>${codBadge}</div>
                             ${priceVisibilityBadge}
                         </td>
@@ -2283,10 +2282,8 @@
             updateLabel();
         }
 
-        // --- NEW: COD TOGGLE HANDLER ---
         function onCodChange() {
             const isCod = document.getElementById('inputCod').checked;
-            // The Show Price checkbox will now perfectly mirror the COD checkbox
             document.getElementById('inputShowPrice').checked = isCod;
             updateLabel();
         }
@@ -2346,8 +2343,12 @@
             let courierText = '';
             if (courierVal === 'Other') {
                 courierText = document.getElementById('inputCourierOther').value.trim() || 'ផ្សេងៗ';
+            } else if (courierVal === 'virak') {
+                courierText = 'វីរៈប៊ុនថាំ';
+            } else if (courierVal === 'jalat') {
+                courierText = 'ចល័តឡូជីស្ទីក';
             } else {
-                courierText = courierSelect.options[courierSelect.selectedIndex].text.split(' ')[0];
+                courierText = courierSelect.options[courierSelect.selectedIndex].text;
             }
             
             let price = document.getElementById('inputPrice').value.trim();
@@ -2446,7 +2447,7 @@
             if (address) document.getElementById('inputAddress').value = address.replace(/___SPLIT___/g, '').trim();
 
             let lowerText = rawText.toLowerCase();
-            if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ')) {
+            if (lowerText.includes('វីតា') || lowerText.includes('ប៊ុនថាំ') || lowerText.includes('vet') || lowerText.includes('វីរៈ') || lowerText.includes('express')) {
                 document.getElementById('inputCourier').value = 'virak';
             } else if (lowerText.includes('ចល័ត') || lowerText.includes('jalat')) {
                 document.getElementById('inputCourier').value = 'jalat';
