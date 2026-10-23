@@ -328,57 +328,95 @@
             gap: 12px;
         }
 
+        /* DYNAMIC PRODUCT BUILDER STYLES */
         .product-selections {
             display: flex; 
             flex-direction: column; 
             border: 1px solid #d1d5db; 
-            padding: 8px 12px; 
-            border-radius: 6px;
+            padding: 10px; 
+            border-radius: 8px;
             background: #fafafa;
+            gap: 10px;
+        }
+
+        .product-row-builder {
+            display: flex;
+            align-items: center;
             gap: 8px;
-        }
-        
-        .product-selections .multi-item-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            padding-bottom: 6px;
-            border-bottom: 1px dashed #e5e7eb;
-        }
-        
-        .product-selections .multi-item-group:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
+            background: #ffffff;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
         }
 
-        .product-selections .group-title {
-            font-size: 13px;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 2px;
+        .product-row-builder select {
+            flex: 2;
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13.5px;
+            font-family: inherit;
+            background: #fff;
         }
 
-        .product-selections .sub-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-left: 15px;
+        .product-row-builder .sub-item-select {
+            flex: 2;
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13.5px;
+            font-family: inherit;
+            background: #fff;
         }
 
-        .product-selections label {
-            font-weight: normal;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            margin: 0;
-        }
-
-        .qty-input {
-            width: 50px;
-            padding: 4px !important;
+        .product-row-builder .qty-input {
+            width: 60px;
+            padding: 6px 4px !important;
             text-align: center;
-            font-size: 13px !important;
+            font-size: 13.5px !important;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+
+        .product-row-builder .remove-row-btn {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .product-row-builder .remove-row-btn:hover {
+            background: #fecaca;
+        }
+
+        .add-product-row-btn {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px dashed #4ade80;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .add-product-row-btn:hover {
+            background: #dcfce7;
         }
 
         .qty-input::-webkit-outer-spin-button,
@@ -483,12 +521,12 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 3px; 
+            gap: 3.5px; 
         }
 
         .main-brand {
             font-family: 'Arial Black', 'Kantumruy Pro', sans-serif;
-            font-size: 14.5px; 
+            font-size: 15px; 
             font-weight: 900;
             letter-spacing: 0px;
             color: #000;
@@ -497,32 +535,34 @@
             margin-bottom: 1px;
         }
 
+        /* --- ENLARGED FONT SIZES HERE --- */
         .khmer-tag {
-            font-size: 6.2px; 
+            font-size: 7.8px; 
             font-weight: bold;
             color: #1f2937;
             white-space: nowrap;
-            line-height: 1;
+            line-height: 1.1;
         }
 
         .eng-tag {
-            font-size: 5.8px; 
+            font-size: 7.2px; 
             font-weight: bold;
             color: #1f2937;
             white-space: nowrap; 
-            line-height: 1;
+            line-height: 1.1;
         }
 
         .contact-line {
-            font-size: 6.2px; 
+            font-size: 7.8px; 
             font-weight: bold;
             color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 3px; 
-            line-height: 1;
+            gap: 4px; 
+            line-height: 1.1;
         }
+        /* -------------------------------- */
 
         .datetime-line {
             font-size: 8px; 
@@ -615,22 +655,10 @@
             background-color: #000;
         }
 
-        .checkbox-square {
-            width: 9px; 
-            height: 9px; 
-            border: 1.5px solid #000;
-            display: inline-block;
-            border-radius: 1.5px;
-        }
-
-        .checkbox-square.checked {
-            background-color: #000;
-        }
-
         .product-grid {
             display: flex;
             flex-direction: column;
-            gap: 5px; 
+            gap: 4px; 
             font-size: 8.5px; 
             font-weight: bold;
             margin-top: 3px; 
@@ -649,7 +677,6 @@
             display: flex;
             align-items: center;
             gap: 3px; 
-            margin-right: 4px;
         }
 
         .qty-box-inline {
@@ -1120,76 +1147,15 @@
                     <textarea id="inputAddress" placeholder="បញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off"></textarea>
                 </div>
 
-                <!-- MULTI-SELECT PRODUCTS SECTION -->
+                <!-- DYNAMIC PRODUCTS SECTION WITH DROPDOWNS & (+) BUTTON -->
                 <div class="form-group">
                     <label>ទំនិញ (Products):</label>
-                    <div class="product-selections">
-                        
-                        <div class="multi-item-group">
-                            <div class="group-title">Bikini Razor:</div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-bj" onchange="updateLabel()"> BJ</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-bk" onchange="updateLabel()"> BK</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-bman" onchange="updateLabel()"> B-Man</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-bman" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                        </div>
-
-                        <div class="multi-item-group">
-                            <div class="group-title">Soap Razor:</div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-soap-green" onchange="updateLabel()"> Green</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-green" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-soap-pink" onchange="updateLabel()"> Pink</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-pink" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-soap-yellow" onchange="updateLabel()"> Yellow</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-yellow" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-soap-purple" onchange="updateLabel()"> Purple</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-purple" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-soap-darkgreen" onchange="updateLabel()"> Dark Green</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-soap-darkgreen" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                        </div>
-
-                        <div class="multi-item-group">
-                            <div class="group-title">Oil:</div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-oil-bio" onchange="updateLabel()"> Bio-Oil</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-oil-bio" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-oil-palmer" onchange="updateLabel()"> Palmer’s</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-oil-palmer" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                        </div>
-
-                        <div class="multi-item-group">
-                            <div class="group-title">Refill:</div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-refill-bj" onchange="updateLabel()"> BJ</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-refill-bj" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                            <div class="sub-row">
-                                <label><input type="checkbox" id="in-refill-bk" onchange="updateLabel()"> BK</label>
-                                <input type="number" inputmode="numeric" pattern="[0-9]*" id="in-qty-refill-bk" class="qty-input" placeholder="Qty" oninput="updateLabel()">
-                            </div>
-                        </div>
-
+                    <div class="product-selections" id="productRowsContainer">
+                        <!-- Rows will be dynamically injected here -->
                     </div>
+                    <button type="button" class="add-product-row-btn" onclick="addProductRow()">
+                        ➕ Add Product
+                    </button>
                 </div>
 
                 <div class="two-col-row">
@@ -1272,7 +1238,7 @@
                             <div class="khmer-tag">ផ្គត់ផ្គង់ឡាមកោររោមមានគុណភាពខ្ពស់</div>
                             <div class="eng-tag">Authentic Product from Korea Japan and USA</div>
                             <div class="contact-line">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="6" height="6">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="7.5" height="7.5">
                                     <circle cx="12" cy="12" r="12" fill="#2AABEE"/>
                                     <path d="M5.4 11.6L18 6.5c.6-.2 1.1.1 1 .8l-2.2 10.3c-.1.6-.5.8-1.1.5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3.1 5.7-5.1c.2-.2 0-.4-.4-.2L8.6 13.9l-3-1c-.6-.2-.6-.6.1-.9z" fill="#FFF"/>
                                 </svg>
@@ -1305,70 +1271,17 @@
                             <div class="field-content" id="prevAddress">&nbsp;</div>
                         </div>
 
-                        <!-- PRODUCTS LABEL FIELD -->
+                        <!-- PRODUCTS LABEL FIELD (DYNAMICALLY RENDERED SELECTED PRODUCTS) -->
                         <div class="label-field">
                             <div class="field-label-title">ទំនិញ (Products)</div>
-                            <div class="product-grid">
-                                
-                                <div class="product-row">
-                                    <span style="margin-right: 4px;">Bikini:</span>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-bj"></span> BJ <span class="qty-box-inline" id="lbl-qty-bj"></span>
-                                    </div>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-bk"></span> BK <span class="qty-box-inline" id="lbl-qty-bk"></span>
-                                    </div>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-bman"></span> B-Man <span class="qty-box-inline" id="lbl-qty-bman"></span>
-                                    </div>
-                                </div>
-
-                                <div class="product-row">
-                                    <span style="margin-right: 4px;">Soap:</span>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-soap-green"></span> Grn <span class="qty-box-inline" id="lbl-qty-soap-green"></span>
-                                    </div>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-soap-pink"></span> Pnk <span class="qty-box-inline" id="lbl-qty-soap-pink"></span>
-                                    </div>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-soap-yellow"></span> Ylw <span class="qty-box-inline" id="lbl-qty-soap-yellow"></span>
-                                    </div>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-soap-purple"></span> Pur <span class="qty-box-inline" id="lbl-qty-soap-purple"></span>
-                                    </div>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-soap-darkgreen"></span> D.Grn <span class="qty-box-inline" id="lbl-qty-soap-darkgreen"></span>
-                                    </div>
-                                </div>
-                                
-                                <div class="product-row">
-                                    <span style="margin-right: 4px;">Oil:</span>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-oil-bio"></span> Bio <span class="qty-box-inline" id="lbl-qty-oil-bio"></span>
-                                    </div>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-oil-palmer"></span> Palmer <span class="qty-box-inline" id="lbl-qty-oil-palmer"></span>
-                                    </div>
-                                </div>
-
-                                <div class="product-row">
-                                    <span style="margin-right: 4px;">Refill:</span>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-refill-bj"></span> BJ <span class="qty-box-inline" id="lbl-qty-refill-bj"></span>
-                                    </div>
-                                    <div class="item-group">
-                                        <span class="checkbox-circle" id="lbl-chk-refill-bk"></span> BK <span class="qty-box-inline" id="lbl-qty-refill-bk"></span>
-                                    </div>
-                                </div>
-
+                            <div class="product-grid" id="labelProductsContainer">
+                                <span style="color: #6b7280; font-weight: normal;">(គ្មានទំនិញ / No products selected)</span>
                             </div>
                         </div>
 
                         <div class="row-fields">
                             <div class="label-field">
                                 <div class="field-label-title">សេវាដឹក</div>
-                                <!-- SHOWS ONLY វីរៈប៊ុនថាំ ON THE LABEL -->
                                 <div class="field-content" id="prevCourier">វីរៈប៊ុនថាំ</div>
                             </div>
                             <div class="label-field">
@@ -1381,7 +1294,6 @@
                     <!-- Footer -->
                     <div class="label-footer">
                         <div class="courier-options">
-                            <!-- SHOWS ONLY វីរៈប៊ុនថាំ ON THE LABEL -->
                             <div class="checkbox-item">
                                 <span class="checkbox-circle" id="chk-virak"></span> វីរៈប៊ុនថាំ
                             </div>
@@ -1533,6 +1445,15 @@
         let savedOrders = [];
         let editingOrderId = null;
 
+        // Product Catalog Definition for Dropdowns
+        const PRODUCT_CATEGORIES = {
+            "Bikini Razor": ["BJ", "BK", "B-Man"],
+            "Soap Razor": ["Green", "Pink", "Yellow", "Purple", "Dark Green"],
+            "Oil": ["Bio-Oil", "Palmer’s"],
+            "Bikini Refill": ["BJ", "BK", "B-Man"],
+            "Soap Refill": ["Green", "Pink", "Purple"]
+        };
+
         // Initialize on page load & fetch from Firebase
         window.addEventListener('DOMContentLoaded', async () => {
             
@@ -1554,6 +1475,11 @@
             updateDateTime();
             setInterval(updateDateTime, 60000);
             
+            // Add initial product row if empty
+            if (document.getElementById('productRowsContainer').children.length === 0) {
+                addProductRow();
+            }
+
             onFormStatusChange();
             updateLabel();
         });
@@ -1712,7 +1638,7 @@
             const t = (courierText || '').toLowerCase();
             if (t.includes('ចល័ត') || t.includes('jalat')) return 'jalat';
             if (t.includes('វីរៈ') || t.includes('vet') || t.includes('virak')) return 'virak';
-            return 'Other'; // Fallback to other if unrecognized
+            return 'Other';
         }
 
         function loadSavedOrdersFromStorage() {
@@ -1761,21 +1687,96 @@
             }
         }
 
-        function buildProductSummaryList(p) {
-            const items = [];
-            if (p.bj) items.push(`BJ (${p.bj})`);
-            if (p.bk) items.push(`BK (${p.bk})`);
-            if (p.bMan) items.push(`B-Man (${p.bMan})`);
-            if (p.soapGreen) items.push(`Soap Grn (${p.soapGreen})`);
-            if (p.soapPink) items.push(`Soap Pnk (${p.soapPink})`);
-            if (p.soapYellow) items.push(`Soap Ylw (${p.soapYellow})`);
-            if (p.soapPurple) items.push(`Soap Pur (${p.soapPurple})`);
-            if (p.soapDarkGreen) items.push(`Soap D.Grn (${p.soapDarkGreen})`);
-            if (p.oilBio) items.push(`Bio-Oil (${p.oilBio})`);
-            if (p.oilPalmer) items.push(`Palmer (${p.oilPalmer})`);
-            if (p.refillBj) items.push(`Refill BJ (${p.refillBj})`);
-            if (p.refillBk) items.push(`Refill BK (${p.refillBk})`);
-            return items;
+        // --- DYNAMIC PRODUCT BUILDER FUNCTIONS ---
+        function addProductRow(category = "", subItem = "", qty = "1") {
+            const container = document.getElementById('productRowsContainer');
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'product-row-builder';
+
+            // Category Dropdown
+            const catSelect = document.createElement('select');
+            catSelect.className = 'category-select';
+            catSelect.innerHTML = `<option value="">-- ជ្រើសរើសប្រភេទផលិតផល --</option>` + 
+                Object.keys(PRODUCT_CATEGORIES).map(cat => `<option value="${cat}" ${cat === category ? 'selected' : ''}>${cat}</option>`).join('');
+            
+            catSelect.onchange = function() {
+                updateSubItemOptions(rowDiv, this.value);
+                updateLabel();
+            };
+
+            // Sub-item Dropdown
+            const subSelect = document.createElement('select');
+            subSelect.className = 'sub-item-select';
+            subSelect.innerHTML = `<option value="">-- ជ្រើសរើសម៉ាក/ពណ៌ --</option>`;
+            
+            subSelect.onchange = function() {
+                updateLabel();
+            };
+
+            // Quantity Input
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'number';
+            qtyInput.inputMode = 'numeric';
+            qtyInput.pattern = '[0-9]*';
+            qtyInput.className = 'qty-input';
+            qtyInput.value = qty || '1';
+            qtyInput.placeholder = 'Qty';
+            qtyInput.oninput = function() {
+                updateLabel();
+            };
+
+            // Remove Button
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-row-btn';
+            removeBtn.innerHTML = '✕';
+            removeBtn.title = 'លុបជួរនេះ (Remove row)';
+            removeBtn.onclick = function() {
+                rowDiv.remove();
+                if (container.children.length === 0) {
+                    addProductRow(); // Keep at least one empty row
+                }
+                updateLabel();
+            };
+
+            rowDiv.appendChild(catSelect);
+            rowDiv.appendChild(subSelect);
+            rowDiv.appendChild(qtyInput);
+            rowDiv.appendChild(removeBtn);
+            container.appendChild(rowDiv);
+
+            if (category) {
+                updateSubItemOptions(rowDiv, category, subItem);
+            }
+        }
+
+        function updateSubItemOptions(rowDiv, category, selectedSubItem = "") {
+            const subSelect = rowDiv.querySelector('.sub-item-select');
+            subSelect.innerHTML = `<option value="">-- ជ្រើសរើសម៉ាក/ពណ៌ --</option>`;
+            
+            if (PRODUCT_CATEGORIES[category]) {
+                PRODUCT_CATEGORIES[category].forEach(sub => {
+                    const opt = document.createElement('option');
+                    opt.value = sub;
+                    opt.textContent = sub;
+                    if (sub === selectedSubItem) opt.selected = true;
+                    subSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function getStructuredProductsList() {
+            const rows = document.querySelectorAll('.product-row-builder');
+            const products = [];
+            rows.forEach(row => {
+                const cat = row.querySelector('.category-select').value;
+                const sub = row.querySelector('.sub-item-select').value;
+                const qty = row.querySelector('.qty-input').value || "1";
+                if (cat && sub) {
+                    products.push({ category: cat, item: sub, quantity: qty });
+                }
+            });
+            return products;
         }
 
         function editOrder(orderId) {
@@ -1824,24 +1825,18 @@
                 platformOther.value = pPlatform;
             }
 
-            const setProd = (chkId, qtyId, val) => {
-                const hasVal = val !== undefined && val !== null && String(val).trim() !== '';
-                document.getElementById(chkId).checked = hasVal;
-                document.getElementById(qtyId).value = hasVal ? val : '';
-            };
-
-            setProd('in-bj', 'in-qty-bj', p.bj);
-            setProd('in-bk', 'in-qty-bk', p.bk);
-            setProd('in-bman', 'in-qty-bman', p.bMan);
-            setProd('in-soap-green', 'in-qty-soap-green', p.soapGreen);
-            setProd('in-soap-pink', 'in-qty-soap-pink', p.soapPink);
-            setProd('in-soap-yellow', 'in-qty-soap-yellow', p.soapYellow);
-            setProd('in-soap-purple', 'in-qty-soap-purple', p.soapPurple);
-            setProd('in-soap-darkgreen', 'in-qty-soap-darkgreen', p.soapDarkGreen);
-            setProd('in-oil-bio', 'in-qty-oil-bio', p.oilBio);
-            setProd('in-oil-palmer', 'in-qty-oil-palmer', p.oilPalmer);
-            setProd('in-refill-bj', 'in-qty-refill-bj', p.refillBj);
-            setProd('in-refill-bk', 'in-qty-refill-bk', p.refillBk);
+            // Populate Products
+            const container = document.getElementById('productRowsContainer');
+            container.innerHTML = '';
+            
+            if (p.structuredProducts && Array.isArray(p.structuredProducts) && p.structuredProducts.length > 0) {
+                p.structuredProducts.forEach(prod => {
+                    addProductRow(prod.category, prod.item, prod.quantity);
+                });
+            } else {
+                // Backward compatibility for legacy saved orders
+                addProductRow();
+            }
 
             document.getElementById('editingBanner').style.display = 'flex';
             document.getElementById('editingBannerText').textContent = `✏️ កំពុងកែប្រែការកម្ម៉ង់របស់៖ ${p.customerName}`;
@@ -1868,9 +1863,15 @@
 
             const name = document.getElementById('inputName').value.trim();
             const phone = document.getElementById('inputPhone').value.trim();
+            const structuredProducts = getStructuredProductsList();
 
             if (!name) {
                 alert("សូមបញ្ចូលឈ្មោះអ្នកទទួលសិន! (Please enter a receiver name)");
+                return;
+            }
+
+            if (structuredProducts.length === 0) {
+                alert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់មួយ! (Please select at least one product)");
                 return;
             }
 
@@ -1936,18 +1937,7 @@
                     phone: phone, 
                     location: document.getElementById('inputAddress').value.trim(),
                     platform: platformVal,
-                    bj: document.getElementById('in-bj').checked ? (document.getElementById('in-qty-bj').value || "1") : "",
-                    bk: document.getElementById('in-bk').checked ? (document.getElementById('in-qty-bk').value || "1") : "",
-                    bMan: document.getElementById('in-bman').checked ? (document.getElementById('in-qty-bman').value || "1") : "",
-                    soapGreen: document.getElementById('in-soap-green').checked ? (document.getElementById('in-qty-soap-green').value || "1") : "",
-                    soapPink: document.getElementById('in-soap-pink').checked ? (document.getElementById('in-qty-soap-pink').value || "1") : "",
-                    soapYellow: document.getElementById('in-soap-yellow').checked ? (document.getElementById('in-qty-soap-yellow').value || "1") : "",
-                    soapPurple: document.getElementById('in-soap-purple').checked ? (document.getElementById('in-qty-soap-purple').value || "1") : "",
-                    soapDarkGreen: document.getElementById('in-soap-darkgreen').checked ? (document.getElementById('in-qty-soap-darkgreen').value || "1") : "",
-                    oilBio: document.getElementById('in-oil-bio').checked ? (document.getElementById('in-qty-oil-bio').value || "1") : "",
-                    oilPalmer: document.getElementById('in-oil-palmer').checked ? (document.getElementById('in-qty-oil-palmer').value || "1") : "",
-                    refillBj: document.getElementById('in-refill-bj').checked ? (document.getElementById('in-qty-refill-bj').value || "1") : "",
-                    refillBk: document.getElementById('in-refill-bk').checked ? (document.getElementById('in-qty-refill-bk').value || "1") : "",
+                    structuredProducts: structuredProducts,
                     courierVal: courierVal,
                     courier: courierTextToSave,
                     totalPrice: cleanPrice,
@@ -2075,10 +2065,12 @@
 
             tbody.innerHTML = filtered.map((item, idx) => {
                 const p = item.payload;
-                const products = buildProductSummaryList(p);
-                const productsHTML = products.length > 0
-                    ? products.map(prod => `<span class="product-pill">${prod}</span>`).join('')
-                    : `<span style="color:#9ca3af;">-</span>`;
+                
+                // Build product summary pills for table
+                let productsHTML = `<span style="color:#9ca3af;">-</span>`;
+                if (p.structuredProducts && Array.isArray(p.structuredProducts)) {
+                    productsHTML = p.structuredProducts.map(prod => `<span class="product-pill">${prod.category}: ${prod.item} (${prod.quantity})</span>`).join('');
+                }
 
                 const statusVal = normalizeOrderStatus(p.orderStatus);
                 const isConfirmed = (statusVal === 'Confirmed');
@@ -2313,8 +2305,10 @@
             document.getElementById('inputPlatformOther').style.display = 'none';
             document.getElementById('inputPlatformOther').value = '';
             
-            document.querySelectorAll('.product-selections input[type="checkbox"]').forEach(cb => cb.checked = false);
-            document.querySelectorAll('.product-selections input[type="number"]').forEach(qty => qty.value = '');
+            // Reset Products to 1 empty row
+            const container = document.getElementById('productRowsContainer');
+            container.innerHTML = '';
+            addProductRow();
             
             onFormStatusChange();
             updateLabel();
@@ -2380,25 +2374,21 @@
             else if (courierVal === 'jalat') document.getElementById('chk-jalat').classList.add('checked');
             else if (courierVal === 'Other') document.getElementById('chk-other-courier').classList.add('checked');
 
-            const setLbl = (chkInId, qtyInId, chkLblId, qtyLblId) => {
-                const isChk = document.getElementById(chkInId).checked;
-                const qtyVal = document.getElementById(qtyInId).value.trim();
-                document.getElementById(chkLblId).classList.toggle('checked', isChk);
-                document.getElementById(qtyLblId).textContent = isChk ? qtyVal : '';
-            };
+            // Render Selected Products on Label
+            const labelProductsContainer = document.getElementById('labelProductsContainer');
+            const structuredProducts = getStructuredProductsList();
 
-            setLbl('in-bj', 'in-qty-bj', 'lbl-chk-bj', 'lbl-qty-bj');
-            setLbl('in-bk', 'in-qty-bk', 'lbl-chk-bk', 'lbl-qty-bk');
-            setLbl('in-bman', 'in-qty-bman', 'lbl-chk-bman', 'lbl-qty-bman'); 
-            setLbl('in-soap-green', 'in-qty-soap-green', 'lbl-chk-soap-green', 'lbl-qty-soap-green');
-            setLbl('in-soap-pink', 'in-qty-soap-pink', 'lbl-chk-soap-pink', 'lbl-qty-soap-pink');
-            setLbl('in-soap-yellow', 'in-qty-soap-yellow', 'lbl-chk-soap-yellow', 'lbl-qty-soap-yellow');
-            setLbl('in-soap-purple', 'in-qty-soap-purple', 'lbl-chk-soap-purple', 'lbl-qty-soap-purple');
-            setLbl('in-soap-darkgreen', 'in-qty-soap-darkgreen', 'lbl-chk-soap-darkgreen', 'lbl-qty-soap-darkgreen');
-            setLbl('in-oil-bio', 'in-qty-oil-bio', 'lbl-chk-oil-bio', 'lbl-qty-oil-bio');
-            setLbl('in-oil-palmer', 'in-qty-oil-palmer', 'lbl-chk-oil-palmer', 'lbl-qty-oil-palmer');
-            setLbl('in-refill-bj', 'in-qty-refill-bj', 'lbl-chk-refill-bj', 'lbl-qty-refill-bj');
-            setLbl('in-refill-bk', 'in-qty-refill-bk', 'lbl-chk-refill-bk', 'lbl-qty-refill-bk');
+            if (structuredProducts.length === 0) {
+                labelProductsContainer.innerHTML = `<span style="color: #6b7280; font-weight: normal;">(គ្មានទំនិញ / No products selected)</span>`;
+            } else {
+                labelProductsContainer.innerHTML = structuredProducts.map(prod => `
+                    <div class="product-row">
+                        <div class="item-group">
+                            <span class="checkbox-circle checked"></span> <strong>${prod.category}</strong>: ${prod.item} <span class="qty-box-inline">${prod.quantity}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
         }
 
         function parseSmartText() {
