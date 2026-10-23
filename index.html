@@ -535,7 +535,6 @@
             margin-bottom: 1px;
         }
 
-        /* --- ENLARGED FONT SIZES HERE --- */
         .khmer-tag {
             font-size: 7.8px; 
             font-weight: bold;
@@ -562,7 +561,6 @@
             gap: 4px; 
             line-height: 1.1;
         }
-        /* -------------------------------- */
 
         .datetime-line {
             font-size: 8px; 
@@ -629,30 +627,14 @@
             padding-top: 5px; 
         }
 
-        .courier-options {
-            display: flex;
-            flex-direction: column;
-            gap: 3px; 
-            font-size: 8px; 
-            font-weight: bold;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 4px; 
-        }
-
-        .checkbox-circle {
-            width: 9px; 
-            height: 9px; 
-            border: 1.5px solid #000;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .checkbox-circle.checked {
-            background-color: #000;
+        /* CUSTOMER THANK YOU NOTE AT FOOTER */
+        .thank-you-footer-text {
+            font-size: 8.5px;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1.35;
+            max-width: 90px;
+            word-break: break-word;
         }
 
         .product-grid {
@@ -1151,7 +1133,7 @@
                 <div class="form-group">
                     <label>ទំនិញ (Products):</label>
                     <div class="product-selections" id="productRowsContainer">
-                        <!-- Rows will be dynamically injected here -->
+                        <!-- Rows dynamically injected here -->
                     </div>
                     <button type="button" class="add-product-row-btn" onclick="addProductRow()">
                         ➕ Add Product
@@ -1176,7 +1158,7 @@
                         <div style="display: flex; gap: 5px;">
                             <select id="inputPlatform" onchange="togglePlatformOther()" style="flex: 1;">
                                 <option value="Facebook">Facebook</option>
-                                <option value="Tiktok">Tiktok</option>
+                                <option value="TikTok">TikTok</option>
                                 <option value="Telegram">Telegram</option>
                                 <option value="Other">Other (Please specify)</option>
                             </select>
@@ -1271,7 +1253,7 @@
                             <div class="field-content" id="prevAddress">&nbsp;</div>
                         </div>
 
-                        <!-- PRODUCTS LABEL FIELD (DYNAMICALLY RENDERED SELECTED PRODUCTS) -->
+                        <!-- PRODUCTS LABEL FIELD (SHORTENED: B. Razor / B. Refill) -->
                         <div class="label-field">
                             <div class="field-label-title">ទំនិញ (Products)</div>
                             <div class="product-grid" id="labelProductsContainer">
@@ -1293,16 +1275,9 @@
 
                     <!-- Footer -->
                     <div class="label-footer">
-                        <div class="courier-options">
-                            <div class="checkbox-item">
-                                <span class="checkbox-circle" id="chk-virak"></span> វីរៈប៊ុនថាំ
-                            </div>
-                            <div class="checkbox-item">
-                                <span class="checkbox-circle" id="chk-jalat"></span> ចល័តឡូជីស្ទីក
-                            </div>
-                            <div class="checkbox-item">
-                                <span class="checkbox-circle" id="chk-other-courier"></span> ផ្សេងៗ (Other)
-                            </div>
+                        <!-- Replaced 3 courier options with Thank You message -->
+                        <div class="thank-you-footer-text">
+                            ❤️ សូមអរគុណអតិថិជនទាំងអស់សម្រាប់ការគាំទ្រ
                         </div>
 
                         <div class="icons-group">
@@ -1452,6 +1427,12 @@
             "Oil": ["Bio-Oil", "Palmer’s"],
             "Bikini Refill": ["BJ", "BK", "B-Man"],
             "Soap Refill": ["Green", "Pink", "Purple"]
+        };
+
+        // Category renaming dictionary specifically for physical label display
+        const LABEL_CATEGORY_NAMES = {
+            "Bikini Razor": "B. Razor",
+            "Bikini Refill": "B. Refill"
         };
 
         // Initialize on page load & fetch from Firebase
@@ -1815,7 +1796,7 @@
             const pPlatform = p.platform || 'Facebook';
             const platformSelect = document.getElementById('inputPlatform');
             const platformOther = document.getElementById('inputPlatformOther');
-            if (['Facebook', 'Tiktok', 'Telegram'].includes(pPlatform)) {
+            if (['Facebook', 'TikTok', 'Telegram'].includes(pPlatform)) {
                 platformSelect.value = pPlatform;
                 platformOther.style.display = 'none';
                 platformOther.value = '';
@@ -1834,7 +1815,6 @@
                     addProductRow(prod.category, prod.item, prod.quantity);
                 });
             } else {
-                // Backward compatibility for legacy saved orders
                 addProductRow();
             }
 
@@ -1877,7 +1857,7 @@
 
             const formattedDate = getFormattedPickerDate();
 
-            // --- Duplicate Entry Check ---
+            // Duplicate Entry Check
             if (!editingOrderId) {
                 const isDuplicate = savedOrders.some(order => {
                     const p = order.payload;
@@ -2066,7 +2046,6 @@
             tbody.innerHTML = filtered.map((item, idx) => {
                 const p = item.payload;
                 
-                // Build product summary pills for table
                 let productsHTML = `<span style="color:#9ca3af;">-</span>`;
                 if (p.structuredProducts && Array.isArray(p.structuredProducts)) {
                     productsHTML = p.structuredProducts.map(prod => `<span class="product-pill">${prod.category}: ${prod.item} (${prod.quantity})</span>`).join('');
@@ -2366,28 +2345,23 @@
             document.getElementById('prevCourier').textContent = courierText;
             document.getElementById('prevPrice').textContent = displayPriceOnLabel || '\u00A0';
 
-            document.getElementById('chk-virak').classList.remove('checked');
-            document.getElementById('chk-jalat').classList.remove('checked');
-            document.getElementById('chk-other-courier').classList.remove('checked');
-
-            if (courierVal === 'virak') document.getElementById('chk-virak').classList.add('checked');
-            else if (courierVal === 'jalat') document.getElementById('chk-jalat').classList.add('checked');
-            else if (courierVal === 'Other') document.getElementById('chk-other-courier').classList.add('checked');
-
-            // Render Selected Products on Label
+            // Render Selected Products on Label with shortened category names
             const labelProductsContainer = document.getElementById('labelProductsContainer');
             const structuredProducts = getStructuredProductsList();
 
             if (structuredProducts.length === 0) {
                 labelProductsContainer.innerHTML = `<span style="color: #6b7280; font-weight: normal;">(គ្មានទំនិញ / No products selected)</span>`;
             } else {
-                labelProductsContainer.innerHTML = structuredProducts.map(prod => `
-                    <div class="product-row">
-                        <div class="item-group">
-                            <span class="checkbox-circle checked"></span> <strong>${prod.category}</strong>: ${prod.item} <span class="qty-box-inline">${prod.quantity}</span>
+                labelProductsContainer.innerHTML = structuredProducts.map(prod => {
+                    const displayCategory = LABEL_CATEGORY_NAMES[prod.category] || prod.category;
+                    return `
+                        <div class="product-row">
+                            <div class="item-group">
+                                <span class="checkbox-circle checked"></span> <strong>${displayCategory}</strong>: ${prod.item} <span class="qty-box-inline">${prod.quantity}</span>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         }
 
