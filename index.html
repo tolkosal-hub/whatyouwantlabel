@@ -1131,6 +1131,7 @@
                             <select id="inputCourier" onchange="toggleCourierOther(); updateLabel();" style="flex: 1;">
                                 <option value="virak">វីរៈប៊ុនថាំ (VET Express)</option>
                                 <option value="jalat">ចល័តឡូជីស្ទីក (Jalat Logistic)</option>
+                                <option value="jnt">ជេ អេន ធី អ៊ិចប្រេស (J&T Express)</option>
                                 <option value="Other">Other (Please specify)</option>
                             </select>
                             <input type="text" id="inputCourierOther" placeholder="Specify..." style="display: none; flex: 1;" oninput="updateLabel()">
@@ -1722,10 +1723,11 @@
         }
 
         function getCourierKeyFromText(courierVal, courierText) {
-            if (courierVal && ['virak', 'jalat', 'Other'].includes(courierVal)) {
+            if (courierVal && ['virak', 'jalat', 'jnt', 'Other'].includes(courierVal)) {
                 return courierVal;
             }
             const t = (courierText || '').toLowerCase();
+            if (t.includes('ជេ អេន ធី') || t.includes('j&t') || t.includes('jnt')) return 'jnt';
             if (t.includes('ចល័ត') || t.includes('jalat')) return 'jalat';
             if (t.includes('វីរៈ') || t.includes('vet') || t.includes('virak')) return 'virak';
             return 'Other';
@@ -1799,7 +1801,7 @@
             const courierSelect = document.getElementById('inputCourier');
             const courierOther = document.getElementById('inputCourierOther');
             
-            if (['virak', 'jalat'].includes(pCourierVal)) {
+            if (['virak', 'jalat', 'jnt'].includes(pCourierVal)) {
                 courierSelect.value = pCourierVal;
                 courierOther.style.display = 'none';
                 courierOther.value = '';
@@ -2326,6 +2328,8 @@
                 courierText = 'វីរៈប៊ុនថាំ';
             } else if (courierVal === 'jalat') {
                 courierText = 'ចល័តឡូជីស្ទីក';
+            } else if (courierVal === 'jnt') {
+                courierText = 'ជេ អេន ធី';
             } else {
                 courierText = courierSelect.options[courierSelect.selectedIndex].text;
             }
@@ -2421,7 +2425,9 @@
                 document.getElementById('inputCourier').value = 'virak';
             } else if (lowerText.includes('ចល័ត') || lowerText.includes('jalat')) {
                 document.getElementById('inputCourier').value = 'jalat';
-            } 
+            } else if (lowerText.includes('ជេ អេន ធី') || lowerText.includes('j&t') || lowerText.includes('jnt')) {
+                document.getElementById('inputCourier').value = 'jnt';
+            }
 
             toggleCourierOther();
             updateLabel();
