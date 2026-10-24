@@ -328,103 +328,75 @@
             gap: 12px;
         }
 
-        /* DYNAMIC PRODUCT BUILDER STYLES */
-        .product-selections {
-            display: flex; 
-            flex-direction: column; 
-            border: 1px solid #d1d5db; 
-            padding: 10px; 
+        /* CHECKBOX PRODUCT SELECTION GRID STYLES */
+        .product-checkbox-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border: 1px solid #d1d5db;
+            padding: 12px;
             border-radius: 8px;
             background: #fafafa;
-            gap: 10px;
+            max-height: 280px;
+            overflow-y: auto;
         }
 
-        .product-row-builder {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .product-cat-block {
             background: #ffffff;
-            padding: 8px;
             border: 1px solid #e5e7eb;
             border-radius: 6px;
+            padding: 8px 10px;
         }
 
-        .product-row-builder select {
-            flex: 2;
-            padding: 6px 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 13.5px;
-            font-family: inherit;
-            background: #fff;
-        }
-
-        .product-row-builder .sub-item-select {
-            flex: 2;
-            padding: 6px 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 13.5px;
-            font-family: inherit;
-            background: #fff;
-        }
-
-        .product-row-builder .qty-input {
-            width: 60px;
-            padding: 6px 4px !important;
-            text-align: center;
-            font-size: 13.5px !important;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-        }
-
-        .product-row-builder .remove-row-btn {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fca5a5;
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
+        .product-cat-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            transition: background 0.2s;
+            justify-content: space-between;
         }
 
-        .product-row-builder .remove-row-btn:hover {
-            background: #fecaca;
-        }
-
-        .add-product-row-btn {
-            background: #f0fdf4;
-            color: #16a34a;
-            border: 1px dashed #4ade80;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 13.5px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            transition: background 0.2s;
+        .product-items-group {
             display: flex;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+        }
+
+        .product-check-item {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 6px;
+            gap: 5px;
+            font-size: 12.5px;
+            color: #374151;
+            cursor: pointer;
+            user-select: none;
         }
 
-        .add-product-row-btn:hover {
-            background: #dcfce7;
+        .product-check-item input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            margin: 0;
         }
 
-        .qty-input::-webkit-outer-spin-button,
-        .qty-input::-webkit-inner-spin-button {
+        .product-qty-input {
+            width: 44px;
+            padding: 2px 4px !important;
+            font-size: 12px !important;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            text-align: center;
+            height: 24px;
+        }
+
+        .product-qty-input::-webkit-outer-spin-button,
+        .product-qty-input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
-        .qty-input[type=number] {
+        .product-qty-input[type=number] {
             -moz-appearance: textfield;
         }
 
@@ -492,7 +464,7 @@
             height: var(--label-height);
             background: #FFFBEB;
             border: 3px solid #FACC15;
-            padding: 4.2mm; 
+            padding: 3.8mm; 
             display: flex;
             flex-direction: column;
             position: relative;
@@ -504,26 +476,27 @@
             display: flex;
             align-items: center;
             border-bottom: 1.5px solid #FDE047;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
             gap: 6px;
         }
 
         .header-logo-container {
-            width: 38%;
+            width: 36%;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .header-main-content {
-            width: 62%;
+            width: 64%;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 3.5px; 
+            gap: 2.5px; 
         }
 
+        /* KEPT REMAIN THE SAME SIZE */
         .main-brand {
             font-family: 'Arial Black', 'Kantumruy Pro', sans-serif;
             font-size: 15px; 
@@ -535,38 +508,39 @@
             margin-bottom: 1px;
         }
 
+        /* PROPORTIONALLY INCREASED FONT SIZES */
         .khmer-tag {
-            font-size: 7.8px; 
-            font-weight: bold;
+            font-size: 9px; 
+            font-weight: 700;
             color: #1f2937;
             white-space: nowrap;
-            line-height: 1.1;
+            line-height: 1.15;
         }
 
         .eng-tag {
-            font-size: 7.2px; 
-            font-weight: bold;
+            font-size: 8.2px; 
+            font-weight: 700;
             color: #1f2937;
             white-space: nowrap; 
-            line-height: 1.1;
+            line-height: 1.15;
         }
 
         .contact-line {
-            font-size: 7.8px; 
-            font-weight: bold;
+            font-size: 9px; 
+            font-weight: 800;
             color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 4px; 
-            line-height: 1.1;
+            line-height: 1.15;
         }
 
         .datetime-line {
-            font-size: 8px; 
-            font-weight: bold;
+            font-size: 9px; 
+            font-weight: 800;
             color: #111;
-            line-height: 1.1;
+            line-height: 1.15;
             margin-top: 1px;
         }
 
@@ -574,40 +548,50 @@
             flex: 1; 
             display: flex;
             flex-direction: column;
-            gap: 5px; 
-            margin: 5px 0; 
+            gap: 4px; 
+            margin: 4px 0; 
         }
 
         .label-field {
             background: #ffffff;
             border: 2px solid #FACC15;
-            border-radius: 8px;
-            padding: 4px 7px; 
-            min-height: 22px; 
+            border-radius: 7px;
+            padding: 3px 6px; 
+            min-height: 20px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
+        /* RESTORED FLEX: 1 AUTO-EXPANSION ON ADDRESS BOX */
         .label-field.address-field {
-            flex: 1; 
+            flex: 1 !important; 
+            height: auto !important;
+            min-height: 22px;
+            max-height: none !important;
             justify-content: flex-start;
         }
 
         .field-label-title {
-            font-size: 8px; 
+            font-size: 9px; 
             color: #713f12;
-            font-weight: bold;
-            line-height: 1;
-            margin-bottom: 3px; 
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 2px; 
         }
 
         .field-content {
-            font-size: 11px; 
+            font-size: 12px; 
             color: #000;
-            font-weight: 600;
+            font-weight: 700;
             word-break: break-word;
-            line-height: 1.2;
+            line-height: 1.25;
+        }
+
+        .label-field.address-field .field-content {
+            font-size: 11.5px;
+            line-height: 1.25;
+            display: block;
         }
 
         .row-fields {
@@ -624,26 +608,26 @@
             align-items: center;
             justify-content: space-between;
             border-top: 1.5px solid #FDE047;
-            padding-top: 5px; 
+            padding-top: 4px; 
         }
 
-        /* CUSTOMER THANK YOU NOTE AT FOOTER */
+        /* PROPORTIONALLY INCREASED FOOTER NOTE */
         .thank-you-footer-text {
-            font-size: 8.5px;
-            font-weight: 700;
+            font-size: 9.2px;
+            font-weight: 800;
             color: #1f2937;
             line-height: 1.35;
-            max-width: 90px;
+            max-width: 95px;
             word-break: break-word;
         }
 
         .product-grid {
             display: flex;
             flex-direction: column;
-            gap: 4px; 
-            font-size: 8.5px; 
-            font-weight: bold;
-            margin-top: 3px; 
+            gap: 3px; 
+            font-size: 9.8px; 
+            font-weight: 800;
+            margin-top: 2px; 
             color: #111;
         }
 
@@ -658,18 +642,19 @@
         .item-group {
             display: flex;
             align-items: center;
-            gap: 3px; 
+            gap: 4px; 
         }
 
         .qty-box-inline {
             display: inline-block;
-            min-width: 15px; 
-            height: 12px; 
+            min-width: 17px; 
+            height: 14px; 
             border: 1.5px solid #000;
             border-radius: 2px;
             text-align: center;
-            line-height: 10px; 
-            font-size: 8.5px; 
+            line-height: 12px; 
+            font-size: 9.5px; 
+            font-weight: 800;
             color: #000;
             background: #fdfdfd;
             margin-left: 3px; 
@@ -677,27 +662,29 @@
 
         .icons-group {
             display: flex;
-            gap: 5px; 
+            gap: 4px; 
         }
 
         .custom-icon {
-            width: 27px; 
-            height: 27px; 
+            width: 25px; 
+            height: 25px; 
         }
 
         .warning-container {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 4px; 
+            gap: 3px; 
         }
 
+        /* ADJUSTED FONT SIZE & NO-WRAP TO KEEP LETTERS ON THE SAME LINE */
         .warning-text {
             text-align: right;
-            font-size: 7.5px; 
-            font-weight: bold;
+            font-size: 7.2px; 
+            font-weight: 800;
             color: #dc2626;
-            line-height: 1.1;
+            line-height: 1.15;
+            white-space: nowrap;
         }
 
         .warning-text span {
@@ -1002,7 +989,7 @@
                 width: 76mm !important; 
                 height: 130mm !important; 
                 margin: 0 !important; 
-                padding: 4.2mm !important; 
+                padding: 3.8mm !important; 
                 border: none !important; 
                 box-sizing: border-box !important;
                 box-shadow: none !important;
@@ -1129,15 +1116,12 @@
                     <textarea id="inputAddress" placeholder="បញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន" oninput="updateLabel()" lang="km" spellcheck="false" autocorrect="off"></textarea>
                 </div>
 
-                <!-- DYNAMIC PRODUCTS SECTION WITH DROPDOWNS & (+) BUTTON -->
+                <!-- CHECKBOX BASED PRODUCT SELECTION -->
                 <div class="form-group">
-                    <label>ទំនិញ (Products):</label>
-                    <div class="product-selections" id="productRowsContainer">
-                        <!-- Rows dynamically injected here -->
+                    <label>ទំនិញ (Products - ជ្រើសរើសដោយធីក Checkbox):</label>
+                    <div class="product-checkbox-wrapper" id="productCheckboxContainer">
+                        <!-- Checkbox categories injected dynamically -->
                     </div>
-                    <button type="button" class="add-product-row-btn" onclick="addProductRow()">
-                        ➕ Add Product
-                    </button>
                 </div>
 
                 <div class="two-col-row">
@@ -1202,7 +1186,7 @@
                         
                         <!-- Left Panel (S-SHAPE BASKET LOGO) -->
                         <div class="header-logo-container">
-                            <svg viewBox="0 0 270 190" style="width: 100%; max-width: 110px; height: auto;" xmlns="http://www.w3.org/2000/svg">
+                            <svg viewBox="0 0 270 190" style="width: 100%; max-width: 105px; height: auto;" xmlns="http://www.w3.org/2000/svg">
                                 <g fill="none" stroke="#F5B201" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M 18 25 H 52 L 80 142 H 245" />
                                     <path d="M 52 25 H 225 A 17.5 17.5 0 0 1 225 60 H 90 A 17.5 17.5 0 0 0 90 95 H 210" />
@@ -1216,11 +1200,12 @@
 
                         <!-- Right Side (Title & Information) -->
                         <div class="header-main-content">
+                            <!-- WHAT YOU WANT unchanged -->
                             <div class="main-brand">WHAT YOU WANT</div>
                             <div class="khmer-tag">ផ្គត់ផ្គង់ឡាមកោររោមមានគុណភាពខ្ពស់</div>
                             <div class="eng-tag">Authentic Product from Korea Japan and USA</div>
                             <div class="contact-line">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="7.5" height="7.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="8.5" height="8.5">
                                     <circle cx="12" cy="12" r="12" fill="#2AABEE"/>
                                     <path d="M5.4 11.6L18 6.5c.6-.2 1.1.1 1 .8l-2.2 10.3c-.1.6-.5.8-1.1.5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3.1 5.7-5.1c.2-.2 0-.4-.4-.2L8.6 13.9l-3-1c-.6-.2-.6-.6.1-.9z" fill="#FFF"/>
                                 </svg>
@@ -1247,13 +1232,13 @@
                             <div class="field-content" id="prevPhone">&nbsp;</div>
                         </div>
 
-                        <!-- Address field dynamically expands -->
+                        <!-- Address field auto-expands with flex: 1 -->
                         <div class="label-field address-field">
                             <div class="field-label-title">ទីតាំង</div>
                             <div class="field-content" id="prevAddress">&nbsp;</div>
                         </div>
 
-                        <!-- PRODUCTS LABEL FIELD (SHORTENED: B. Razor / B. Refill) -->
+                        <!-- PRODUCTS LABEL FIELD (ONLY SELECTED SHOWN) -->
                         <div class="label-field">
                             <div class="field-label-title">ទំនិញ (Products)</div>
                             <div class="product-grid" id="labelProductsContainer">
@@ -1275,7 +1260,7 @@
 
                     <!-- Footer -->
                     <div class="label-footer">
-                        <!-- Replaced 3 courier options with Thank You message -->
+                        <!-- Customer Thank You note -->
                         <div class="thank-you-footer-text">
                             ❤️ សូមអរគុណអតិថិជនទាំងអស់សម្រាប់ការគាំទ្រ
                         </div>
@@ -1420,7 +1405,7 @@
         let savedOrders = [];
         let editingOrderId = null;
 
-        // Product Catalog Definition for Dropdowns
+        // Product Catalog Definition for Checkboxes
         const PRODUCT_CATEGORIES = {
             "Bikini Razor": ["BJ", "BK", "B-Man"],
             "Soap Razor": ["Green", "Pink", "Yellow", "Purple", "Dark Green"],
@@ -1438,6 +1423,9 @@
         // Initialize on page load & fetch from Firebase
         window.addEventListener('DOMContentLoaded', async () => {
             
+            // Render Checkboxes
+            buildProductCheckboxes();
+
             // --- SECURE FIREBASE AUTH LISTENER ---
             firebase.auth().onAuthStateChanged((user) => {
                 if (user) {
@@ -1456,14 +1444,135 @@
             updateDateTime();
             setInterval(updateDateTime, 60000);
             
-            // Add initial product row if empty
-            if (document.getElementById('productRowsContainer').children.length === 0) {
-                addProductRow();
-            }
-
             onFormStatusChange();
             updateLabel();
         });
+
+        // --- BUILD CHECKBOX PRODUCT SECTION ---
+        function buildProductCheckboxes() {
+            const container = document.getElementById('productCheckboxContainer');
+            container.innerHTML = '';
+
+            Object.entries(PRODUCT_CATEGORIES).forEach(([category, items]) => {
+                const catBlock = document.createElement('div');
+                catBlock.className = 'product-cat-block';
+
+                const catTitle = document.createElement('div');
+                catTitle.className = 'product-cat-title';
+                catTitle.textContent = category;
+                catBlock.appendChild(catTitle);
+
+                const itemsGroup = document.createElement('div');
+                itemsGroup.className = 'product-items-group';
+
+                items.forEach(item => {
+                    const uniqueId = `prod_${category.replace(/[\s\W]+/g, '_')}_${item.replace(/[\s\W]+/g, '_')}`;
+
+                    const label = document.createElement('label');
+                    label.className = 'product-check-item';
+
+                    const chk = document.createElement('input');
+                    chk.type = 'checkbox';
+                    chk.id = uniqueId;
+                    chk.dataset.category = category;
+                    chk.dataset.item = item;
+                    chk.onchange = function() {
+                        const qtyBox = document.getElementById(`qty_${uniqueId}`);
+                        if (qtyBox) {
+                            qtyBox.disabled = !this.checked;
+                            if (!this.checked) {
+                                qtyBox.value = '';
+                            }
+                        }
+                        updateLabel();
+                    };
+
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = item;
+
+                    // Numeric only quantity input, left blank by default
+                    const qtyInput = document.createElement('input');
+                    qtyInput.type = 'text';
+                    qtyInput.inputMode = 'numeric';
+                    qtyInput.pattern = '[0-9]*';
+                    qtyInput.id = `qty_${uniqueId}`;
+                    qtyInput.className = 'product-qty-input';
+                    qtyInput.value = '';
+                    qtyInput.placeholder = 'Qty';
+                    qtyInput.disabled = true;
+
+                    // Strict number input handler
+                    qtyInput.onkeypress = function(e) {
+                        if (!/[0-9]/.test(e.key)) {
+                            e.preventDefault();
+                        }
+                    };
+
+                    qtyInput.oninput = function() {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                        updateLabel();
+                    };
+
+                    label.appendChild(chk);
+                    label.appendChild(textSpan);
+                    label.appendChild(qtyInput);
+                    itemsGroup.appendChild(label);
+                });
+
+                catBlock.appendChild(itemsGroup);
+                container.appendChild(catBlock);
+            });
+        }
+
+        // Return only checked items with their quantity (blank defaults to 1)
+        function getStructuredProductsList() {
+            const checkedBoxes = document.querySelectorAll('#productCheckboxContainer input[type="checkbox"]:checked');
+            const products = [];
+            checkedBoxes.forEach(chk => {
+                const cat = chk.dataset.category;
+                const item = chk.dataset.item;
+                const qtyInput = document.getElementById(`qty_${chk.id}`);
+                let qty = (qtyInput && qtyInput.value.trim() !== '') ? qtyInput.value.trim() : '1';
+                products.push({
+                    category: cat,
+                    item: item,
+                    quantity: qty
+                });
+            });
+            return products;
+        }
+
+        // Reset all product checkboxes
+        function resetProductCheckboxes() {
+            const checkboxes = document.querySelectorAll('#productCheckboxContainer input[type="checkbox"]');
+            checkboxes.forEach(chk => {
+                chk.checked = false;
+                const qtyInput = document.getElementById(`qty_${chk.id}`);
+                if (qtyInput) {
+                    qtyInput.value = '';
+                    qtyInput.disabled = true;
+                }
+            });
+        }
+
+        // Populate checkboxes from existing order
+        function setCheckboxesFromProductList(products) {
+            resetProductCheckboxes();
+            if (!Array.isArray(products)) return;
+
+            products.forEach(p => {
+                const uniqueId = `prod_${p.category.replace(/[\s\W]+/g, '_')}_${p.item.replace(/[\s\W]+/g, '_')}`;
+                const chk = document.getElementById(uniqueId);
+                const qtyInput = document.getElementById(`qty_${uniqueId}`);
+                if (chk) {
+                    chk.checked = true;
+                    if (qtyInput) {
+                        qtyInput.disabled = false;
+                        qtyInput.value = p.quantity ? String(p.quantity) : '';
+                    }
+                }
+            });
+        }
 
         // --- LOGIN AUTHENTICATION LOGIC ---
         function checkLogin() {
@@ -1668,98 +1777,6 @@
             }
         }
 
-        // --- DYNAMIC PRODUCT BUILDER FUNCTIONS ---
-        function addProductRow(category = "", subItem = "", qty = "1") {
-            const container = document.getElementById('productRowsContainer');
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'product-row-builder';
-
-            // Category Dropdown
-            const catSelect = document.createElement('select');
-            catSelect.className = 'category-select';
-            catSelect.innerHTML = `<option value="">-- ជ្រើសរើសប្រភេទផលិតផល --</option>` + 
-                Object.keys(PRODUCT_CATEGORIES).map(cat => `<option value="${cat}" ${cat === category ? 'selected' : ''}>${cat}</option>`).join('');
-            
-            catSelect.onchange = function() {
-                updateSubItemOptions(rowDiv, this.value);
-                updateLabel();
-            };
-
-            // Sub-item Dropdown
-            const subSelect = document.createElement('select');
-            subSelect.className = 'sub-item-select';
-            subSelect.innerHTML = `<option value="">-- ជ្រើសរើសម៉ាក/ពណ៌ --</option>`;
-            
-            subSelect.onchange = function() {
-                updateLabel();
-            };
-
-            // Quantity Input
-            const qtyInput = document.createElement('input');
-            qtyInput.type = 'number';
-            qtyInput.inputMode = 'numeric';
-            qtyInput.pattern = '[0-9]*';
-            qtyInput.className = 'qty-input';
-            qtyInput.value = qty || '1';
-            qtyInput.placeholder = 'Qty';
-            qtyInput.oninput = function() {
-                updateLabel();
-            };
-
-            // Remove Button
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'remove-row-btn';
-            removeBtn.innerHTML = '✕';
-            removeBtn.title = 'លុបជួរនេះ (Remove row)';
-            removeBtn.onclick = function() {
-                rowDiv.remove();
-                if (container.children.length === 0) {
-                    addProductRow(); // Keep at least one empty row
-                }
-                updateLabel();
-            };
-
-            rowDiv.appendChild(catSelect);
-            rowDiv.appendChild(subSelect);
-            rowDiv.appendChild(qtyInput);
-            rowDiv.appendChild(removeBtn);
-            container.appendChild(rowDiv);
-
-            if (category) {
-                updateSubItemOptions(rowDiv, category, subItem);
-            }
-        }
-
-        function updateSubItemOptions(rowDiv, category, selectedSubItem = "") {
-            const subSelect = rowDiv.querySelector('.sub-item-select');
-            subSelect.innerHTML = `<option value="">-- ជ្រើសរើសម៉ាក/ពណ៌ --</option>`;
-            
-            if (PRODUCT_CATEGORIES[category]) {
-                PRODUCT_CATEGORIES[category].forEach(sub => {
-                    const opt = document.createElement('option');
-                    opt.value = sub;
-                    opt.textContent = sub;
-                    if (sub === selectedSubItem) opt.selected = true;
-                    subSelect.appendChild(opt);
-                });
-            }
-        }
-
-        function getStructuredProductsList() {
-            const rows = document.querySelectorAll('.product-row-builder');
-            const products = [];
-            rows.forEach(row => {
-                const cat = row.querySelector('.category-select').value;
-                const sub = row.querySelector('.sub-item-select').value;
-                const qty = row.querySelector('.qty-input').value || "1";
-                if (cat && sub) {
-                    products.push({ category: cat, item: sub, quantity: qty });
-                }
-            });
-            return products;
-        }
-
         function editOrder(orderId) {
             const target = savedOrders.find(o => o.id === orderId);
             if (!target) return;
@@ -1806,17 +1823,8 @@
                 platformOther.value = pPlatform;
             }
 
-            // Populate Products
-            const container = document.getElementById('productRowsContainer');
-            container.innerHTML = '';
-            
-            if (p.structuredProducts && Array.isArray(p.structuredProducts) && p.structuredProducts.length > 0) {
-                p.structuredProducts.forEach(prod => {
-                    addProductRow(prod.category, prod.item, prod.quantity);
-                });
-            } else {
-                addProductRow();
-            }
+            // Set Checkboxes for Products
+            setCheckboxesFromProductList(p.structuredProducts || []);
 
             document.getElementById('editingBanner').style.display = 'flex';
             document.getElementById('editingBannerText').textContent = `✏️ កំពុងកែប្រែការកម្ម៉ង់របស់៖ ${p.customerName}`;
@@ -2284,10 +2292,8 @@
             document.getElementById('inputPlatformOther').style.display = 'none';
             document.getElementById('inputPlatformOther').value = '';
             
-            // Reset Products to 1 empty row
-            const container = document.getElementById('productRowsContainer');
-            container.innerHTML = '';
-            addProductRow();
+            // Reset Checkboxes
+            resetProductCheckboxes();
             
             onFormStatusChange();
             updateLabel();
@@ -2345,7 +2351,7 @@
             document.getElementById('prevCourier').textContent = courierText;
             document.getElementById('prevPrice').textContent = displayPriceOnLabel || '\u00A0';
 
-            // Render Selected Products on Label with shortened category names
+            // Render Only Checked Products on Physical Label
             const labelProductsContainer = document.getElementById('labelProductsContainer');
             const structuredProducts = getStructuredProductsList();
 
@@ -2357,7 +2363,7 @@
                     return `
                         <div class="product-row">
                             <div class="item-group">
-                                <span class="checkbox-circle checked"></span> <strong>${displayCategory}</strong>: ${prod.item} <span class="qty-box-inline">${prod.quantity}</span>
+                                <strong>${displayCategory}</strong>: ${prod.item} <span class="qty-box-inline">${prod.quantity}</span>
                             </div>
                         </div>
                     `;
